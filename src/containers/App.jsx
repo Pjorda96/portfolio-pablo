@@ -1,17 +1,11 @@
 import React from 'react';
-import { HashRouter, Route, Switch } from 'react-router-dom';
+import { HashRouter, Route, Switch, Redirect } from 'react-router-dom';
 import '../scss/App.scss';
 
+import Routes from '../router/routes'
+
 import Spinner from '../components/spinner'
-
-// Containers
-const DefaultLayout = React.lazy(() => import('./DefaultLayout/defaultLayout'));
-
-// Pages
-// const Login = React.lazy(() => import('./views/Pages/Login/'));
-// const Register = React.lazy(() => import('./views/Pages/Register/'));
-// const Page404 = React.lazy(() => import('./views/Pages/Page404/'));
-// const Page500 = React.lazy(() => import('./views/Pages/Page500/'));
+const DefaultLayout = React.lazy(() => import('../containers/DefaultLayout/defaultLayout'));
 
 function App() {
   return (
@@ -24,6 +18,7 @@ function App() {
           <Route exact path="/500" render={props => <Page500 {...props}/>} />
           <Route path="/" render={props => <DefaultLayout {...props}/>} />*/}
           <Route path="/" render={props => <DefaultLayout {...props}/>} />
+          <Redirect to='/' />
         </Switch>
       </React.Suspense>
     </HashRouter>
