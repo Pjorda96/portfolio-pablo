@@ -1,11 +1,18 @@
 import React from 'react';
+
+// Components
+import Home from "../../components/home";
 import Header from "../../components/header";
 
 export default function DefaultLayout() {
   return (
     <div className='overflow-wrap'>
+      <Home />
       <Header />
-      <p>Hello world</p>
+
+      <div className="container-fluid">
+        container fluid
+      </div>
 
       {/*<div className="modal-wrap flex">
         <div className="mask"></div>

@@ -7,7 +7,7 @@ import '../scss/header.scss';
 
 export default function Header() {
   return (
-    <header id="home" className="header">
+    <header id="home">
       <div className="flex">
         <div className="text">
           Hello, I'm <span className="highlight">Matthew Williams</span>.
