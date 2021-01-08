@@ -11,11 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install npm
-      - run: 'npm install'
+        run: 'npm install'
 
       - name: Deploy project
-      - uses: actions/checkout@v2
-      - run: 'npm run deploy:dev'
+        uses: actions/checkout@v2
+
+      - name: Command to deploy dev
+        run: 'npm run deploy:dev'
+
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
