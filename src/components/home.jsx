@@ -1,7 +1,5 @@
 import React from "react";
 import Typed from 'react-typed';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircle } from '@fortawesome/free-solid-svg-icons'
 
 import '../scss/home.scss';
 import Scroller from "./scroller";

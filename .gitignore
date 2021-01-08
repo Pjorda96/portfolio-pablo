@@ -23,7 +23,10 @@ yarn-debug.log*
 yarn-error.log*
 
 /.idea
+
+# firebase
 /.firebase
+firebase-debug.log
 
 .eslintcache
 /src/template
