@@ -27,7 +27,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "sync:dev": "firebase target:apply hosting dev dev-portfolio-pablo",
-    "deploy:dev": "npm run build && firebase deploy --only hosting:dev"
+    "deploy:dev": "firebase deploy --only hosting:dev"
   },
   "eslintConfig": {
     "extends": "react-app"
