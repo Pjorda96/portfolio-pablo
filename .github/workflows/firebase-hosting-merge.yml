@@ -25,9 +25,6 @@ jobs:
       - name: Build
         run: 'npm run build'
 
-      - name: Command to deploy dev
-        run: 'npm run deploy:dev'
-
       - name: Firebase configuration
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
