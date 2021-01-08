@@ -19,6 +19,16 @@ jobs:
           node-version: '12'
           check-latest: true
 
+      - name: Firebase configuration
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PORTFOLIO_PABLO }}'
+          channelId: live
+          projectId: portfolio-pablo
+        env:
+          FIREBASE_CLI_PREVIEWS: hostingchannels
+
       - name: Install npm
         run: 'npm install'
 
@@ -27,12 +37,3 @@ jobs:
 
       - name: Command to deploy dev
         run: 'npm run deploy:dev'
-
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PORTFOLIO_PABLO }}'
-          channelId: live
-          projectId: portfolio-pablo
-        env:
-          FIREBASE_CLI_PREVIEWS: hostingchannels
