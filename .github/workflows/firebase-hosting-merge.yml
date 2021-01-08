@@ -19,6 +19,15 @@ jobs:
           node-version: '12'
           check-latest: true
 
+      - name: Install npm
+        run: 'npm install'
+
+      - name: Build
+        run: 'npm run build'
+
+      - name: Command to deploy dev
+        run: 'npm run deploy:dev'
+
       - name: Firebase configuration
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -28,12 +37,3 @@ jobs:
           projectId: portfolio-pablo
         env:
           FIREBASE_CLI_PREVIEWS: hostingchannels
-
-      - name: Install npm
-        run: 'npm install'
-
-      - name: Build
-        run: 'npm run build'
-
-      - name: Command to deploy dev
-        run: 'npm run deploy:dev'
