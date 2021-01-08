@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "portfolio-pablo"
+  },
+  "targets": {
+    "portfolio-pablo": {
+      "hosting": {
+        "dev": [
+          "development-portfolio-pablo"
+        ]
+      }
+    }
+  }
+}
