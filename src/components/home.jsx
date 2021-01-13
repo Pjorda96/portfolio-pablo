@@ -1,24 +1,28 @@
-import React from "react";
+import React from 'react';
 import Typed from 'react-typed';
+import { useTranslation } from 'react-i18next';
 
 import '../scss/home.scss';
-import Scroller from "./scroller";
+
+import Scroller from './scroller';
 
 export default function Home() {
+  const [ t ] = useTranslation();
+
   return (
     <section id="home">
       <div className="overlay" />
       <div className="content" id="scroll-down">
         <div className="intro">
-          <h2>Hello! I AM</h2>
-          <h1>PABLO JORDÁ GARCÍA</h1>
+          <h2>{ t('home.helloIm') }</h2>
+          <h1>Pablo Jordá García</h1>
 
           <Typed
             strings={[
               'frontend',
               'backend',
               'cloud',
-              'full stack developer'
+              t('home.fsDeveloper')
             ]}
             className="type-wrap"
             typeSpeed={50}

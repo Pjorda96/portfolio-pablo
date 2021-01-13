@@ -1,8 +1,8 @@
 import React from 'react';
 
 // Components
-import Home from "../../components/home";
-import Header from "../../components/header";
+import Home from '../../components/home';
+import Header from '../../components/header';
 
 export default function DefaultLayout() {
   return (
