@@ -1,21 +1,25 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import en from './locales/en/translation.json'
-import es from './locales/es/translation.json'
+import en from './locales/en/translation.json';
+import es from './locales/es/translation.json';
+
+import { getLocalLang, getWindowLang } from './utils';
 
 const resources = {
   en: { translation: en },
   es: { translation: es }
 }
 
-// TODO: detect the initial language
+const localLang = getLocalLang();
+const navLang = getWindowLang();
+const lng = localLang || navLang || 'en';
 
 i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'es',
-    fallbackLng: 'es',
+    lng,
+    fallbackLng: navLang || 'es',
 
     interpolation: {
       escapeValue: false

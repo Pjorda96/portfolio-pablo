@@ -1,10 +1,20 @@
 import React from 'react';
+import { useTranslation } from "react-i18next";
 
 // Components
 import Home from '../../components/home';
 import Header from '../../components/header';
 
+// utils
+import { storeLocalLang } from '../../internationalization/utils'; // TODO: delete
+
 export default function DefaultLayout() {
+  const { i18n } = useTranslation();
+
+  const changeLanguage = lang => { // TODO: delete
+    i18n.changeLanguage(lang).then(() => {storeLocalLang(lang)});
+  }
+
   return (
     <div className='overflow-wrap'>
       <Home />
@@ -12,6 +22,8 @@ export default function DefaultLayout() {
 
       <div className="container-fluid">
         container fluid
+        <button onClick={() => changeLanguage('es')}>es</button> {/*TODO: delete*/}
+        <button onClick={() => changeLanguage('en')}>en</button> {/*TODO: delete*/}
       </div>
 
       {/*<div className="modal-wrap flex">
