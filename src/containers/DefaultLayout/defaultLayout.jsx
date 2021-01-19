@@ -6,7 +6,7 @@ import Home from '../../components/home';
 import Header from '../../components/header';
 
 // utils
-import { storeLocalLang } from '../../internationalization/utils'; // TODO: delete
+import { storeLocalLang } from '../../internationalization'; // TODO: delete
 
 export default function DefaultLayout() {
   const { i18n } = useTranslation();

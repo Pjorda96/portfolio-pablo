@@ -1,9 +1,10 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 import en from './locales/en/translation.json';
 import es from './locales/es/translation.json';
 
-import { getLocalLang, getWindowLang } from './utils';
+import { getLocalLang } from './utils';
 
 const resources = {
   en: { translation: en },
@@ -11,15 +12,15 @@ const resources = {
 }
 
 const localLang = getLocalLang();
-const navLang = getWindowLang();
-const lng = localLang || navLang || 'en';
+const lng = localLang || 'en';
 
 i18n
+  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
     lng,
-    fallbackLng: navLang || 'es',
+    fallbackLng: 'es',
 
     interpolation: {
       escapeValue: false
