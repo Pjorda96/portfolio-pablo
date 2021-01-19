@@ -5,14 +5,13 @@ import { useTranslation } from "react-i18next";
 import Home from '../../components/home';
 import Header from '../../components/header';
 
-// utils
-import { storeLocalLang } from '../../internationalization'; // TODO: delete
-
 export default function DefaultLayout() {
   const { i18n } = useTranslation();
 
   const changeLanguage = lang => { // TODO: delete
-    i18n.changeLanguage(lang).then(() => {storeLocalLang(lang)});
+    i18n.changeLanguage(lang)
+      .then(() => console.log('completed'))
+      .catch(err => console.log(err));
   }
 
   return (

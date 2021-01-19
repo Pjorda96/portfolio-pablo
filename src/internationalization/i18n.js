@@ -4,27 +4,40 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import en from './locales/en/translation.json';
 import es from './locales/es/translation.json';
 
-import { getLocalLang } from './utils';
+const language = 'i18nextLng';
 
 const resources = {
   en: { translation: en },
   es: { translation: es }
 }
 
-const localLang = getLocalLang();
-const lng = localLang || 'en';
+const i18nConfig = {
+  resources,
+  fallbackLng: 'es',
+
+  interpolation: {
+    escapeValue: false
+  }
+}
+
+// i18n LanguageDetector config
+const i18nLDConfig = {
+  order: ['localStorage', 'navigator'],
+
+  // keys or params to lookup language from
+  lookupLocalStorage: language,
+
+  // cache user language on
+  caches: ['localStorage'],
+  excludeCacheFor: ['cimode'], // languages to not persist (cookie, localStorage)
+}
 
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources,
-    lng,
-    fallbackLng: 'es',
-
-    interpolation: {
-      escapeValue: false
-    }
+    ...i18nConfig,
+    ...i18nLDConfig
   });
 
 export default i18n;
