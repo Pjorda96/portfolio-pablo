@@ -7,7 +7,3 @@ export function storeLocalLang(lang) {
 export function getLocalLang() {
   return localStorage.getItem(language);
 }
-
-export function getWindowLang() {
-  return (navigator.language || window.navigator.language)?.substring(0,2);
-}
