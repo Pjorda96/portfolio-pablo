@@ -6,6 +6,8 @@ import { useTranslation } from "react-i18next";
 import '../scss/gotoTop.scss';
 
 export default function GotoTop() {
+  const { t } = useTranslation();
+
   function scrollToTop() {
     window.scrollTo(0, 0);
   }
@@ -14,7 +16,7 @@ export default function GotoTop() {
     <button
       onClick={() => scrollToTop()}
       className='goto-top'
-      title='Ir a arriba'
+      title={t('gotoTop')}
     >
       <span>
         <FontAwesomeIcon icon={faArrowUp} />

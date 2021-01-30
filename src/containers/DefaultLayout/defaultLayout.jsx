@@ -20,7 +20,7 @@ export default function DefaultLayout() {
       <Home />
       <Header />
 
-      <div className="container-fluid">
+      <div id='about' className="container-fluid">
         container fluid
         <button onClick={() => changeLanguage('es')}>es</button> {/*TODO: delete*/}
         <button onClick={() => changeLanguage('en')}>en</button> {/*TODO: delete*/}
