@@ -1,3 +1,5 @@
+@import './colors.scss';
+
 section#home {
   background: url('../assets/images/wbg1920.jpg') no-repeat center;
   background-size: cover !important;
@@ -10,7 +12,7 @@ section#home {
   }
 
   .overlay{
-    background-color: rgba(0,0,0,0.6);
+    background-color: color('black', 'transparent');
     position: absolute;
     top: 0;
     bottom: 0;
@@ -33,7 +35,7 @@ section#home {
       width: 100%;
 
       h1, h2, span{
-        color: #fff;
+        color: color('white');
         text-transform: uppercase;
       }
 
@@ -57,7 +59,7 @@ section#home {
       vertical-align: middle;
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
-      box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+      box-shadow: 0 0 1px color('black');
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
       -moz-osx-font-smoothing: grayscale;
@@ -66,7 +68,7 @@ section#home {
       transition-property: color;
       -webkit-transition-duration: 0.3s;
       transition-duration: 0.3s;
-      color: #fff;
+      color: color('white');
       padding: 10px 15px;
       font-size: 19px;
 
@@ -78,7 +80,7 @@ section#home {
         bottom: 0;
         left: 0;
         right: 0;
-        background: #fff;
+        background: color('white');
         -webkit-transform: scaleX(0);
         transform: scaleX(0);
         -webkit-transform-origin: 50%;
