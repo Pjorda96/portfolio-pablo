@@ -1,7 +1,7 @@
 import React from 'react';
 import { HashRouter, Route, Switch, Redirect } from 'react-router-dom';
 import '../scss/App.scss';
-import '../internationalization/i18n';
+import '../services/internationalization/i18n';
 
 import Spinner from '../components/spinner'
 const DefaultLayout = React.lazy(() => import('../containers/DefaultLayout/defaultLayout'));
