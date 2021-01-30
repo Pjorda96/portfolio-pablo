@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 // Components
 import Home from '../../components/home';
 import Header from '../../components/header';
+import GotoTop from "../../components/gotoTop";
 
 export default function DefaultLayout() {
   const { i18n } = useTranslation();
@@ -24,6 +25,8 @@ export default function DefaultLayout() {
         <button onClick={() => changeLanguage('es')}>es</button> {/*TODO: delete*/}
         <button onClick={() => changeLanguage('en')}>en</button> {/*TODO: delete*/}
       </div>
+
+      <GotoTop />
 
       {/*<div className="modal-wrap flex">
         <div className="mask"></div>
