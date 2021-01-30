@@ -1,5 +1,8 @@
 @import "~bootstrap/scss/bootstrap";
 
+html {
+  scroll-behavior: smooth;
+}
 
 .overflow-wrap {
   overflow-wrap: break-spaces;
