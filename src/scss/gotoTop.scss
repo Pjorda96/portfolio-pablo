@@ -1,0 +1,29 @@
+@import 'colors.scss';
+
+$general: color('general');
+$general-sec: color('general', 'secondary');
+
+.goto-top {
+  position: fixed;
+  bottom: 20px;
+  right: 45px;
+  padding: 0;
+  margin: 0;
+  z-index: 99;
+  border: none;
+  background: none;
+
+  span {
+    font-size: 25px;
+    display: block;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    background: $general-sec;
+    overflow: hidden;
+    text-align: center;
+    border: 1px solid $general-sec;
+    border-radius: 50%;
+    color: $general;
+  }
+}
