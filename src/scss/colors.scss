@@ -1,0 +1,57 @@
+// Palette
+$palettes: (
+        'black': (
+                core: #000000,
+                transparent: rgba(0,0,0,0.6),
+        ),
+        'white': (
+                core: #FFFFFF,
+        ),
+        'general': (
+                core: #3793bd,
+                'secondary': #2f3742,
+
+        )
+);
+
+
+// color() mixin:
+/////////////////////////////////////////////////////
+// Gets the specified color from the color palette //
+//                                                 //
+// Usage:                                          //
+//  background: color('blue', 80); // #1D3649      //
+//  background: color('blue', 8);  // #1D3649      //
+//  background: color('blue');     // #4178BE      //
+/////////////////////////////////////////////////////
+@function color($color, $tone: 'core') {
+  @if type-of($tone) == 'number' {
+    @if $tone % 10 == $tone {
+      $tone: $tone * 10;
+    }
+  }
+  @return map-get(map-get($palettes, $color), $tone);
+}
+
+
+// get-colors() mixin:
+/////////////////////////////////////////////////////
+// Gets array of specified color from palette      //
+//                                                 //
+// See README for usage                            //
+//                                                 //
+/////////////////////////////////////////////////////
+@function get-colors($color: null) {
+  // Return a list of colors available if nothing is passed in
+  @if $color == null {
+    @return map-keys($palettes);
+  }
+    // Return the full color map if 'all' is passed in
+  @else if $color == 'all' {
+    @return $palettes;
+  }
+    // Return just the color map if a specific color is passed in
+  @else {
+    @return map-get($palettes, $color);
+  }
+}
