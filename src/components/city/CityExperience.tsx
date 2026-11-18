@@ -12,9 +12,11 @@ import {
   type ReactNode,
 } from 'react';
 
-import { placeById, ui, type PlaceId } from '@/content/site';
-import { colorAt, SKY_STOPS, uiModeOf } from '@/lib/time-of-day';
+import type { CityCopy, PlaceId } from '@/content/site';
+import { applyPreference, setAutoHourSource, subscribePreference } from '@/lib/theme/preference';
+import { colorAt, SKY_STOPS } from '@/lib/time-of-day';
 
+import { announcePlace, CityCopyProvider, placeIn } from './copy-context';
 import { createTimeStore } from './time-store';
 import { Clock } from './ui/Clock';
 import { Dock } from './ui/Dock';
@@ -67,8 +69,10 @@ class CanvasBoundary extends Component<
 }
 
 interface CityExperienceProps {
-  /** Brand block, server-rendered. */
-  header: ReactNode;
+  /** Copy of the city in the page's locale. */
+  copy: CityCopy;
+  /** Brand block, server-rendered. Optional: the site header can float over the stage instead. */
+  header?: ReactNode;
   /** Hero with the page's h1, server-rendered. */
   hero: ReactNode;
 }
@@ -78,7 +82,8 @@ interface CityExperienceProps {
  * dock, detail sheet, pins). Everything here is server-rendered except the
  * canvas, which is progressive enhancement over the static sky.
  */
-export function CityExperience({ header, hero }: CityExperienceProps) {
+export function CityExperience({ copy, header, hero }: CityExperienceProps) {
+  const { ui } = copy;
   const reducedMotion = useSyncExternalStore(subscribeReducedMotion, getReducedMotion, () => false);
   const webgl = useSyncExternalStore(noopSubscribe, detectWebgl, () => 'unknown' as const);
   const [store] = useState(() =>
@@ -101,19 +106,26 @@ export function CityExperience({ header, hero }: CityExperienceProps) {
   const sheetHeading = useRef<HTMLHeadingElement>(null);
   const moveFocusToSheet = useRef(false);
 
-  // The UI palette and the static sky follow the city's hour. Layout effect:
-  // React's dev remount resets <html> attributes the boot script had set.
+  // The static sky follows the city's hour, and so does the UI palette while
+  // the theme is on Auto. Layout effect: React's dev remount resets <html>
+  // attributes the boot script had set.
   useLayoutEffect(() => {
     const root = document.documentElement;
-    let mode = '';
+    setAutoHourSource(() => store.getState().hour);
     const sync = () => {
-      const { hour } = store.getState();
-      const next = uiModeOf(hour);
-      if (next !== mode) root.setAttribute('data-mode', (mode = next));
-      root.style.setProperty('--sky', colorAt(SKY_STOPS, hour));
+      applyPreference();
+      root.style.setProperty('--sky', colorAt(SKY_STOPS, store.getState().hour));
     };
     sync();
-    return store.subscribe(sync);
+    const offStore = store.subscribe(sync);
+    const offPreference = subscribePreference(sync);
+    return () => {
+      offStore();
+      offPreference();
+      // Leaving the home: Auto follows the visitor's clock again.
+      setAutoHourSource(null);
+      applyPreference();
+    };
   }, [store]);
 
   useEffect(() => () => store.dispose(), [store]);
@@ -183,94 +195,94 @@ export function CityExperience({ header, hero }: CityExperienceProps) {
 
   const cityRunning = ready && !failed;
   const unsupported = webgl === 'no' || failed;
-  const announcement = focused
-    ? ui.sheet.announce(placeById(focused).landmark, placeById(focused).title)
-    : '';
+  const announcement = focused ? announcePlace(ui.sheet.announce, placeIn(copy, focused)) : '';
 
   return (
-    <section
-      ref={stageRef}
-      aria-label={ui.stageLabel}
-      className="relative isolate h-dvh min-h-[560px] overflow-hidden"
-    >
-      <SkyFallback />
+    <CityCopyProvider value={copy}>
+      <section
+        ref={stageRef}
+        aria-label={ui.stageLabel}
+        className="relative isolate h-dvh min-h-[560px] overflow-hidden"
+      >
+        <SkyFallback />
 
-      {mountCanvas && !failed && (
-        <div
-          className="absolute inset-0 transition-opacity duration-700"
-          style={{ opacity: ready ? 1 : 0 }}
-        >
-          <CanvasBoundary onError={() => setFailed(true)}>
-            <CityCanvas
-              store={store}
-              focused={focused}
-              reducedMotion={reducedMotion}
-              active={onScreen && pageVisible}
-              placePin={placePin}
-              onSelect={onSelect}
-              onBackgroundClick={onBackgroundClick}
-              onHover={setHovered}
-              onReady={onReady}
-            />
-          </CanvasBoundary>
-        </div>
-      )}
-
-      <Pins pins={pins} hovered={hovered} focused={focused} visible={cityRunning} />
-
-      <div className="pointer-events-none absolute inset-0 grid grid-rows-[auto_1fr_auto] gap-4 p-[max(16px,env(safe-area-inset-top,0px))_max(16px,env(safe-area-inset-right,0px))_max(16px,env(safe-area-inset-bottom,0px))_max(16px,env(safe-area-inset-left,0px))] *:pointer-events-auto">
-        <div className="pointer-events-none flex items-start justify-between gap-3 *:pointer-events-auto">
-          {header}
-          <Clock store={store} />
-        </div>
-
-        <div
-          className="self-center justify-self-start transition-[opacity,translate] duration-400 data-hidden:pointer-events-none data-hidden:-translate-x-4 data-hidden:opacity-0 max-[700px]:self-start"
-          data-hidden={focused || undefined}
-        >
-          {hero}
-          <a
-            href="#lugares"
-            className="scroll-cue mt-3 inline-flex items-center gap-2 glass px-4 py-2.5 text-sm font-semibold"
+        {mountCanvas && !failed && (
+          <div
+            className="absolute inset-0 transition-opacity duration-700"
+            style={{ opacity: ready ? 1 : 0 }}
           >
-            {ui.scrollCue}
-            <svg aria-hidden="true" viewBox="0 0 16 16" className="scroll-cue-arrow size-4">
-              <path
-                d="M8 2v11M3 8l5 5 5-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+            <CanvasBoundary onError={() => setFailed(true)}>
+              <CityCanvas
+                store={store}
+                focused={focused}
+                reducedMotion={reducedMotion}
+                active={onScreen && pageVisible}
+                placePin={placePin}
+                onSelect={onSelect}
+                onBackgroundClick={onBackgroundClick}
+                onHover={setHovered}
+                onReady={onReady}
               />
-            </svg>
-          </a>
-          {unsupported && (
-            <p role="status" className="mt-3 max-w-[470px] glass p-4 text-sm text-text-muted">
-              {ui.noWebgl}
-            </p>
-          )}
+            </CanvasBoundary>
+          </div>
+        )}
+
+        <Pins pins={pins} hovered={hovered} focused={focused} visible={cityRunning} />
+
+        <div className="pointer-events-none absolute inset-0 grid grid-rows-[auto_1fr_auto] gap-4 p-[max(16px,env(safe-area-inset-top,0px))_max(16px,env(safe-area-inset-right,0px))_max(16px,env(safe-area-inset-bottom,0px))_max(16px,env(safe-area-inset-left,0px))] *:pointer-events-auto">
+          <div className="pointer-events-none flex items-start justify-between gap-3 *:pointer-events-auto">
+            {header ?? <span aria-hidden="true" />}
+            <Clock store={store} />
+          </div>
+
+          <div
+            className="self-center justify-self-start transition-[opacity,translate] duration-400 data-hidden:pointer-events-none data-hidden:-translate-x-4 data-hidden:opacity-0 max-[700px]:self-start"
+            data-hidden={focused || undefined}
+          >
+            {hero}
+            <a
+              href="#lugares"
+              className="scroll-cue mt-3 inline-flex items-center gap-2 glass px-4 py-2.5 text-sm font-semibold"
+            >
+              {ui.scrollCue}
+              <svg aria-hidden="true" viewBox="0 0 16 16" className="scroll-cue-arrow size-4">
+                <path
+                  d="M8 2v11M3 8l5 5 5-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </a>
+            {unsupported && (
+              <p role="status" className="mt-3 max-w-[470px] glass p-4 text-sm text-text-muted">
+                {ui.noWebgl}
+              </p>
+            )}
+          </div>
+
+          <Dock
+            focused={focused}
+            interactive={cityRunning}
+            onOpen={(id) => open(id, true)}
+            links={links}
+          />
         </div>
 
-        <Dock
-          focused={focused}
-          interactive={cityRunning}
+        <PlaceSheet
+          place={shown}
+          open={!!focused}
+          headingRef={sheetHeading}
+          onClose={close}
           onOpen={(id) => open(id, true)}
-          links={links}
         />
-      </div>
 
-      <PlaceSheet
-        place={shown}
-        open={!!focused}
-        headingRef={sheetHeading}
-        onClose={close}
-        onOpen={(id) => open(id, true)}
-      />
-
-      <p aria-live="polite" className="sr-only">
-        {announcement}
-      </p>
-    </section>
+        <p aria-live="polite" className="sr-only">
+          {announcement}
+        </p>
+      </section>
+    </CityCopyProvider>
   );
 }

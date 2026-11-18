@@ -5,7 +5,9 @@ import type { RefObject } from 'react';
 
 import avatar from '@/assets/avatar.webp';
 
-import { placeById, site, ui, type PlaceId } from '@/content/site';
+import type { PlaceId } from '@/content/site';
+
+import { placeIn, useCityCopy } from '../copy-context';
 
 interface PlaceSheetProps {
   /** Place shown; the sheet keeps the last one while it fades out. */
@@ -18,7 +20,9 @@ interface PlaceSheetProps {
 
 /** Detail of the landmark the camera is visiting. */
 export function PlaceSheet({ place, open, headingRef, onClose, onOpen }: PlaceSheetProps) {
-  const p = place ? placeById(place) : null;
+  const copy = useCityCopy();
+  const { ui } = copy;
+  const p = place ? placeIn(copy, place) : null;
 
   return (
     <aside
@@ -32,7 +36,7 @@ export function PlaceSheet({ place, open, headingRef, onClose, onOpen }: PlaceSh
           {p.id === 'torre' && (
             <Image
               src={avatar}
-              alt={site.avatarAlt}
+              alt={copy.avatarAlt}
               sizes="80px"
               className="size-20 rounded-full border border-line object-cover"
             />

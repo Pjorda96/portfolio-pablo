@@ -9,7 +9,7 @@ import {
   type PageMeta,
   type SiteContent,
 } from '@/content';
-import { places } from '@/content/site';
+import { getCityCopy } from '@/content/site';
 
 const es = getContent('es');
 const en = getContent('en');
@@ -201,9 +201,16 @@ describe('Píxel y Papel case study', () => {
   });
 });
 
-describe('F1 home (site.ts)', () => {
-  it('takes its place copy from the Spanish content', () => {
+describe.each(LOCALES)('home city copy (site.ts, %s)', (locale) => {
+  const content = getContent(locale);
+  const { places } = getCityCopy(locale);
+
+  it('takes its place copy from the content of the same locale', () => {
     expect(places).toHaveLength(6);
-    expect(places.find((p) => p.id === 'lab')?.text).toBe(es.services.items[1]?.summary.text);
+    expect(places.find((p) => p.id === 'lab')?.text).toBe(content.services.items[1]?.summary.text);
+  });
+
+  it('gives every place a unique fragment id', () => {
+    expect(new Set(places.map((p) => p.slug)).size).toBe(places.length);
   });
 });

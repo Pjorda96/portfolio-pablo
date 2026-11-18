@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import createNextIntlPlugin from 'next-intl/plugin';
 
 // Validates the environment as soon as Next loads its config, so `next dev`
 // and `next build` stop with a readable list of invalid variables.
@@ -12,4 +13,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
 };
 
-export default nextConfig;
+// Points next-intl at the per-request config (locale + messages).
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
+
+export default withNextIntl(nextConfig);

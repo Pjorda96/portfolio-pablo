@@ -2,15 +2,16 @@
 
 import { useId, useSyncExternalStore } from 'react';
 
-import { ui } from '@/content/site';
 import { formatHour } from '@/lib/time-of-day';
 
+import { useCityCopy } from '../copy-context';
 import type { TimeStore } from '../time-store';
 
 const serverSnapshot = () => null;
 
 /** Hour of the city: a dial (range) plus "real time" and "whole day" toggles. */
 export function Clock({ store }: { store: TimeStore }) {
+  const { ui } = useCityCopy();
   const state = useSyncExternalStore(store.subscribe, store.getState, serverSnapshot);
   const sliderId = useId();
   const time = state ? formatHour(state.hour) : ui.clock.placeholder;

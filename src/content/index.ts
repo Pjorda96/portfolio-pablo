@@ -13,9 +13,6 @@ import {
 export * from './types';
 export { owner } from './owner';
 
-/** Default locale: served at the root, without a prefix. */
-export const DEFAULT_LOCALE: Locale = 'es';
-
 const contents: Record<Locale, SiteContent> = { es, en };
 
 export const isLocale = (value: string): value is Locale =>

@@ -2,7 +2,9 @@
 
 import type { RefObject } from 'react';
 
-import { places, type PlaceId } from '@/content/site';
+import type { PlaceId } from '@/content/site';
+
+import { useCityCopy } from '../copy-context';
 
 interface PinsProps {
   pins: RefObject<Partial<Record<PlaceId, HTMLElement | null>>>;
@@ -17,6 +19,7 @@ interface PinsProps {
  * links, so pins are hidden from the accessibility tree and not focusable.
  */
 export function Pins({ pins, hovered, focused, visible }: PinsProps) {
+  const { places } = useCityCopy();
   return (
     <div
       aria-hidden="true"

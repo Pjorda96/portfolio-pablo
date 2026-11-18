@@ -31,8 +31,12 @@ export const meta = {
     about: 'Sobre mí',
     faq: 'Preguntas frecuentes',
     contact: 'Contacto',
+    cta: 'Cuéntame tu proyecto',
+    home: 'Pablo Jordá, inicio',
   },
+  menu: { open: 'Abrir menú', close: 'Cerrar menú', title: 'Menú' },
   languageSwitch: { label: 'Cambiar idioma', target: 'English' },
+  theme: { label: 'Tema', auto: 'Auto', light: 'Claro', dark: 'Oscuro' },
   skipLink: 'Saltar al contenido',
   footer: {
     tagline: 'Hecho a mano en Valencia.',
@@ -46,6 +50,12 @@ export const meta = {
     description:
       'Esta calle no existe en la ciudad. Vuelve al inicio para ver servicios y proyectos.',
     text: 'Esta calle no existe en la ciudad. Puede que el enlace esté mal o que la página se haya movido.',
+    back: 'Volver al inicio',
+  },
+  error: {
+    title: 'Algo se ha torcido',
+    text: 'No se ha podido cargar esta página. Puede ser algo pasajero: vuelve a intentarlo en un momento.',
+    retry: 'Reintentar',
     back: 'Volver al inicio',
   },
 } as const satisfies MetaContent;

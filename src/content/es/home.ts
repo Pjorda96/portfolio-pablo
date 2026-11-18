@@ -77,6 +77,37 @@ export const home: HomeContent = {
         points: ['Formulario breve, sin compromiso', 'Respuesta personal, no automática'],
       },
     },
+    anchors: {
+      taller: 'desarrollo-web',
+      lab: 'soluciones-ia',
+      puerto: 'apps-saas-mvp',
+      mercado: 'proyectos',
+      torre: 'sobre-mi',
+      faro: 'contacto',
+    },
+    ui: {
+      skipLink: 'Saltar a los lugares',
+      coordinates: '39.4699° N · 0.3763° W · Valencia',
+      stageLabel: 'La ciudad',
+      dockLabel: 'Lugares de la ciudad',
+      clock: {
+        label: 'Hora de la ciudad',
+        slider: 'Hora del día en la ciudad',
+        real: 'Hora real',
+        play: 'Ver un día entero',
+        modes: { real: 'tu hora', play: 'un día en 24 s', manual: 'hora elegida' },
+        placeholder: '--:--',
+      },
+      sheet: {
+        cta: 'Cuéntame tu proyecto',
+        contactCta: 'Escribirme',
+        back: 'Volver a la ciudad',
+        announce: '{landmark}: {title}',
+      },
+      scrollCue: 'Descubre todo lo que hago',
+      noWebgl:
+        'Tu navegador no puede mostrar la escena 3D. Usa los lugares de abajo para recorrer la ciudad.',
+    },
   },
   value: {
     title: 'Lo que construyo, bien construido',

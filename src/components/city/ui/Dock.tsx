@@ -2,7 +2,9 @@
 
 import type { MouseEvent, RefObject } from 'react';
 
-import { places, ui, type PlaceId } from '@/content/site';
+import type { PlaceId } from '@/content/site';
+
+import { useCityCopy } from '../copy-context';
 
 interface DockProps {
   focused: PlaceId | null;
@@ -17,6 +19,7 @@ interface DockProps {
  * JavaScript or WebGL; with the city running they open the landmark.
  */
 export function Dock({ focused, interactive, onOpen, links }: DockProps) {
+  const { places, ui } = useCityCopy();
   const handle = (id: PlaceId) => (e: MouseEvent<HTMLAnchorElement>) => {
     if (!interactive || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
     e.preventDefault();

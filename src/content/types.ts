@@ -10,6 +10,9 @@
 export const LOCALES = ['es', 'en'] as const;
 export type Locale = (typeof LOCALES)[number];
 
+/** Default locale: served at the root, without a prefix. */
+export const DEFAULT_LOCALE = 'es' satisfies Locale;
+
 export const PLACE_IDS = ['taller', 'lab', 'puerto', 'mercado', 'torre', 'faro'] as const;
 /** Internal id of a clickable landmark in the home city. */
 export type PlaceId = (typeof PLACE_IDS)[number];
@@ -106,8 +109,16 @@ export interface MetaContent {
     about: string;
     faq: string;
     contact: string;
+    /** The single call to action of the header: always the contact page. */
+    cta: string;
+    /** Accessible name of the link back to the home page (monogram + name). */
+    home: string;
   };
+  /** Mobile menu (and the menu button of the floating chip on the home). */
+  menu: { open: string; close: string; title: string };
   languageSwitch: { label: string; target: string };
+  /** Theme selector: follow the city's hour, or pin day / night. */
+  theme: { label: string; auto: string; light: string; dark: string };
   skipLink: string;
   footer: {
     tagline: string;
@@ -117,6 +128,8 @@ export interface MetaContent {
     cookies: string;
   };
   notFound: PageMeta & { text: string; back: string };
+  /** Error boundary (`error.tsx`): unexpected failures, with a retry. */
+  error: { title: string; text: string; retry: string; back: string };
 }
 
 /* ------------------------------------------------------------------ home */
@@ -131,6 +144,31 @@ export interface CityPlace {
   points: readonly string[];
 }
 
+export interface CityUi {
+  /** Skip link that jumps over the 3D stage to the places' sections. */
+  skipLink: string;
+  coordinates: string;
+  stageLabel: string;
+  dockLabel: string;
+  clock: {
+    label: string;
+    slider: string;
+    real: string;
+    play: string;
+    modes: { real: string; play: string; manual: string };
+    placeholder: string;
+  };
+  sheet: {
+    cta: string;
+    contactCta: string;
+    back: string;
+    /** Live-region text when a place opens; `{landmark}` and `{title}` are replaced. */
+    announce: string;
+  };
+  scrollCue: string;
+  noWebgl: string;
+}
+
 export interface HomeContent {
   meta: PageMeta;
   hero: PageHero & { hint: string; cta: Link };
@@ -139,6 +177,10 @@ export interface HomeContent {
     title: string;
     intro: string;
     places: Record<PlaceId, CityPlace>;
+    /** Fragment id of each place's section on the home page. */
+    anchors: Record<PlaceId, string>;
+    /** Interface of the city: clock, dock, detail sheet, notices. */
+    ui: CityUi;
   };
   value: {
     title: string;
