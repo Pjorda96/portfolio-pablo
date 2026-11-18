@@ -64,11 +64,11 @@ export const places: readonly Place[] = [
     landmark: 'La Ciudad de las Ciencias',
     short: 'Soluciones con IA',
     title: 'Soluciones con IA',
-    text: 'Te ayudo a conseguir más con menos esfuerzo apoyándote en la IA: detectamos qué tareas de tu negocio puede acelerar y construyo la solución que lo hace realidad.',
+    text: 'Tú me cuentas el problema; yo lo resuelvo apoyándome en la IA. La uso en cada paso, del análisis a la entrega, para llegar antes a una solución sólida y hecha a la medida de tu negocio.',
     points: [
-      'Asistentes que atienden con tu propio contenido',
-      'Tareas repetitivas que pasan a hacerse solas',
-      'Respuestas al instante sobre tus documentos y datos',
+      'Del problema a la solución en mucho menos tiempo',
+      'La IA trabaja para mí; tú recibes el resultado',
+      'Misma exigencia de calidad, revisada por una persona',
     ],
   },
   {
@@ -102,7 +102,7 @@ export const places: readonly Place[] = [
     landmark: 'El Micalet',
     short: 'Sobre mí',
     title: 'Sobre mí',
-    text: 'Desarrollador full-stack potenciado por IA, con más de 7 años construyendo aplicaciones web para seguros, fintech y arquitectura. Hoy uso la IA en cada fase del trabajo para entregar antes sin rebajar la calidad, y te acompaño para que tu equipo también le saque partido.',
+    text: 'Desarrollador full-stack potenciado por IA, con más de 7 años construyendo aplicaciones web para seguros, fintech y arquitectura. Hoy uso la IA en cada fase del trabajo para entregar antes sin rebajar la calidad.',
     points: [
       'Desarrollo potenciado por IA: más rápido, igual de riguroso',
       'React, Next.js, TypeScript y Node.js',
