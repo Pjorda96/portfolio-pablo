@@ -13,17 +13,17 @@
 
 ## 2. Decisiones tomadas
 
-| Tema | Decisión |
-|---|---|
-| Dominio | `pablojorda.es` (hoy aparcado en Strato sin HTTPS → DNS a Vercel) |
-| Idiomas | Español (raíz, sin prefijo) + Inglés (`/en`), slugs traducidos, `hreflang` + `x-default` |
-| Servicios | 1) Desarrollo web a medida · 2) Integraciones de IA · 3) Apps / SaaS / MVPs |
+| Tema      | Decisión                                                                                                                                                                                                                 |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Dominio   | `pablojorda.es` (hoy aparcado en Strato sin HTTPS → DNS a Vercel)                                                                                                                                                        |
+| Idiomas   | Español (raíz, sin prefijo) + Inglés (`/en`), slugs traducidos, `hreflang` + `x-default`                                                                                                                                 |
+| Servicios | 1) Desarrollo web a medida · 2) Integraciones de IA · 3) Apps / SaaS / MVPs                                                                                                                                              |
 | Proyectos | Solo lo que está en producción: **Píxel y Papel** (web comercial + plataforma de bodas). Proyecto de 4 socios: se presenta como cofundador, explicando el papel técnico propio y sin atribuirse el proyecto en exclusiva |
-| Precios | No se muestran |
-| Contacto | Solo formulario (Resend + Zod + rate limit + anti-spam) |
-| Foto | Ilustración/avatar generado a partir de una foto nueva. **Nunca** la foto existente en el repo |
-| Board | GitHub Projects, con issues en este repo |
-| Repo | Se desmonta todo lo anterior; se reconstruye desde cero |
+| Precios   | No se muestran                                                                                                                                                                                                           |
+| Contacto  | Solo formulario (Resend + Zod + rate limit + anti-spam)                                                                                                                                                                  |
+| Foto      | Ilustración/avatar generado a partir de una foto nueva. **Nunca** la foto existente en el repo                                                                                                                           |
+| Board     | GitHub Projects, con issues en este repo                                                                                                                                                                                 |
+| Repo      | Se desmonta todo lo anterior; se reconstruye desde cero                                                                                                                                                                  |
 
 ## 3. Stack propuesto
 
@@ -42,17 +42,17 @@ Misma base probada en attrezzo / pixelypapel / viajapp (coherencia y velocidad),
 
 ## 4. Mapa del sitio (ES / EN)
 
-| ES | EN | Intención SEO |
-|---|---|---|
-| `/` | `/en` | Marca + "desarrollador web freelance Valencia" |
-| `/servicios/desarrollo-web-a-medida` | `/en/services/custom-web-development` | Servicio |
-| `/servicios/integraciones-ia` | `/en/services/ai-integrations` | Servicio |
-| `/servicios/apps-saas-mvp` | `/en/services/saas-mvp-development` | Servicio |
-| `/proyectos/pixel-y-papel` | `/en/projects/pixel-y-papel` | Caso de estudio |
-| `/sobre-mi` | `/en/about` | Marca personal / E-E-A-T |
-| `/contacto` | `/en/contact` | Conversión |
-| `/blog` (fase 2, opcional) | `/en/blog` | Long-tail y autoridad |
-| `/legal/*` | `/en/legal/*` | Privacidad, cookies, aviso legal |
+| ES                                   | EN                                    | Intención SEO                                  |
+| ------------------------------------ | ------------------------------------- | ---------------------------------------------- |
+| `/`                                  | `/en`                                 | Marca + "desarrollador web freelance Valencia" |
+| `/servicios/desarrollo-web-a-medida` | `/en/services/custom-web-development` | Servicio                                       |
+| `/servicios/integraciones-ia`        | `/en/services/ai-integrations`        | Servicio                                       |
+| `/servicios/apps-saas-mvp`           | `/en/services/saas-mvp-development`   | Servicio                                       |
+| `/proyectos/pixel-y-papel`           | `/en/projects/pixel-y-papel`          | Caso de estudio                                |
+| `/sobre-mi`                          | `/en/about`                           | Marca personal / E-E-A-T                       |
+| `/contacto`                          | `/en/contact`                         | Conversión                                     |
+| `/blog` (fase 2, opcional)           | `/en/blog`                            | Long-tail y autoridad                          |
+| `/legal/*`                           | `/en/legal/*`                         | Privacidad, cookies, aviso legal               |
 
 **Home:** hero con propuesta de valor + CTA → servicios → caso destacado → proceso (4 pasos) → stack/capacidades → asistente IA → FAQ → CTA final.
 
@@ -68,16 +68,16 @@ Misma base probada en attrezzo / pixelypapel / viajapp (coherencia y velocidad),
 
 ## 6. Fases
 
-| Fase | Contenido | Quién |
-|---|---|---|
-| **F0 Fundamentos** | Limpiar repo (quitar CRA, CVs, `.env`, foto), scaffold Next 16, tooling, CI, proyecto Vercel con previews | Agente (Sonnet) |
-| **F1 Identidad** | Dirección de arte propia (distinta de attrezzo y pixelypapel), tipografía, paleta, tokens, monograma/logo, avatar | Claude + tú (validación) |
-| **F2 Contenido** | Copy ES/EN de servicios, caso Píxel y Papel, sobre mí, FAQ, legal | Claude redacta, tú revisas |
-| **F3 Páginas** | Layout, home, servicios, caso, sobre mí, contacto, legal | Agentes en paralelo por página |
-| **F4 Experiencia** | Hero WebGL, transiciones, animaciones de scroll, asistente IA | Agente (Opus) + revisión |
-| **F5 SEO y rendimiento** | Metadata, JSON-LD, OG, sitemap, budgets, optimización de imágenes | Agente + auditoría |
-| **F6 Calidad** | Tests unitarios/E2E, axe, Lighthouse CI, revisión de seguridad | Agentes |
-| **F7 Lanzamiento** | DNS de pablojorda.es → Vercel, Search Console, analítica, README del repo | Claude + tú (DNS) |
+| Fase                     | Contenido                                                                                                         | Quién                          |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| **F0 Fundamentos**       | Limpiar repo (quitar CRA, CVs, `.env`, foto), scaffold Next 16, tooling, CI, proyecto Vercel con previews         | Agente (Sonnet)                |
+| **F1 Identidad**         | Dirección de arte propia (distinta de attrezzo y pixelypapel), tipografía, paleta, tokens, monograma/logo, avatar | Claude + tú (validación)       |
+| **F2 Contenido**         | Copy ES/EN de servicios, caso Píxel y Papel, sobre mí, FAQ, legal                                                 | Claude redacta, tú revisas     |
+| **F3 Páginas**           | Layout, home, servicios, caso, sobre mí, contacto, legal                                                          | Agentes en paralelo por página |
+| **F4 Experiencia**       | Hero WebGL, transiciones, animaciones de scroll, asistente IA                                                     | Agente (Opus) + revisión       |
+| **F5 SEO y rendimiento** | Metadata, JSON-LD, OG, sitemap, budgets, optimización de imágenes                                                 | Agente + auditoría             |
+| **F6 Calidad**           | Tests unitarios/E2E, axe, Lighthouse CI, revisión de seguridad                                                    | Agentes                        |
+| **F7 Lanzamiento**       | DNS de pablojorda.es → Vercel, Search Console, analítica, README del repo                                         | Claude + tú (DNS)              |
 
 ## 7. Pendiente de ti
 
