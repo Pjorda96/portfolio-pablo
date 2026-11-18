@@ -1,0 +1,325 @@
+<title>Direcciones de arte pablojorda.es</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&family=IBM+Plex+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Unbounded:wght@400;600;800&family=Instrument+Sans:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: neutral review document; each direction is a self-contained live specimen with its own tokens. */
+:root{
+  --bg:#f5f6f7; --surface:#ffffff; --fg:#16181c; --muted:#5b616b; --line:#dfe2e6; --focus:#2f5bd3;
+  --chrome:"Inter",system-ui,sans-serif;
+
+  /* A · Plano */
+  --a-bg:#eef1f4; --a-paper:#f8fafb; --a-ink:#0f1a2b; --a-muted:#4a5568; --a-grid:#cfd8e3; --a-accent:#2340d9; --a-accent-ink:#ffffff;
+  /* B · Azulejo */
+  --b-bg:#f2f5f3; --b-ink:#13232b; --b-muted:#46585f; --b-primary:#0e5e6f; --b-primary-ink:#ffffff; --b-sun:#c98a0e; --b-tile:#d6e4e2;
+  /* C · Señal (dark-first look, light variant below) */
+  --c-bg:#e9eeeb; --c-ink:#0f1512; --c-muted:#45524c; --c-accent:#0b6b8f; --c-accent-ink:#ffffff; --c-line:#c8d2cd; --c-glow:#0b6b8f;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121417; --surface:#1a1d21; --fg:#e8eaed; --muted:#9aa1ab; --line:#2a2f35; --focus:#8fb0ff;
+    --a-bg:#0b1220; --a-paper:#0f1828; --a-ink:#e6ecf5; --a-muted:#9fb0c6; --a-grid:#1f2c42; --a-accent:#7f97ff; --a-accent-ink:#0b1220;
+    --b-bg:#0f1c20; --b-ink:#e8f0ee; --b-muted:#9fb4b4; --b-primary:#5fc0cf; --b-primary-ink:#0b1a1e; --b-sun:#f0b84a; --b-tile:#16303a;
+    --c-bg:#0f1512; --c-ink:#e8eee9; --c-muted:#93a39a; --c-accent:#9ad7ff; --c-accent-ink:#0b1410; --c-line:#22302a; --c-glow:#9ad7ff;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121417; --surface:#1a1d21; --fg:#e8eaed; --muted:#9aa1ab; --line:#2a2f35; --focus:#8fb0ff;
+  --a-bg:#0b1220; --a-paper:#0f1828; --a-ink:#e6ecf5; --a-muted:#9fb0c6; --a-grid:#1f2c42; --a-accent:#7f97ff; --a-accent-ink:#0b1220;
+  --b-bg:#0f1c20; --b-ink:#e8f0ee; --b-muted:#9fb4b4; --b-primary:#5fc0cf; --b-primary-ink:#0b1a1e; --b-sun:#f0b84a; --b-tile:#16303a;
+  --c-bg:#0f1512; --c-ink:#e8eee9; --c-muted:#93a39a; --c-accent:#9ad7ff; --c-accent-ink:#0b1410; --c-line:#22302a; --c-glow:#9ad7ff;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.6 var(--chrome);}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:40px 64px;display:grid;gap:48px}
+h1,h2,h3{text-wrap:balance;margin:0}
+p{margin:0}
+.intro{display:grid;gap:14px;max-width:70ch}
+.intro h1{font-size:clamp(26px,3.4vw,36px);font-weight:600;letter-spacing:-.01em}
+.intro p{color:var(--muted)}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--muted);font-size:13px}
+.legend b{color:var(--fg);font-weight:600}
+
+.dir{display:grid;gap:18px}
+.dir-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px;border-top:1px solid var(--line);padding-top:20px}
+.dir-head h2{font-size:22px;font-weight:600}
+.dir-head .tag{font-size:13px;color:var(--muted)}
+.dir-body{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:20px}
+@media (max-width:900px){.dir-body{grid-template-columns:1fr}}
+.notes{display:grid;gap:16px;align-content:start;min-width:0}
+.notes h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.notes ul{margin:6px 0 0;padding-left:18px;display:grid;gap:4px}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:8px}
+.sw{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--surface);font-size:11.5px}
+.sw i{display:block;height:38px}
+.sw span{display:block;padding:5px 7px;color:var(--muted)}
+.specimen{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:grid;gap:6px;margin-top:8px}
+
+.mock{position:relative;overflow:hidden;border-radius:10px;min-height:440px;isolation:isolate}
+.mock-nav{display:flex;justify-content:space-between;align-items:center;gap:12px;position:relative;z-index:2}
+.mock-nav nav{display:flex;gap:16px;flex-wrap:wrap}
+.mock-body{position:relative;z-index:2;display:grid;gap:18px;max-width:640px}
+.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;cursor:pointer;border:0;font:inherit}
+.btn:focus-visible,.mock a:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+
+/* ---------- A · Plano ---------- */
+.a{background:var(--a-bg);color:var(--a-ink);font-family:"Archivo",sans-serif;padding:22px 24px 26px;
+  background-image:linear-gradient(var(--a-grid) 1px,transparent 1px),linear-gradient(90deg,var(--a-grid) 1px,transparent 1px);
+  background-size:24px 24px;background-position:-1px -1px}
+.a .mono{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.02em;color:var(--a-muted)}
+.a .logo{font-weight:800;font-stretch:125%;letter-spacing:-.02em;font-size:15px}
+.a .logo em{font-style:normal;color:var(--a-accent)}
+.a nav a{color:var(--a-ink);text-decoration:none;font-size:13px;font-stretch:100%}
+.a .mock-body{margin-top:56px}
+.a h4{font-size:clamp(30px,4.6vw,50px);line-height:1.02;font-weight:750;font-stretch:118%;letter-spacing:-.025em;margin:0;text-wrap:balance}
+.a h4 .u{background:linear-gradient(var(--a-accent),var(--a-accent)) 0 92%/100% 3px no-repeat}
+.a .lead{font-size:16px;line-height:1.55;color:var(--a-muted);font-stretch:100%;max-width:52ch}
+.a .btn{background:var(--a-accent);color:var(--a-accent-ink);padding:11px 16px;font-weight:600;font-stretch:105%;border-radius:2px}
+.a .ghost{background:transparent;color:var(--a-ink);border:1px solid var(--a-ink)}
+.a .dims{position:absolute;inset:auto 24px 18px 24px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;z-index:2}
+.a svg.draw{position:absolute;right:-10px;top:40px;width:min(46%,380px);height:auto;z-index:1;color:var(--a-accent)}
+.a svg.draw .s{fill:none;stroke:currentColor;stroke-width:1.25;stroke-dasharray:600;stroke-dashoffset:0;animation:draw 3.2s ease-out both}
+.a svg.draw .t{fill:var(--a-muted);font:500 10px "IBM Plex Mono",monospace}
+@keyframes draw{from{stroke-dashoffset:600}to{stroke-dashoffset:0}}
+@media (max-width:640px){.a svg.draw{opacity:.25}}
+
+/* ---------- B · Azulejo ---------- */
+.b{background:var(--b-bg);color:var(--b-ink);font-family:"Figtree",sans-serif;padding:22px 24px 26px}
+.b canvas{position:absolute;right:0;top:0;width:44%;height:100%;z-index:1}
+@media (max-width:640px){.b canvas{width:100%;opacity:.22}}
+.b .logo{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:17px;letter-spacing:-.01em}
+.b .logo i{font-style:normal;color:var(--b-sun)}
+.b nav a{color:var(--b-ink);text-decoration:none;font-size:13.5px}
+.b .mock-body{margin-top:52px;max-width:56%}
+@media (max-width:640px){.b .mock-body{max-width:100%}}
+.b .kick{font-size:12.5px;font-weight:600;color:var(--b-primary);letter-spacing:.04em}
+.b h4{font-family:"Bricolage Grotesque",sans-serif;font-size:clamp(30px,4.4vw,48px);line-height:1.02;font-weight:750;font-variation-settings:"opsz" 96;letter-spacing:-.03em;margin:0;text-wrap:balance}
+.b h4 em{font-style:normal;font-weight:300}
+.b .lead{font-size:16px;line-height:1.6;color:var(--b-muted);max-width:46ch}
+.b .btn{background:var(--b-primary);color:var(--b-primary-ink);padding:12px 18px;border-radius:999px;font-weight:600}
+.b .chips{display:flex;flex-wrap:wrap;gap:8px}
+.b .chips span{font-family:"JetBrains Mono",monospace;font-size:11.5px;padding:4px 9px;border-radius:999px;background:var(--b-tile);color:var(--b-ink)}
+
+/* ---------- C · Señal ---------- */
+.c{background:var(--c-bg);color:var(--c-ink);font-family:"Instrument Sans",sans-serif;padding:22px 24px 26px}
+.c canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.c .logo{font-family:"Unbounded",sans-serif;font-weight:600;font-size:14px;letter-spacing:.01em}
+.c nav a{color:var(--c-muted);text-decoration:none;font-size:13px}
+.c .mock-body{margin-top:60px;max-width:700px}
+.c .status{font-family:"Geist Mono",monospace;font-size:11.5px;color:var(--c-muted);display:flex;align-items:center;gap:8px}
+.c .status::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c-accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--c-accent) 22%,transparent)}
+.c h4{font-family:"Unbounded",sans-serif;font-size:clamp(28px,4.2vw,46px);line-height:1.08;font-weight:600;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.c h4 span{color:var(--c-accent)}
+.c .lead{font-size:16px;line-height:1.6;color:var(--c-muted);max-width:52ch}
+.c .btn{background:var(--c-accent);color:var(--c-accent-ink);padding:12px 18px;border-radius:8px;font-weight:600}
+.c .prompt{font-family:"Geist Mono",monospace;font-size:12.5px;border:1px solid var(--c-line);border-radius:8px;padding:10px 12px;background:color-mix(in srgb,var(--c-bg) 80%,transparent);backdrop-filter:blur(6px);max-width:460px;color:var(--c-muted)}
+.c .prompt b{color:var(--c-ink);font-weight:500}
+
+.mock-foot{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+
+/* comparison */
+.compare{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:14px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+.rec{display:grid;gap:10px;max-width:72ch}
+.rec h2{font-size:20px;font-weight:600}
+.rec p{color:var(--muted)}
+.rec strong{color:var(--fg)}
+
+@media (prefers-reduced-motion:reduce){.a svg.draw .s{animation:none}}
+</style>
+
+<div class="wrap">
+  <header class="intro">
+    <span class="eyebrow">F1-01 · Identidad visual · pablojorda.es</span>
+    <h1>Tres direcciones de arte para elegir</h1>
+    <p>Cada propuesta está maquetada en vivo con sus fuentes y colores reales. Cambia el tema del sistema (claro u oscuro) para ver las dos variantes. Ninguna repite la estética de Attrezzo (crema y oro) ni la de Píxel y Papel (serif y marrón).</p>
+    <div class="legend"><span><b>Fuentes:</b> todas con licencia OFL, se autoalojarán con next/font</span><span><b>Texto:</b> provisional, se redacta en F2</span></div>
+  </header>
+
+  <!-- A -->
+  <section class="dir" aria-labelledby="a-t">
+    <div class="dir-head"><h2 id="a-t">A · Plano</h2><span class="tag">Ingeniería precisa, como un plano técnico acotado</span></div>
+    <div class="dir-body">
+      <div class="mock a" role="img" aria-label="Maqueta del hero de la dirección Plano">
+        <div class="mock-nav"><span class="logo">pablo<em>/</em>jordá</span><nav><a href="#a-t">Servicios</a><a href="#a-t">Proyectos</a><a href="#a-t">Contacto</a></nav></div>
+        <svg class="draw" viewBox="0 0 380 300" aria-hidden="true">
+          <rect class="s" x="40" y="30" width="300" height="200"/>
+          <line class="s" x1="40" y1="70" x2="340" y2="70"/>
+          <rect class="s" x="60" y="92" width="130" height="110"/>
+          <line class="s" x1="210" y1="100" x2="320" y2="100"/><line class="s" x1="210" y1="122" x2="300" y2="122"/><line class="s" x1="210" y1="144" x2="315" y2="144"/>
+          <line class="s" x1="40" y1="258" x2="340" y2="258"/><line class="s" x1="40" y1="250" x2="40" y2="266"/><line class="s" x1="340" y1="250" x2="340" y2="266"/>
+          <text class="t" x="150" y="280">1280 px · LCP 1,1 s</text>
+          <line class="s" x1="356" y1="30" x2="356" y2="230"/><text class="t" x="300" y="22">CLS 0,00</text>
+        </svg>
+        <div class="mock-body">
+          <span class="mono">// desarrollo web · IA aplicada · producto — Valencia</span>
+          <h4>Software a medida, <span class="u">medido</span> hasta el último milisegundo.</h4>
+          <p class="lead">Webs y aplicaciones con Next.js e IA integrada, rápidas, accesibles y pensadas para aparecer en Google desde el primer día.</p>
+          <div class="mock-foot"><a class="btn" href="#a-t">Cuéntame tu proyecto →</a><a class="btn ghost" href="#a-t">Ver servicios</a></div>
+        </div>
+        <div class="dims mono"><span>Lighthouse ≥ 98</span><span>WCAG 2.2 AA</span><span>ES · EN</span></div>
+      </div>
+      <div class="notes">
+        <div><h3>Concepto</h3><p>La web se presenta como un plano técnico: retícula, cotas y anotaciones en monoespaciada con métricas reales (LCP, CLS, peso). Comunica rigor y que el trabajo se mide.</p></div>
+        <div><h3>Paleta</h3><div class="swatches">
+          <div class="sw"><i style="background:var(--a-bg)"></i><span>Papel</span></div>
+          <div class="sw"><i style="background:var(--a-ink)"></i><span>Tinta</span></div>
+          <div class="sw"><i style="background:var(--a-accent)"></i><span>Cobalto</span></div>
+          <div class="sw"><i style="background:var(--a-grid)"></i><span>Retícula</span></div></div></div>
+        <div><h3>Tipografía</h3><div class="specimen">
+          <span style="font:750 26px/1.1 'Archivo';font-stretch:118%">Archivo Expanded</span>
+          <span style="font:400 14px 'Archivo'">Archivo para texto · ¿Diseño? ¡Sí! Año 2026 · 1.200 €</span>
+          <span style="font:400 12px 'IBM Plex Mono'">IBM Plex Mono · cotas y métricas</span></div></div>
+        <div><h3>Movimiento</h3><ul><li>Las líneas del plano se dibujan al cargar</li><li>Las cotas se actualizan con las métricas reales del sitio</li><li>Hero WebGL: retícula 3D que se deforma con el cursor</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- B -->
+  <section class="dir" aria-labelledby="b-t">
+    <div class="dir-head"><h2 id="b-t">B · Azulejo</h2><span class="tag">Mediterráneo y geométrico, con raíces en Valencia</span></div>
+    <div class="dir-body">
+      <div class="mock b" role="img" aria-label="Maqueta del hero de la dirección Azulejo">
+        <canvas id="tiles" aria-hidden="true"></canvas>
+        <div class="mock-nav"><span class="logo">Pablo Jordá<i>.</i></span><nav><a href="#b-t">Servicios</a><a href="#b-t">Proyectos</a><a href="#b-t">Contacto</a></nav></div>
+        <div class="mock-body">
+          <span class="kick">Desarrollo web e IA · desde Valencia</span>
+          <h4>Productos digitales <em>bien hechos,</em> pieza a pieza.</h4>
+          <p class="lead">Diseño y desarrollo webs, aplicaciones y MVPs con Next.js, e integro IA donde de verdad aporta.</p>
+          <div class="chips"><span>Next.js</span><span>TypeScript</span><span>IA</span><span>SEO técnico</span></div>
+          <div class="mock-foot"><a class="btn" href="#b-t">Cuéntame tu proyecto</a></div>
+        </div>
+      </div>
+      <div class="notes">
+        <div><h3>Concepto</h3><p>Un patrón de azulejo generativo: cada pieza es un módulo, como los componentes de un producto. Es cálido y cercano, y con la referencia local refuerza el SEO de "desarrollador web en Valencia".</p></div>
+        <div><h3>Paleta</h3><div class="swatches">
+          <div class="sw"><i style="background:var(--b-bg)"></i><span>Cal</span></div>
+          <div class="sw"><i style="background:var(--b-ink)"></i><span>Pizarra</span></div>
+          <div class="sw"><i style="background:var(--b-primary)"></i><span>Mar</span></div>
+          <div class="sw"><i style="background:var(--b-sun)"></i><span>Azafrán</span></div></div></div>
+        <div><h3>Tipografía</h3><div class="specimen">
+          <span style="font:750 26px/1.1 'Bricolage Grotesque';letter-spacing:-.03em">Bricolage Grotesque</span>
+          <span style="font:400 14px 'Figtree'">Figtree para texto · ¿Diseño? ¡Sí! Año 2026 · 1.200 €</span>
+          <span style="font:400 12px 'JetBrains Mono'">JetBrains Mono · etiquetas y código</span></div></div>
+        <div><h3>Movimiento</h3><ul><li>Las piezas del mosaico giran por turnos (en la maqueta)</li><li>Transiciones de página como piezas que se recolocan</li><li>Hero WebGL: mosaico 3D con luz de sol que se desplaza</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- C -->
+  <section class="dir" aria-labelledby="c-t">
+    <div class="dir-head"><h2 id="c-t">C · Señal</h2><span class="tag">Producto tecnológico, con la IA como protagonista</span></div>
+    <div class="dir-body">
+      <div class="mock c" role="img" aria-label="Maqueta del hero de la dirección Señal">
+        <canvas id="field" aria-hidden="true"></canvas>
+        <div class="mock-nav"><span class="logo">PJ—</span><nav><a href="#c-t">Servicios</a><a href="#c-t">Proyectos</a><a href="#c-t">Contacto</a></nav></div>
+        <div class="mock-body">
+          <span class="status">Disponible para nuevos proyectos</span>
+          <h4>De la idea a producción, <span>con IA dentro.</span></h4>
+          <p class="lead">Desarrollo web a medida, integraciones de IA y MVPs listos para crecer.</p>
+          <div class="prompt">› <b>¿Cuánto se tarda en lanzar un MVP?</b><br>Depende del alcance; un MVP típico son 4–8 semanas…</div>
+          <div class="mock-foot"><a class="btn" href="#c-t">Cuéntame tu proyecto</a></div>
+        </div>
+      </div>
+      <div class="notes">
+        <div><h3>Concepto</h3><p>Un campo de partículas que fluye como una señal o una red: evoca IA y datos sin caer en los degradados morados. El asistente de IA aparece ya en el hero como demo en vivo.</p></div>
+        <div><h3>Paleta</h3><div class="swatches">
+          <div class="sw"><i style="background:var(--c-bg)"></i><span>Pino noche</span></div>
+          <div class="sw"><i style="background:var(--c-ink)"></i><span>Niebla</span></div>
+          <div class="sw"><i style="background:var(--c-accent)"></i><span>Hielo</span></div>
+          <div class="sw"><i style="background:var(--c-line)"></i><span>Línea</span></div></div></div>
+        <div><h3>Tipografía</h3><div class="specimen">
+          <span style="font:600 24px/1.1 'Unbounded'">Unbounded</span>
+          <span style="font:400 14px 'Instrument Sans'">Instrument Sans para texto · ¿Diseño? ¡Sí! Año 2026 · 1.200 €</span>
+          <span style="font:400 12px 'Geist Mono'">Geist Mono · estados y prompts</span></div></div>
+        <div><h3>Movimiento</h3><ul><li>Campo de flujo que reacciona al cursor (en la maqueta)</li><li>El asistente escribe sus respuestas en streaming</li><li>Hero WebGL: shader de flujo en GPU con alternativa estática</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dir" aria-labelledby="cmp-t">
+    <div class="dir-head"><h2 id="cmp-t">Comparativa</h2></div>
+    <div class="compare">
+      <table>
+        <thead><tr><th>Criterio</th><th>A · Plano</th><th>B · Azulejo</th><th>C · Señal</th></tr></thead>
+        <tbody>
+          <tr><td>Qué transmite</td><td>Rigor, precisión, calidad medible</td><td>Cercanía, oficio, origen local</td><td>Innovación, IA, producto</td></tr>
+          <tr><td>Cliente ideal</td><td>Empresas que valoran la calidad técnica</td><td>Pymes y negocios locales</td><td>Startups y empresas que quieren IA</td></tr>
+          <tr><td>Diferenciación</td><td>Alta: el sitio enseña sus propias métricas</td><td>Alta: identidad propia y reconocible</td><td>Media-alta: estética tecnológica más habitual</td></tr>
+          <tr><td>Coste en rendimiento</td><td>Bajo: SVG y CSS</td><td>Bajo-medio: canvas ligero</td><td>Medio: shader, necesita fallback cuidado</td></tr>
+          <tr><td>Encaje con los 3 servicios</td><td>Muy bueno en web; IA menos visible</td><td>Bueno; la IA queda en segundo plano</td><td>Muy bueno en IA y MVP</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="rec" aria-labelledby="rec-t">
+    <h2 id="rec-t">Mi recomendación</h2>
+    <p><strong>A · Plano como base, con el asistente de IA de C integrado.</strong> Es la más difícil de confundir con una plantilla, convierte el rendimiento y el SEO (tus puntos fuertes) en el propio lenguaje visual, y casi no pesa. El asistente le da el componente de IA sin depender de una estética "futurista".</p>
+    <p>También se pueden mezclar elementos: por ejemplo, la tipografía de una dirección con la paleta de otra.</p>
+  </section>
+</div>
+
+<script>
+(function(){
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+  function fit(cv){
+    const r = cv.getBoundingClientRect(), d = Math.min(devicePixelRatio||1,2);
+    cv.width = Math.max(1,r.width*d); cv.height = Math.max(1,r.height*d);
+    const ctx = cv.getContext('2d'); ctx.setTransform(d,0,0,d,0,0); return {ctx,w:r.width,h:r.height};
+  }
+
+  // B · azulejo tiles
+  const tc = document.getElementById('tiles');
+  let tiles=[], tctx, tw, th, S=56;
+  function initTiles(){ ({ctx:tctx,w:tw,h:th}=fit(tc)); tiles=[]; for(let y=0;y<th/S+1;y++)for(let x=0;x<tw/S+1;x++)tiles.push({x,y,r:(x+y)%4,t:(x+y)%4}); }
+  function drawTile(t){
+    const p=css('--b-primary'), s=css('--b-sun'), bg=css('--b-tile');
+    tctx.save(); tctx.translate(t.x*S+S/2,t.y*S+S/2); tctx.rotate(t.r*Math.PI/2);
+    tctx.fillStyle=bg; tctx.fillRect(-S/2,-S/2,S,S);
+    tctx.fillStyle=p; tctx.beginPath(); tctx.arc(-S/2,-S/2,S/2,0,Math.PI/2); tctx.lineTo(-S/2,-S/2); tctx.fill();
+    tctx.beginPath(); tctx.arc(S/2,S/2,S/2,Math.PI,Math.PI*1.5); tctx.lineTo(S/2,S/2); tctx.fill();
+    if((t.x*7+t.y*3)%5===0){ tctx.fillStyle=s; tctx.beginPath(); tctx.arc(0,0,S/7,0,Math.PI*2); tctx.fill(); }
+    tctx.restore();
+  }
+  function renderTiles(){ tctx.clearRect(0,0,tw,th); tiles.forEach(t=>{ t.r += (t.t-t.r)*0.12; drawTile(t); }); }
+  initTiles(); renderTiles();
+  if(!reduce){ setInterval(()=>{ const t=tiles[(Math.random()*tiles.length)|0]; if(t) t.t+=1; },350); (function loop(){ renderTiles(); requestAnimationFrame(loop); })(); }
+
+  // C · flow field
+  const fc = document.getElementById('field');
+  let fctx, fw, fh, pts=[], mouse={x:-999,y:-999};
+  function initField(){ ({ctx:fctx,w:fw,h:fh}=fit(fc)); pts=Array.from({length:Math.round(fw*fh/900)},()=>({x:Math.random()*fw,y:Math.random()*fh})); }
+  function stepField(fade){
+    fctx.globalAlpha=1; fctx.fillStyle=css('--c-bg'); fctx.globalAlpha=fade; fctx.fillRect(0,0,fw,fh);
+    fctx.globalAlpha=.55; fctx.fillStyle=css('--c-glow');
+    const tt=performance.now()/4000;
+    for(const p of pts){
+      let a=Math.sin(p.x*0.008+tt)*Math.cos(p.y*0.01-tt)*Math.PI*2;
+      const dx=p.x-mouse.x, dy=p.y-mouse.y, d=dx*dx+dy*dy; if(d<9000) a+=Math.atan2(dy,dx)*0.6;
+      p.x+=Math.cos(a)*0.9; p.y+=Math.sin(a)*0.9;
+      if(p.x<0||p.x>fw||p.y<0||p.y>fh){ p.x=Math.random()*fw; p.y=Math.random()*fh; }
+      fctx.fillRect(p.x,p.y,1.4,1.4);
+    }
+  }
+  initField();
+  fctx.fillStyle=css('--c-bg'); fctx.fillRect(0,0,fw,fh);
+  if(reduce){ for(let i=0;i<120;i++) stepField(0.02); }
+  else { (function loop(){ stepField(0.08); requestAnimationFrame(loop); })(); }
+  fc.parentElement.addEventListener('pointermove',e=>{ const r=fc.getBoundingClientRect(); mouse.x=e.clientX-r.left; mouse.y=e.clientY-r.top; });
+  fc.parentElement.addEventListener('pointerleave',()=>{ mouse.x=mouse.y=-999; });
+
+  addEventListener('resize',()=>{ initTiles(); renderTiles(); initField(); });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{ renderTiles(); initField(); });
+})();
+</script>

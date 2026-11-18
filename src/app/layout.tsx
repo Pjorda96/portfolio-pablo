@@ -4,6 +4,10 @@ import type { ReactNode } from 'react';
 import './globals.css';
 
 import { env } from '@/env';
+import { themeBootScript } from '@/lib/theme/boot-script';
+import { themes } from '@/lib/theme/tokens';
+
+import { fontVariables } from './fonts';
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.SITE_URL),
@@ -20,14 +24,18 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fafaf9' },
-    { media: '(prefers-color-scheme: dark)', color: '#0c0a09' },
+    { media: '(prefers-color-scheme: light)', color: themes.day.ground },
+    { media: '(prefers-color-scheme: dark)', color: themes.night.ground },
   ],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="es">
+    // The boot script sets data-mode and --sky on <html> before first paint.
+    <html lang="es" className={fontVariables} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
+      </head>
       <body className="min-h-dvh antialiased">{children}</body>
     </html>
   );

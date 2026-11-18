@@ -1,0 +1,1128 @@
+<title>La Ciudad · prototipo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: full-bleed WebGL city; HTML layers float over it (brand, hero, time dial, place dock, detail sheet).
+   The UI palette follows the scene's hour (data-mode day|night), not the OS theme: one world, two lights. */
+:root{
+  --ui-bg: rgba(250,246,238,.80);
+  --ui-solid:#faf6ee;
+  --ui-fg:#1a1f2b;
+  --ui-muted:#566072;
+  --ui-line:rgba(26,31,43,.14);
+  --accent:#d9642a;          /* naranja valenciano */
+  --accent-ink:#ffffff;
+  --pin:#1a1f2b;
+  --display:"Syne","Arial Black",system-ui,sans-serif;
+  --body:"Inter Tight",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+:root[data-mode="night"]{
+  --ui-bg: rgba(10,14,28,.72);
+  --ui-solid:#0d1222;
+  --ui-fg:#eef1f8;
+  --ui-muted:#a2abc2;
+  --ui-line:rgba(238,241,248,.16);
+  --accent:#ffb067;
+  --accent-ink:#1a1206;
+  --pin:#eef1f8;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--ui-solid);color:var(--ui-fg);font:15px/1.55 var(--body);overflow:hidden}
+#stage{position:fixed;inset:0}
+canvas{display:block;width:100%;height:100%;outline:none}
+.ui{position:fixed;inset:0;pointer-events:none;
+  padding-top:max(16px, env(safe-area-inset-top, 0px));padding-bottom:max(16px, env(safe-area-inset-bottom, 0px));
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  display:grid;grid-template-rows:auto 1fr auto;gap:16px}
+.ui > *{pointer-events:auto}
+.glass{background:var(--ui-bg);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--ui-line);border-radius:14px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* top bar */
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;pointer-events:none}
+.top > *{pointer-events:auto}
+.brand{padding:10px 14px;display:grid;gap:2px}
+.brand b{font:800 15px/1 var(--display);letter-spacing:.06em;text-transform:uppercase}
+.brand span{font:400 11px/1.3 var(--mono);color:var(--ui-muted)}
+.clock{padding:10px 12px;display:grid;gap:8px;width:min(300px,52vw)}
+.clock-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.clock time{font:500 22px/1 var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.clock small{font:400 11px var(--mono);color:var(--ui-muted)}
+.clock input{width:100%;accent-color:var(--accent)}
+.clock .btns{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--ui-line);background:transparent;border-radius:999px;padding:4px 10px;font-size:12px}
+.chip[aria-pressed="true"]{background:var(--ui-fg);color:var(--ui-solid);border-color:var(--ui-fg)}
+
+/* hero */
+.hero{align-self:center;max-width:470px;padding:22px 22px 20px;display:grid;gap:12px;transition:opacity .4s,transform .4s}
+.hero.hide{opacity:0;transform:translateX(-16px);pointer-events:none}
+.kicker{font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.hero h1{margin:0;font:800 clamp(30px,4.6vw,52px)/.98 var(--display);letter-spacing:-.03em;text-wrap:balance}
+.hero p{margin:0;color:var(--ui-muted);max-width:44ch}
+.hint{font:400 12px var(--mono);color:var(--ui-muted)}
+@media (max-width:700px){.hero{align-self:start;padding:16px}.hero p.lead{display:none}}
+
+/* dock */
+.dock{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;padding:6px;justify-self:center;max-width:100%}
+.dock button{border:0;background:transparent;border-radius:10px;padding:8px 12px;display:grid;gap:1px;text-align:left;min-width:0}
+.dock button b{font:700 14px/1.1 var(--display);letter-spacing:.01em}
+.dock button span{font-size:11.5px;color:var(--ui-muted);white-space:nowrap}
+.dock button:hover,.dock button[aria-current="true"]{background:var(--ui-line)}
+
+/* detail sheet */
+.sheet{position:fixed;top:50%;right:max(16px, env(safe-area-inset-right, 0px));transform:translate(24px,-50%);opacity:0;pointer-events:none;
+  width:min(400px,calc(100vw - 32px));padding:22px;display:grid;gap:12px;transition:opacity .35s,transform .35s;max-height:calc(100% - 180px);overflow:auto}
+.sheet.open{opacity:1;transform:translate(0,-50%);pointer-events:auto}
+.sheet h2{margin:0;font:800 34px/1 var(--display);letter-spacing:-.02em}
+.sheet p{margin:0;color:var(--ui-muted)}
+.sheet ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.sheet li{display:grid;grid-template-columns:14px 1fr;gap:8px;font-size:14.5px}
+.sheet li::before{content:"";width:6px;height:6px;margin-top:8px;border-radius:1px;background:var(--accent);transform:rotate(45deg)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.cta{border:0;background:var(--accent);color:var(--accent-ink);padding:11px 16px;border-radius:10px;font-weight:600}
+.back{border:1px solid var(--ui-line);background:transparent;padding:10px 14px;border-radius:10px}
+@media (max-width:700px){.sheet{top:auto;bottom:max(96px, calc(env(safe-area-inset-bottom, 0px) + 96px));transform:translate(0,24px);max-height:55%}.sheet.open{transform:none}}
+
+/* pins */
+#pins{position:fixed;inset:0;pointer-events:none}
+.pin{position:absolute;left:0;top:0;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none;transition:opacity .3s}
+.pin span{font:600 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--pin);background:var(--ui-bg);border:1px solid var(--ui-line);padding:4px 7px;border-radius:999px;white-space:nowrap;backdrop-filter:blur(8px)}
+.pin i{width:1px;height:18px;background:var(--pin);opacity:.5}
+.pin.hot span{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.pin.dim{opacity:0}
+
+.note{position:fixed;left:50%;bottom:4px;transform:translateX(-50%);font:400 10.5px var(--mono);color:var(--ui-muted);white-space:nowrap;pointer-events:none;opacity:.8}
+.fallback{position:fixed;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ui-muted)}
+@media (prefers-reduced-motion:reduce){.hero,.sheet,.pin{transition:none}}
+</style>
+
+<div id="stage" aria-hidden="true"></div>
+<div id="pins" aria-hidden="true"></div>
+
+<div class="ui">
+  <div class="top">
+    <div class="brand glass"><b>Pablo Jordá</b><span>39.4699° N · 0.3763° W · Valencia</span></div>
+    <div class="clock glass" role="group" aria-label="Hora de la ciudad">
+      <div class="clock-row"><time id="clockTime">--:--</time><small id="clockLabel">tu hora</small></div>
+      <label for="hour" class="hint" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Hora del día en la ciudad</label>
+      <input id="hour" type="range" min="0" max="24" step="0.05" value="12">
+      <div class="btns">
+        <button class="chip" id="realBtn" aria-pressed="true">Hora real</button>
+        <button class="chip" id="playBtn" aria-pressed="false">Ver un día entero</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="hero glass" id="hero" aria-labelledby="heroTitle">
+    <span class="kicker">Desarrollo web · IA · Producto</span>
+    <h1 id="heroTitle">Una ciudad de cosas bien construidas.</h1>
+    <p class="lead">Soy Pablo Jordá, desarrollador full-stack en Valencia. Cada edificio de esta ciudad es algo que puedo construir para ti.</p>
+    <p class="hint">Pulsa un edificio o elige un lugar abajo · arrastra la hora</p>
+  </section>
+
+  <nav class="dock glass" id="dock" aria-label="Lugares de la ciudad"></nav>
+</div>
+
+<aside class="sheet glass" id="sheet" aria-live="polite" aria-labelledby="sheetTitle">
+  <span class="kicker" id="sheetKicker"></span>
+  <h2 id="sheetTitle"></h2>
+  <p id="sheetText"></p>
+  <ul id="sheetList"></ul>
+  <div class="actions"><button class="cta" id="sheetCta">Cuéntame tu proyecto</button><button class="back" id="sheetBack">Volver a la ciudad</button></div>
+</aside>
+
+<p class="note">Prototipo de dirección de arte · F1 · escena generada en tiempo real, sin imágenes</p>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script>
+(function(){
+const PLACES = [
+  { id:'taller', name:'La Lonja', short:'Web a medida', kicker:'Desarrollo web a medida',
+    text:'Webs y aplicaciones con Next.js y React hechas a mano: rápidas, accesibles y preparadas para posicionar en Google desde el primer día.',
+    list:['Webs corporativas y landings que convierten','Aplicaciones web y paneles internos','SEO técnico y Core Web Vitals en verde'] },
+  { id:'lab', name:'La Ciudad de las Ciencias', short:'Integraciones de IA', kicker:'Integraciones de IA',
+    text:'Llevo la IA a tu producto donde de verdad ahorra tiempo o vende más: asistentes, automatizaciones y búsqueda inteligente sobre tus datos.',
+    list:['Asistentes que responden con tu contenido','Automatización de procesos con agentes','Integración con tus sistemas y APIs'] },
+  { id:'puerto', name:'La Marina', short:'Apps, SaaS y MVPs', kicker:'Apps, SaaS y MVPs',
+    text:'De aquí zarpan productos: de la idea a una primera versión en producción, con la base lista para crecer.',
+    list:['MVPs en semanas, no en meses','Cuentas, pagos y panel de administración','Web y app móvil sobre la misma API'] },
+  { id:'mercado', name:'El Mercado Central', short:'Proyectos', kicker:'Proyectos',
+    text:'Productos reales con clientes reales. Píxel y Papel: webs de boda con confirmación de asistencia, en producción desde 2024.',
+    list:['Píxel y Papel · cofundador y desarrollo técnico','Caso de estudio completo, próximamente'] },
+  { id:'torre', name:'El Micalet', short:'Sobre mí', kicker:'Sobre mí',
+    text:'Más de 7 años construyendo aplicaciones web para seguros, fintech y arquitectura. Desde aquí arriba se ve todo el proyecto.',
+    list:['React, Next.js, TypeScript y Node.js','Calidad medible: tests, accesibilidad y rendimiento','En remoto, en español e inglés'] },
+  { id:'faro', name:'El Faro', short:'Contacto', kicker:'Contacto',
+    text:'¿Tienes un proyecto en mente? Cuéntamelo y te respondo con una propuesta concreta.',
+    list:['Formulario breve, sin compromiso','Respuesta personal, no automática'] },
+];
+
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const stage = document.getElementById('stage');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({antialias:true}); }
+catch(e){ document.body.insertAdjacentHTML('beforeend','<div class="fallback">Tu navegador no puede mostrar la escena 3D. Usa los lugares de abajo para navegar.</div>'); }
+if(!renderer) return;
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+stage.appendChild(renderer.domElement);
+const PR = renderer.getPixelRatio();
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x9fd0ef, 50, 112);
+const VIEW = 30;
+const cam = new THREE.OrthographicCamera(-1,1,1,-1,0.1,300);
+// seen from the south, slightly from the east: north up, the sea on the right, like the city map
+const OFFSET = new THREE.Vector3(11,24,35.1);
+const SCREEN_RIGHT = new THREE.Vector3(OFFSET.z,0,-OFFSET.x).normalize();
+const SCREEN_UP = new THREE.Vector3(-OFFSET.x,0,-OFFSET.z).normalize();
+const center = new THREE.Vector3(2.8,0,0.1);
+function homeTarget(){
+  const t = center.clone();
+  if(innerWidth >= 900) t.addScaledVector(SCREEN_RIGHT, -6);
+  else if(innerWidth < 700) t.addScaledVector(SCREEN_RIGHT, 2.4).addScaledVector(SCREEN_UP, 10);
+  return t;
+}
+const camState = { target:center.clone(), zoom:1 };
+const camGoal  = { target:center.clone(), zoom:1 };
+
+// ---------- helpers ----------
+let seed = 11;
+const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
+const rr = (a,b) => a + (b-a)*rnd();
+const pick = a => a[(rnd()*a.length)|0];
+const ss = (a,b,x)=>{ const t=Math.min(1,Math.max(0,(x-a)/(b-a))); return t*t*(3-2*t); };
+const UP = new THREE.Vector3(0,1,0);
+const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _e = new THREE.Euler(), _v = new THREE.Vector3(), _s = new THREE.Vector3(), _c = new THREE.Color();
+const dummy = new THREE.Object3D(), col = new THREE.Color();
+
+// polylines on the ground plane (x = east, z = south)
+function mkPath(pts){
+  const P = pts.map(p => ({x:p[0], z:p[1]})), L = [0], T = [];
+  for(let i=1;i<P.length;i++) L.push(L[i-1] + Math.hypot(P[i].x-P[i-1].x, P[i].z-P[i-1].z));
+  for(let i=0;i<P.length;i++){ const a = P[Math.max(0,i-1)], b = P[Math.min(P.length-1,i+1)], l = Math.hypot(b.x-a.x, b.z-a.z) || 1; T.push({x:(b.x-a.x)/l, z:(b.z-a.z)/l}); }
+  const path = { P, L, T, len: L[L.length-1] };
+  path.at = s => {
+    s = Math.max(0, Math.min(path.len, s));
+    let lo = 1, hi = P.length-1; while(lo < hi){ const m = (lo+hi)>>1; if(L[m] < s) lo = m+1; else hi = m; }
+    const a = P[lo-1], b = P[lo], seg = (L[lo]-L[lo-1]) || 1, t = (s-L[lo-1])/seg;
+    return { x:a.x+(b.x-a.x)*t, z:a.z+(b.z-a.z)*t, tx:(b.x-a.x)/seg, tz:(b.z-a.z)/seg };
+  };
+  path.near = (x, z) => {
+    let best = {d:Infinity};
+    for(let i=1;i<P.length;i++){
+      const a = P[i-1], b = P[i], dx = b.x-a.x, dz = b.z-a.z, l2 = dx*dx+dz*dz || 1;
+      const t = Math.max(0, Math.min(1, ((x-a.x)*dx + (z-a.z)*dz)/l2));
+      const px = a.x+dx*t, pz = a.z+dz*t, d = Math.hypot(x-px, z-pz);
+      if(d < best.d){ const l = Math.sqrt(l2), tx = dx/l, tz = dz/l; best = {d, s:L[i-1]+t*l, px, pz, tx, tz, off:(x-px)*(-tz) + (z-pz)*tx}; }
+    }
+    return best;
+  };
+  return path;
+}
+
+// ---------- geometry kit: everything static is merged per material ----------
+function shapeGeo(pts, depth){ const sh = new THREE.Shape(); pts.forEach(([x,y],i) => i ? sh.lineTo(x,y) : sh.moveTo(x,y)); return new THREE.ExtrudeGeometry(sh, {depth, bevelEnabled:false}); }
+const G = {
+  box: new THREE.BoxGeometry(1,1,1),
+  cyl6: new THREE.CylinderGeometry(1,1,1,6), cyl8: new THREE.CylinderGeometry(1,1,1,8), cyl12: new THREE.CylinderGeometry(1,1,1,12),
+  cyl14: new THREE.CylinderGeometry(1,1,1,14), cyl24: new THREE.CylinderGeometry(1,1,1,24),
+  cone4: new THREE.ConeGeometry(1,1,4), cone6: new THREE.ConeGeometry(1,1,6), cone8: new THREE.ConeGeometry(1,1,8), cone12: new THREE.ConeGeometry(1,1,12),
+  dome8: new THREE.SphereGeometry(1,8,4,0,Math.PI*2,0,Math.PI/2), dome16: new THREE.SphereGeometry(1,16,6,0,Math.PI*2,0,Math.PI/2),
+  sph: new THREE.SphereGeometry(1,18,10), ico: new THREE.IcosahedronGeometry(1,0),
+  halfCyl: new THREE.CylinderGeometry(1,1,1,10,1,false,0,Math.PI), halfCone: new THREE.ConeGeometry(1,1,10,1,false,0,Math.PI),
+  vault: new THREE.CylinderGeometry(1,1,1,12,1,false,0,Math.PI).rotateX(Math.PI/2).rotateZ(Math.PI/2),
+  arch: new THREE.TorusGeometry(1,.07,4,12,Math.PI), archThin: new THREE.TorusGeometry(1,.045,4,18,Math.PI),
+  plume: new THREE.TorusGeometry(1,.07,4,20,2.1).scale(1,1,3.4),
+  gable: shapeGeo([[-.5,0],[.5,0],[0,1]],1).translate(0,0,-.5),
+  sail: shapeGeo([[0,0],[0,.5],[-.26,0]],.008),
+  disc: new THREE.CylinderGeometry(1,1,1,28),
+};
+G.almond = (() => { const g = new THREE.SphereGeometry(1,24,8,0,Math.PI*2,0,Math.PI/2), p = g.attributes.position;
+  for(let i=0;i<p.count;i++){ const x = p.getX(i); p.setZ(i, p.getZ(i)*(1-.62*x*x)); } g.computeVertexNormals(); return g; })();
+
+function mergeGeos(list){
+  let n = 0; for(const g of list) n += g.attributes.position.count;
+  const out = new THREE.BufferGeometry();
+  for(const name of ['position','normal','color']){
+    const arr = new Float32Array(n*3); let o = 0;
+    for(const g of list){ arr.set(g.attributes[name].array, o); o += g.attributes[name].count*3; }
+    out.setAttribute(name, new THREE.BufferAttribute(arr,3));
+  }
+  out.computeBoundingBox(); out.computeBoundingSphere(); return out;
+}
+class Kit {
+  constructor(){ this.parts = {}; this.all = []; this.frame = new THREE.Matrix4(); }
+  add(kind, geo, color, x, y, z, o = {}){
+    const g = geo.index ? geo.toNonIndexed() : geo.clone();
+    for(const k of Object.keys(g.attributes)) if(k !== 'position' && k !== 'normal') g.deleteAttribute(k);
+    if(o.q) _q.copy(o.q); else _q.setFromEuler(_e.set(o.rx||0, o.ry||0, o.rz||0));
+    _m4.compose(_v.set(x,y,z), _q, _s.set(o.sx ?? 1, o.sy ?? 1, o.sz ?? 1));
+    g.applyMatrix4(_m4); g.applyMatrix4(this.frame);
+    const n = g.attributes.position.count, arr = new Float32Array(n*3); _c.set(color);
+    for(let i=0;i<n;i++){ arr[i*3]=_c.r; arr[i*3+1]=_c.g; arr[i*3+2]=_c.b; }
+    g.setAttribute('color', new THREE.BufferAttribute(arr,3));
+    (this.parts[kind] ||= []).push(g); this.all.push(g); return g;
+  }
+  box(kind,c,w,h,d,x,y0,z,o={}){ return this.add(kind,G.box,c,x,y0+h/2,z,Object.assign({},o,{sx:w,sy:h,sz:d})); }
+  cyl(kind,c,r,h,x,y0,z,seg=8,o={}){ return this.add(kind,G['cyl'+seg],c,x,y0+h/2,z,Object.assign({},o,{sx:r,sy:h,sz:r})); }
+  cone(kind,c,r,h,x,y0,z,seg=8,o={}){ return this.add(kind,G['cone'+seg],c,x,y0+h/2,z,Object.assign({},o,{sx:r,sy:h,sz:r})); }
+  dome(kind,c,r,hy,x,y0,z,seg=8,o={}){ return this.add(kind,G['dome'+seg],c,x,y0,z,Object.assign({},o,{sx:r,sy:hy,sz:r})); }
+  beam(kind,c,a,b,t,t2){ const A = new THREE.Vector3(...a), B = new THREE.Vector3(...b), d = B.clone().sub(A), L = d.length();
+    const q = new THREE.Quaternion().setFromUnitVectors(UP, d.normalize()), m = A.add(B).multiplyScalar(.5);
+    return this.add(kind,G.box,c,m.x,m.y,m.z,{q, sx:t, sy:L, sz:t2 ?? t}); }
+  at(x,z,ry,fn){ const prev = this.frame.clone(); this.frame.multiply(new THREE.Matrix4().makeTranslation(x,0,z).multiply(new THREE.Matrix4().makeRotationY(ry))); fn(); this.frame.copy(prev); }
+  mark(){ return this.all.length; }
+  bounds(from){ const b = new THREE.Box3(); for(let i=from;i<this.all.length;i++){ const g = this.all[i]; g.computeBoundingBox(); b.union(g.boundingBox); } return b; }
+  geometry(kind){ return mergeGeos(this.parts[kind]); }
+  build(parent, mats){ for(const [kind,list] of Object.entries(this.parts)){ const m = new THREE.Mesh(mergeGeos(list), mats[kind]); m.castShadow = m.receiveShadow = true; parent.add(m); } }
+}
+// crenellations (Gothic merlons) along a rectangle / ring
+function crenel(k, c, cx, y, cz, w, d, s=.085, step=.18){
+  const nx = Math.max(2, Math.round(w/step)), nz = Math.max(2, Math.round(d/step));
+  for(let i=0;i<=nx;i++){ const x = cx - w/2 + s/2 + (w-s)*i/nx; k.box('body',c,s,s*1.5,s,x,y,cz-d/2+s/2); k.box('body',c,s,s*1.5,s,x,y,cz+d/2-s/2); }
+  for(let j=1;j<nz;j++){ const z = cz - d/2 + s/2 + (d-s)*j/nz; k.box('body',c,s,s*1.5,s,cx-w/2+s/2,y,z); k.box('body',c,s,s*1.5,s,cx+w/2-s/2,y,z); }
+}
+function crenelRing(k, c, cx, y, cz, r, n, s=.08){ for(let i=0;i<n;i++){ const a = i/n*Math.PI*2; k.box('body',c,s,s*1.5,s,cx+Math.cos(a)*(r-s/2),y,cz+Math.sin(a)*(r-s/2),{ry:-a}); } }
+
+// materials for merged landmark meshes: vertex colours + night uplight (warm at the base, fading up) + hover tint
+const MATSETS = [];
+function upCompile(sh){
+  sh.uniforms.uUp = this.userData.uUp; sh.uniforms.uHover = this.userData.uHover;
+  sh.vertexShader = 'varying float vUpY;\n' + sh.vertexShader.replace('#include <begin_vertex>',
+    '#include <begin_vertex>\n\tvec4 upW = vec4(transformed,1.0);\n#ifdef USE_INSTANCING\n\tupW = instanceMatrix * upW;\n#endif\n\tvUpY = (modelMatrix * upW).y;');
+  sh.fragmentShader = 'varying float vUpY;\nuniform vec3 uUp;\nuniform vec3 uHover;\n' + sh.fragmentShader.replace('#include <emissivemap_fragment>',
+    '#include <emissivemap_fragment>\n\ttotalEmissiveRadiance += uUp * clamp(1.15 - vUpY*0.42, 0.06, 1.15) + uHover;');
+}
+function kitMat(o){ const m = new THREE.MeshStandardMaterial(Object.assign({vertexColors:true, roughness:.85}, o||{}));
+  m.userData.uUp = {value:new THREE.Color(0)}; m.userData.uHover = {value:new THREE.Color(0)}; m.onBeforeCompile = upCompile; return m; }
+function matSet(place, up, upK, glow, glowK){
+  const s = { place, up:new THREE.Color(up), upK, glowK, mats:{
+    body: kitMat(), shiny: kitMat({roughness:.28, metalness:.15}),
+    glow: kitMat({roughness:.4, emissive:new THREE.Color(glow), emissiveIntensity:0}),
+    blink: kitMat({emissive:new THREE.Color(0xff3b2f), emissiveIntensity:0}) } };
+  MATSETS.push(s); return s;
+}
+
+// ---------- geography (1 unit ≈ 200 m, compressed towards the sea) ----------
+const COAST = 14.6;
+const TURIA_CTRL = [[-34,-5.6],[-24,-6.1],[-17,-6.7],[-12,-7.1],[-8,-7.5],[-4,-7.6],[-0.6,-7.1],[1.9,-5.6],[3.6,-3.2],[4.8,-0.4],[5.7,2.3],[6.9,4.6],[8.5,5.83],[10.1,7.06],[11.75,8.33],[13.6,9.75]];
+const turia = mkPath(new THREE.CatmullRomCurve3(TURIA_CTRL.map(([x,z]) => new THREE.Vector3(x,0,z)), false, 'centripetal').getSpacedPoints(360).map(v => [v.x, v.z]));
+const sCAC = turia.near(6.4, 4.0).s, sWest = turia.near(-15, -6.8).s;
+const turiaHalf = s => 1.25 + .95*ss(sCAC-1.8, sCAC+.4, s) + .4*(1-ss(sWest-1.5, sWest+1.5, s));
+function turiaInfo(x,z){ const n = turia.near(x,z); n.half = turiaHalf(n.s); return n; }
+const isTuria = (x,z,pad=0) => { const n = turiaInfo(x,z); return n.d < n.half + pad; };
+const OT = {x:-4.8, z:-1.6, r:5.0};               // Ciutat Vella
+const huertaN = (x,z) => z < -12.4 + .9*Math.sin(x*.33);
+const huertaW = (x,z) => x < -17.5 + .9*Math.sin(z*.45);
+const rural = (x,z) => z > 13.2 + .6*Math.sin(x*.4);
+const LAKE = {x:3.5, z:21.8, rx:10.5, rz:4.4};      // L'Albufera
+const inLake = (x,z,k=1) => ((x-LAKE.x)/(LAKE.rx*k))**2 + ((z-LAKE.z)/(LAKE.rz*k))**2 < 1;
+const visible = (x,z) => { const r = x*.954 - z*.299 - 2.7, u = -(x*.299 + z*.954)*.546 + .51; return r > -36 && r < 32 && u > -30 && u < 34; };
+const EXCL = [];
+const addExcl = (b, pad=0) => EXCL.push({x0:b.min.x-pad, x1:b.max.x+pad, z0:b.min.z-pad, z1:b.max.z+pad});
+const exclCircle = (x,z,r) => EXCL.push({x0:x-r, x1:x+r, z0:z-r, z1:z+r});
+const blocked = (x,z,pad=0) => EXCL.some(e => x > e.x0-pad && x < e.x1+pad && z > e.z0-pad && z < e.z1+pad);
+
+// ---------- clickable landmarks ----------
+const landmarks = {}, anchors = {}, pickables = [];
+function landmark(id, x, z, ry, up, upK, glow, glowK, build){
+  const g = new THREE.Group(); g.position.set(x,0,z); g.rotation.y = ry;
+  const k = new Kit(), anchor = build(k), set = matSet(id, up, upK, glow, glowK);
+  k.build(g, set.mats); scene.add(g); g.updateMatrixWorld(true);
+  g.traverse(o => { if(o.isMesh){ o.userData.place = id; pickables.push(o); } });
+  landmarks[id] = g; anchors[id] = g.localToWorld(anchor.clone());
+  if(id !== 'lab') addExcl(new THREE.Box3().setFromObject(g), .05);
+  return g;
+}
+const DARK = '#3a3128';
+
+// El Micalet + la Catedral (Sobre mí)
+landmark('torre', -3.3, -3.25, 0, '#ffb070', .17, '#ffcf8a', 1.6, k => {
+  const S = '#dcc7a1', SD = '#c7ab84', R = '#cdb592', o8 = {ry:Math.PI/8};
+  k.box('body', S, 2.5, .95, .95, 0, 0, 0);
+  k.add('body', G.gable, R, 0, .95, 0, {ry:Math.PI/2, sx:.97, sy:.26, sz:2.5});
+  for(let i=0;i<6;i++){ const x = -1.05 + i*.42; k.box('body', SD, .12, .78, .16, x, 0, .55); k.box('body', SD, .12, .78, .16, x, 0, -.55); }
+  k.box('body', S, .85, .9, 1.75, .35, 0, 0);
+  k.add('body', G.gable, R, .35, .9, 0, {sx:.87, sy:.24, sz:1.75});
+  // cimborrio (octagonal lantern over the crossing)
+  k.cyl('body', S, .4, .62, .35, .95, 0, 8, o8);
+  k.cyl('glow', DARK, .41, .2, .35, 1.2, 0, 8, o8);
+  k.cyl('body', SD, .45, .07, .35, 1.57, 0, 8, o8);
+  k.cone('body', R, .4, .2, .35, 1.64, 0, 8, o8);
+  for(let i=0;i<8;i++){ const a = i/8*Math.PI*2 + Math.PI/8; k.cone('body', SD, .035, .24, .35+Math.cos(a)*.43, 1.6, Math.sin(a)*.43, 4); }
+  // apse to the east, door to the west
+  k.add('body', G.halfCyl, S, 1.25, .42, 0, {sx:.48, sy:.84, sz:.48});
+  k.add('body', G.halfCone, R, 1.25, .93, 0, {sx:.48, sy:.18, sz:.48});
+  k.box('glow', DARK, .03, .42, .3, -1.26, 0, 0);
+  // the Micalet: octagonal Gothic bell tower with its iron bell frame
+  k.at(-1.5, .78, 0, () => {
+    k.cyl('body', S, .42, 2.45, 0, 0, 0, 8, o8);
+    [.85, 1.65].forEach(y => k.cyl('body', SD, .45, .06, 0, y, 0, 8, o8));
+    k.cyl('body', S, .43, .55, 0, 2.45, 0, 8, o8);
+    k.cyl('glow', DARK, .44, .34, 0, 2.53, 0, 8, o8);
+    k.cyl('body', SD, .47, .09, 0, 3.0, 0, 8, o8);
+    for(let i=0;i<8;i++){ const a = i/8*Math.PI*2 + Math.PI/8; k.box('body', SD, .07, .12, .07, Math.cos(a)*.42, 3.09, Math.sin(a)*.42, {ry:-a}); }
+    for(const [dx,dz] of [[-.1,-.1],[.1,-.1],[-.1,.1],[.1,.1]]) k.box('body', '#5a534b', .035, .32, .035, dx, 3.09, dz);
+    k.cone('body', '#5a534b', .18, .2, 0, 3.41, 0, 4, {ry:Math.PI/4});
+    k.cyl('glow', DARK, .05, .1, 0, 3.17, 0, 8);
+  });
+  return new THREE.Vector3(-1.5, 3.75, .78);
+});
+
+// El Mercado Central (Proyectos)
+landmark('mercado', -6.6, -0.7, 0, '#ffb070', .16, '#ffd08a', 1.6, k => {
+  const W = '#e6d4b2', BR = '#b9714a', BL = '#2f86b3', Z = '#7f98a4', o8 = {ry:Math.PI/8};
+  k.box('body', W, 2.7, .7, 1.75, 0, 0, 0);
+  k.box('body', BR, 2.72, .12, 1.77, 0, .48, 0);
+  k.box('shiny', BL, 2.74, .06, 1.79, 0, .64, 0);
+  k.add('body', G.gable, Z, .62, .7, 0, {ry:Math.PI/2, sx:1.75, sy:.38, sz:1.46});
+  k.add('body', G.gable, Z, -1.0, .7, 0, {ry:Math.PI/2, sx:1.75, sy:.38, sz:.7});
+  k.box('glow', '#2b3340', 1.3, .05, .16, .62, 1.06, 0);
+  // main dome
+  k.cyl('body', W, .55, .34, -.35, .7, 0, 8, o8);
+  k.cyl('glow', '#2b3340', .56, .13, -.35, .8, 0, 8, o8);
+  k.cyl('body', BR, .58, .05, -.35, 1.04, 0, 8, o8);
+  k.dome('shiny', BL, .55, .55, -.35, 1.08, 0, 8, o8);
+  k.cyl('body', W, .12, .18, -.35, 1.6, 0, 8);
+  k.cone('shiny', BL, .14, .16, -.35, 1.78, 0, 8);
+  k.box('body', '#3d3a36', .02, .25, .02, -.35, 1.92, 0);
+  k.box('shiny', '#3f9a5a', .13, .05, .03, -.35, 2.15, 0);
+  // fish-market dome
+  k.cyl('body', W, .33, .24, .98, .7, 0, 8, o8);
+  k.cyl('glow', '#2b3340', .34, .1, .98, .78, 0, 8, o8);
+  k.dome('shiny', BL, .33, .32, .98, .94, 0, 8, o8);
+  k.cone('shiny', BL, .07, .14, .98, 1.25, 0, 8);
+  // modernista portal (faces south)
+  k.box('body', W, .78, 1.05, .28, -.35, 0, .82);
+  k.add('body', G.vault, W, -.35, 1.05, .82, {sx:.39, sy:.39, sz:.28});
+  k.add('glow', G.vault, '#2b3340', -.35, .64, .965, {sx:.25, sy:.25, sz:.02});
+  k.box('glow', '#2b3340', .5, .64, .02, -.35, 0, .965);
+  k.box('shiny', BL, .8, .06, .3, -.35, .98, .82);
+  for(const x of [-1.15,.25,.75,1.2]) k.box('glow', '#2b3340', .22, .3, .02, x, .14, .885);
+  for(let i=0;i<5;i++) k.box('glow', '#2b3340', .22, .3, .02, -1.1+i*.55, .14, -.885);
+  return new THREE.Vector3(-.35, 2.35, 0);
+});
+
+// La Lonja de la Seda (Desarrollo web a medida)
+landmark('taller', -6.5, -3.1, 0, '#ffb070', .17, '#ffc778', 1.6, k => {
+  const S = '#d9c29b', SD = '#c0a47c';
+  k.box('body', S, 1.5, 1.05, 1.0, -.5, 0, 0); crenel(k, SD, -.5, 1.05, 0, 1.5, 1.0);
+  k.box('body', S, .58, 1.6, .58, .42, 0, -.1); crenel(k, SD, .42, 1.6, -.1, .58, .58);
+  k.box('body', S, .95, .82, .92, 1.15, 0, .02); crenel(k, SD, 1.15, .82, .02, .95, .92);
+  [-.95,-.5,-.05].forEach(x => k.box('glow', DARK, .14, .5, .02, x, .32, .51));
+  k.box('glow', DARK, .26, .42, .02, -.5, 0, .51);
+  k.box('glow', DARK, .2, .38, .02, .42, 0, .2);
+  [.85,1.15,1.45].forEach(x => k.box('glow', DARK, .12, .22, .02, x, .42, .485));
+  k.box('glow', DARK, .02, .5, .14, -1.255, .32, 0);
+  // Patio de los Naranjos
+  k.box('body', '#7c9a52', 1.0, .03, .55, 1.0, 0, -.78);
+  for(let i=0;i<4;i++){ k.add('body', G.ico, '#4f7a35', .62+i*.25, .2, -.78, {sx:.1, sy:.1, sz:.1}); k.add('body', G.ico, '#e58a2a', .65+i*.25, .27, -.72, {sx:.025, sy:.025, sz:.025}); }
+  k.box('body', S, 1.0, .25, .04, 1.0, 0, -1.06);
+  return new THREE.Vector3(.42, 1.95, -.1);
+});
+
+// La Ciudad de las Artes y las Ciencias, on the old riverbed (Integraciones de IA)
+const cacN = turia.near(10.1, 7.06);
+const cacGroup = landmark('lab', cacN.px, cacN.pz, Math.atan2(-cacN.tz, cacN.tx), '#8fc2ff', .38, '#cfe8ff', 1.1, k => {
+  const CW = '#f5f7f8', WATER = '#3f9cc6';
+  k.box('body', '#e7e6e0', 9.0, .04, 3.9, .3, 0, .15);
+  k.box('glow', WATER, 3.3, .025, .55, .9, .04, .45);
+  k.box('glow', WATER, 1.1, .025, .8, -3.15, .04, .35);
+  // Museu de les Ciències: glass body, white rib skeleton, peaked gables
+  const MX = .9, MZ = -.4;
+  k.box('body', '#e4e8ea', 3.4, .08, 1.3, MX, .04, MZ);
+  k.box('glow', '#7fa3b8', 3.0, .78, .76, MX, .1, MZ);
+  k.box('body', CW, 3.1, .06, 1.0, MX, 1.05, MZ-.04);
+  for(let i=0;i<14;i++){ const x = MX - 1.45 + i*(2.9/13);
+    k.beam('body', CW, [x,.1,MZ+.62], [x,1.0,MZ+.42], .07);
+    k.beam('body', CW, [x,1.0,MZ+.42], [x,1.17,MZ-.12], .06);
+    if(i%2===0) k.beam('body', CW, [x,.1,MZ-.62], [x,1.08,MZ-.38], .08); }
+  [MX-1.62, MX+1.62].forEach(x => k.add('body', G.gable, CW, x, .1, MZ, {ry:Math.PI/2, sx:1.25, sy:1.4, sz:.14}));
+  // L'Hemisfèric: the eye over its pool
+  const HX = -1.95, HZ = .45;
+  k.add('glow', G.disc, WATER, HX, .045, HZ, {sx:1.65, sy:.02, sz:.92});
+  k.add('body', G.almond, CW, HX, .06, HZ, {sx:1.05, sy:.46, sz:.56});
+  k.add('body', G.archThin, '#e3e8ea', HX, .06, HZ, {sx:1.05, sy:.5, sz:1.2});
+  k.add('glow', G.sph, '#6f93a8', HX, .06, HZ+.33, {sx:.42, sy:.17, sz:.12});
+  // Palau de les Arts: helmet shells + the plume
+  const PX = -4.15;
+  k.box('body', '#e4e8ea', 2.1, .08, 1.3, PX, .04, 0);
+  k.add('glow', G.sph, '#8aa6b8', PX, .5, 0, {sx:.95, sy:.45, sz:.42});
+  k.add('body', G.sph, CW, PX, .42, .4, {sx:1.15, sy:.5, sz:.1});
+  k.add('body', G.sph, CW, PX, .42, -.4, {sx:1.15, sy:.5, sz:.1});
+  k.add('body', G.plume, CW, PX-.25, .3, 0, {sx:1.15, sy:1.05});
+  // L'Umbracle: white arches over a garden walk
+  k.box('body', '#5f8f4a', 5.8, .07, .42, .15, .04, 1.55);
+  for(let i=0;i<22;i++) k.add('body', G.arch, CW, -2.7 + i*.27, .05, 1.55, {ry:Math.PI/2, sx:.32, sy:.44, sz:.32});
+  k.box('body', CW, 5.9, .03, .04, .15, .47, 1.55);
+  // Pont de l'Assut de l'Or
+  const AX = 3.0;
+  k.box('body', CW, .45, .07, 4.9, AX, .33, 0);
+  k.box('body', CW, .04, .07, 4.9, AX-.2, .4, 0); k.box('body', CW, .04, .07, 4.9, AX+.2, .4, 0);
+  k.beam('body', CW, [AX,.33,-2.05], [AX,3.05,-2.9], .14, .2);
+  for(let i=0;i<6;i++) k.beam('body', '#dfe4e8', [AX,2.95,-2.86], [AX,.42,-1.4+i*.62], .018);
+  // L'Àgora
+  k.add('shiny', G.sph, '#3c6f97', 4.15, .05, -.1, {sx:.75, sy:.6, sz:.42});
+  k.add('body', G.archThin, CW, 4.15, .05, -.1, {sx:.78, sy:.63, sz:4});
+  return new THREE.Vector3(MX, 1.85, MZ);
+});
+
+// La Marina: Veles e Vents on its quay (Apps, SaaS y MVPs)
+landmark('puerto', 15.9, 6.8, 0, '#ffe2bd', .22, '#ffd08a', 1.6, k => {
+  const Q = '#c9c3b6', Wt = '#f7f6f2';
+  k.box('body', Q, 2.8, .14, 1.6, .2, 0, 0);
+  k.box('glow', '#33414f', .9, .3, .66, .3, .14, 0);
+  [[1.5,1.05,0],[1.7,1.15,.18],[1.5,1.08,-.14],[1.32,.98,.22]].forEach(([w,d,dx],i) => {
+    const y = .44 + i*.32;
+    k.box('body', Wt, w, .07, d, .3+dx, y, .02*i);
+    if(i<3) k.box('glow', '#33414f', w*.7, .25, d*.64, .3+dx*.5, y+.07, .02*i);
+  });
+  k.box('body', Wt, .05, .3, .05, .9, 1.47, .3); k.box('body', Wt, .05, .3, .05, -.2, 1.47, -.3);
+  return new THREE.Vector3(.3, 1.95, 0);
+});
+
+// El Faro on the breakwater (Contacto)
+let beam;
+const faroG = landmark('faro', 21.9, 7.0, 0, '#ffe2bd', .18, '#fff1c2', 2.2, k => {
+  k.box('body', '#a9a49a', 1.0, .2, 1.0, 0, 0, 0);
+  for(let i=0;i<5;i++) k.cyl('body', i%2 ? '#c23b2a' : '#f5f3ee', .26-i*.02, .42, 0, .2+i*.42, 0, 14);
+  k.cyl('body', '#2f2f2f', .24, .05, 0, 2.3, 0, 14);
+  k.cyl('glow', '#3a3a3a', .15, .24, 0, 2.35, 0, 12);
+  k.cone('body', '#2b2b2b', .19, .22, 0, 2.59, 0, 12);
+  k.box('body', '#f1ece2', .4, .3, .35, .32, .2, .22);
+  return new THREE.Vector3(0, 2.95, 0);
+});
+{
+  const bm = new THREE.Mesh(new THREE.ConeGeometry(1.1,11,24,1,true), new THREE.MeshBasicMaterial({color:0xfff2c6, transparent:true, opacity:0, depthWrite:false, side:THREE.DoubleSide, blending:THREE.AdditiveBlending, fog:false}));
+  bm.geometry.translate(0,-5.5,0); bm.rotation.z = Math.PI/2;
+  const piv = new THREE.Group(); piv.position.set(0,2.47,0); piv.add(bm); faroG.add(piv); beam = piv;
+}
+
+// ---------- decorative monuments (merged, warm uplight, not clickable) ----------
+const monu = new Kit(), decor = new Kit();
+function monument(fn, pad=.05){ const m = monu.mark(); fn(); addExcl(monu.bounds(m), pad); }
+
+// Torres de Serranos: gate on the Turia
+monument(() => monu.at(-3.55, -5.75, 0, () => {
+  const S = '#d4b98f', SD = '#bd9f76';
+  monu.box('body', S, .85, 1.15, .8, 0, 0, 0);
+  [-.62,.62].forEach(x => { monu.cyl('body', S, .44, 1.5, x, 0, 0, 6, {ry:Math.PI/6}); crenelRing(monu, SD, x, 1.5, 0, .42, 10); });
+  monu.box('body', SD, .95, .1, .85, 0, 1.15, 0); crenel(monu, SD, 0, 1.25, 0, .85, .8);
+  monu.add('glow', G.vault, DARK, 0, .38, -.41, {sx:.2, sy:.2, sz:.03}); monu.box('glow', DARK, .4, .38, .03, 0, 0, -.41);
+  monu.box('glow', DARK, .5, .25, .03, 0, .7, .41);
+}));
+// Torres de Quart: west gate
+monument(() => monu.at(-9.65, -2.0, Math.PI/2, () => {
+  const S = '#c6a87f', SD = '#ae916b';
+  monu.box('body', S, .8, 1.05, .8, 0, 0, 0);
+  [-.62,.62].forEach(x => { monu.cyl('body', S, .45, 1.38, x, 0, 0, 14); crenelRing(monu, SD, x, 1.38, 0, .43, 11); });
+  crenel(monu, SD, 0, 1.05, 0, .8, .8);
+  monu.add('glow', G.vault, DARK, 0, .36, -.41, {sx:.19, sy:.19, sz:.03}); monu.box('glow', DARK, .38, .36, .03, 0, 0, -.41);
+}));
+// Basílica de la Virgen (blue dome) behind the cathedral
+monument(() => monu.at(-3.95, -4.45, 0, () => {
+  monu.box('body', '#e9dcc2', .75, .6, .6, 0, 0, 0);
+  monu.cyl('body', '#e9dcc2', .26, .22, 0, .6, 0, 8, {ry:Math.PI/8});
+  monu.dome('shiny', '#2f78a8', .26, .26, 0, .82, 0, 8, {ry:Math.PI/8});
+  monu.cone('body', '#e9dcc2', .05, .14, 0, 1.06, 0, 6);
+}));
+// Santa Catalina hexagonal tower
+monument(() => monu.at(-4.05, -1.05, 0, () => {
+  monu.cyl('body', '#d8c19a', .17, 1.75, 0, 0, 0, 6);
+  monu.cyl('glow', DARK, .175, .18, 0, 1.45, 0, 6);
+  monu.cyl('body', '#c7ab84', .2, .05, 0, 1.75, 0, 6);
+  monu.cyl('body', '#d8c19a', .12, .28, 0, 1.8, 0, 6);
+  monu.cone('body', '#c7ab84', .12, .2, 0, 2.08, 0, 6);
+}), .05);
+// church domes with blue glazed tiles, the old town's skyline signature
+[[-7.85,-3.55,.24],[-2.2,-1.95,.2],[-1.6,0.6,.22],[-7.4,1.6,.2]].forEach(([x,z,r]) => monument(() => monu.at(x, z, rr(0,1), () => {
+  monu.box('body', '#e6d3b0', r*2.4, .55, r*2.0, 0, 0, 0);
+  monu.cyl('body', '#efe2c8', r, .2, 0, .55, 0, 8, {ry:Math.PI/8});
+  monu.dome('shiny', pick(['#2f78a8','#2d6f9a','#3a86a6']), r, r*1.05, 0, .75, 0, 8, {ry:Math.PI/8});
+  monu.cone('body', '#efe2c8', r*.25, r*.6, 0, .75+r, 0, 6);
+  monu.box('body', '#e6d3ad', .16, .95, .16, r*1.3, 0, -r*.9);
+}), .05));
+// Plaza del Ayuntamiento: City Hall with its clock tower
+monument(() => monu.at(-5.5, 1.5, -Math.PI/2, () => {
+  const W = '#ece1ca';
+  monu.box('body', W, 1.9, .9, .7, 0, 0, 0);
+  monu.box('body', W, .5, .5, .5, 0, .9, -.05);
+  monu.cyl('body', W, .2, .2, 0, 1.4, -.05, 8);
+  monu.dome('shiny', '#3a7fae', .2, .24, 0, 1.6, -.05, 8);
+  monu.cone('body', '#3d3a36', .03, .3, 0, 1.82, -.05, 6);
+  monu.add('glow', G.disc, '#f3e7c9', 0, 1.17, -.31, {rx:Math.PI/2, sx:.12, sy:.02, sz:.12});
+  [-.82,.82].forEach(x => { monu.box('body', W, .32, 1.1, .32, x, 0, -.2); monu.dome('shiny', '#3a7fae', .16, .18, x, 1.1, -.2, 8); });
+  for(let i=0;i<7;i++) monu.box('glow', DARK, .12, .22, .02, -.6+i*.2, .45, -.36);
+}));
+// Estació del Nord (modernista, orange accents) and the Plaza de Toros next to it
+monument(() => monu.at(-5.1, 4.6, 0, () => {
+  const O = '#c98b55', Wt = '#f1e6d0', OR = '#e2762b';
+  monu.box('body', O, 2.0, .72, .38, 0, 0, -.45);
+  monu.box('body', Wt, 2.02, .05, .4, 0, .72, -.45);
+  monu.box('shiny', OR, 2.02, .05, .4, 0, .44, -.45);
+  monu.box('body', O, .72, 1.0, .4, 0, 0, -.45);
+  monu.add('body', G.vault, O, 0, 1.0, -.45, {sx:.36, sy:.3, sz:.4});
+  monu.add('glow', G.vault, DARK, 0, .5, -.66, {sx:.22, sy:.22, sz:.02});
+  monu.box('glow', DARK, .44, .5, .02, 0, 0, -.66);
+  [-.95,.95].forEach(x => { monu.box('body', O, .26, 1.05, .42, x, 0, -.45); monu.cone('shiny', OR, .17, .32, x, 1.05, -.45, 4, {ry:Math.PI/4}); });
+  [-.3,.3].forEach(x => monu.cone('shiny', OR, .06, .28, x, 1.0, -.45, 6));
+  for(let i=0;i<8;i++){ const x = -.8 + i*.229; if(Math.abs(x) < .4) continue; monu.box('glow', DARK, .12, .26, .02, x, .12, -.66); }
+  monu.add('body', G.vault, '#8e969b', 0, 0, .55, {sx:.75, sy:.55, sz:1.6});
+}));
+monument(() => monu.at(-3.2, 4.75, 0, () => {
+  monu.cyl('body', '#b8683f', .88, .6, 0, 0, 0, 24);
+  monu.cyl('glow', '#3a2a22', .89, .1, 0, .12, 0, 24); monu.cyl('glow', '#3a2a22', .89, .1, 0, .36, 0, 24);
+  monu.cyl('body', '#efe4d2', .905, .03, 0, .58, 0, 24);
+  monu.cyl('body', '#c79a6b', .78, .02, 0, .6, 0, 24);
+  monu.cyl('body', '#b68457', .65, .02, 0, .61, 0, 24);
+  monu.cyl('body', '#e4c690', .5, .02, 0, .62, 0, 24);
+}));
+
+// plazas (paving) and small parks, reserved before houses are placed
+function plazaDisc(x, z, r, c='#ddd3c2'){ decor.add('body', G.disc, c, x, .01, z, {sx:r, sy:.02, sz:r}); exclCircle(x, z, r*.85); }
+plazaDisc(-4.65, -1.55, .62); plazaDisc(-4.7, -4.3, .55); plazaDisc(-6.45, -1.88, .5); plazaDisc(-2.0, -3.55, .38); plazaDisc(-6.8, -4.6, .35);
+{ const tri = [[-5.05,0.1],[-3.15,0.45],[-4.85,3.1]], sh = new THREE.Shape();
+  tri.forEach(([x,z],i) => i ? sh.lineTo(x,-z) : sh.moveTo(x,-z));
+  decor.add('body', new THREE.ShapeGeometry(sh).rotateX(-Math.PI/2), '#ddd3c2', 0, .012, 0);
+  decor.cyl('body', '#cfc4b0', .34, .06, -4.45, 0, 1.25, 24); decor.cyl('shiny', '#4f9fc4', .28, .07, -4.45, 0, 1.25, 24);
+  exclCircle(-4.4, 1.2, .9); }
+
+// ---------- the Turia gardens ----------
+const pathOff = (s, side) => side*.5*turiaHalf(s) + .14*Math.sin(s*.55 + (side > 0 ? 0 : 1.7));
+function ribbonGeo(s0, s1, offFn, y){
+  const pos = []; let prev = null;
+  for(let i=0;i<turia.P.length;i++){
+    const s = turia.L[i]; if(s < s0 || s > s1){ prev = null; continue; }
+    const p = turia.P[i], t = turia.T[i], [o0,o1] = offFn(s);
+    const a = [p.x - t.z*o0, y, p.z + t.x*o0], b = [p.x - t.z*o1, y, p.z + t.x*o1];
+    if(prev) pos.push(...prev[0], ...prev[1], ...a, ...prev[1], ...b, ...a);
+    prev = [a,b];
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos,3));
+  g.setAttribute('normal', new THREE.Float32BufferAttribute(pos.map((_,i) => i%3===1 ? 1 : 0),3)); return g;
+}
+function wallGeo(side, y0, y1){
+  const pos = []; let prev = null;
+  for(let i=0;i<turia.P.length;i++){
+    const p = turia.P[i], t = turia.T[i], o = side*(turiaHalf(turia.L[i]) + .2), x = p.x - t.z*o, z = p.z + t.x*o;
+    if(prev) pos.push(prev[0],y0,prev[1], x,y0,z, x,y1,z, prev[0],y0,prev[1], x,y1,z, prev[0],y1,prev[1]);
+    prev = [x,z];
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos,3)); g.computeVertexNormals(); return g;
+}
+function flat(geo, color, extra){ const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial(Object.assign({color, roughness:1}, extra||{}))); m.receiveShadow = true; scene.add(m); return m; }
+flat(ribbonGeo(0, Infinity, s => [-turiaHalf(s), turiaHalf(s)], .015), 0x86a865);
+flat(ribbonGeo(0, Infinity, s => [turiaHalf(s), turiaHalf(s)+.24], .03), 0xd5c8ad);
+flat(ribbonGeo(0, Infinity, s => [-turiaHalf(s)-.24, -turiaHalf(s)], .03), 0xd5c8ad);
+[1,-1].forEach(side => flat(ribbonGeo(0, sCAC-1.0, s => [pathOff(s,side)-.08, pathOff(s,side)+.08], .022), 0xdccca6));
+[1,-1].forEach(side => flat(wallGeo(side, 0, .13), 0xc9b99a, {side:THREE.DoubleSide}));
+{ // the pond in the Parc de Capçalera
+  const p = turia.at(sWest);
+  decor.add('body', G.disc, '#cdbf9f', p.x, .02, p.z, {sx:1.45, sy:.03, sz:.62, ry:Math.atan2(-p.tz, p.tx)});
+  decor.add('shiny', G.disc, '#4c94b0', p.x, .03, p.z, {sx:1.35, sy:.03, sz:.52, ry:Math.atan2(-p.tz, p.tx)});
+}
+
+// bridges: stone arches, the Exposició "peineta"
+const bridgeS = [], lampPts = [], parkLampPts = [];
+function stoneBridge(L){
+  const S = '#d8c6a2', SD = '#c4ad86', n = Math.max(3, Math.round(L/.62)), span = L/n;
+  monu.box('body', S, L, .12, .52, 0, .32, 0);
+  monu.box('body', SD, L, .08, .05, 0, .44, .235); monu.box('body', SD, L, .08, .05, 0, .44, -.235);
+  for(let i=0;i<=n;i++) monu.box('body', S, .14, .32, .5, -L/2 + i*span, 0, 0);
+  for(let i=0;i<n;i++) monu.add('body', G.arch, SD, -L/2 + (i+.5)*span, 0, 0, {sx:span/2, sy:.3, sz:3.2});
+}
+function modernBridge(L){
+  monu.box('body', '#f2f3f0', L, .1, .58, 0, .34, 0);
+  monu.add('body', G.archThin, '#f6f7f4', 0, .44, -.12, {sx:L/2*.82, sy:.85, rx:-.42});
+}
+[[-7.4,-7.5,0],[-3.55,-7.6,0],[-1.9,-7.4,0],[0.7,-6.6,0],[2.75,-4.4,1],[4.8,-0.4,0],[5.9,2.5,0]].forEach(([bx,bz,modern]) => {
+  const n = turia.near(bx,bz), L = 2*turiaHalf(n.s) + .75; bridgeS.push(n.s);
+  monu.at(n.px, n.pz, Math.atan2(-n.tx, -n.tz), () => modern ? modernBridge(L) : stoneBridge(L));
+  for(let x=-L/2+.2; x<L/2; x+=.55) for(const z of [-.27,.27]) lampPts.push([n.px - n.tz*x - n.tx*z, .55, n.pz + n.tx*x - n.tz*z]);
+});
+
+// ---------- avenues ----------
+const ringPts = (() => { const fw = [], bw = [], R = 5.35, a0 = Math.PI/2;
+  for(let a=a0; a<a0+Math.PI; a+=.04){ const x = OT.x+Math.cos(a)*R, z = OT.z+Math.sin(a)*R; if(isTuria(x,z,.25)) break; fw.push([x,z]); }
+  for(let a=a0-.04; a>a0-Math.PI; a-=.04){ const x = OT.x+Math.cos(a)*R, z = OT.z+Math.sin(a)*R; if(isTuria(x,z,.25)) break; bw.push([x,z]); }
+  return bw.reverse().concat(fw); })();
+const bankPath = side => mkPath(turia.P.map((p,i) => { const t = turia.T[i], h = (turiaHalf(turia.L[i]) + .45)*side; return [p.x - t.z*h, p.z + t.x*h]; }));
+const AV = {
+  ring: mkPath(ringPts),
+  granVia: mkPath([[3.36,0.2],[-1.56,6.36],[-3.0,8.0]]),
+  port: mkPath([[6.24,-0.97],[14.3,3.9]]),
+  blasco: mkPath([[3.1,-6.6],[12.5,-5.4]]),
+  paseo: mkPath([[12.78,-26],[12.78,3.5]]),
+  bankS: bankPath(1), bankN: bankPath(-1),
+};
+
+// ---------- buildings (instanced prisms with procedural facades) ----------
+const FC = 8, FR = 16, CELL = 32, DENS = 3.6, FLOOR = .2;
+function facadeTex(lit){
+  const c = document.createElement('canvas'); c.width = FC*CELL; c.height = FR*CELL; const g = c.getContext('2d');
+  g.fillStyle = lit ? '#000' : '#fff'; g.fillRect(0,0,c.width,c.height);
+  for(let i=0;i<FC;i++) for(let j=0;j<FR;j++){
+    const x = i*CELL, y = j*CELL;
+    if(lit){ const r = rnd(); if(r < .38){ g.fillStyle = pick(['#ffd28a','#ffc070','#ffe0ad','#ffcf86','#ffb766','#cfdcff']); g.fillRect(x+10,y+7,12,18); }
+             else if(r < .5){ g.fillStyle = '#5a3d1e'; g.fillRect(x+10,y+7,12,18); } }
+    else { g.fillStyle = '#ebe6dc'; g.fillRect(x,y+CELL-2,CELL,2); g.fillStyle = rnd() < .25 ? '#8b8576' : '#666c77'; g.fillRect(x+10,y+7,12,18); g.fillStyle = '#cfc8bb'; g.fillRect(x+7,y+25,18,2); }
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy()); return t;
+}
+const facadeMat = new THREE.MeshStandardMaterial({map:facadeTex(false), emissiveMap:facadeTex(true), emissive:0xffffff, emissiveIntensity:0, roughness:.92});
+facadeMat.onBeforeCompile = sh => {
+  sh.vertexShader = 'attribute vec4 aUv;\nattribute float aLit;\nvarying float vLit;\n' + sh.vertexShader.replace('#include <uv_vertex>',
+    '#include <uv_vertex>\n\tvMapUv = uv * aUv.xy;\n\tvEmissiveMapUv = uv * aUv.xy + aUv.zw;\n\tvLit = aLit;');
+  sh.fragmentShader = 'varying float vLit;\n' + sh.fragmentShader.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n\ttotalEmissiveRadiance *= vLit;');
+};
+const roofMat = new THREE.MeshStandardMaterial({color:0xd8d0c2, roughness:.95});
+function prismGeo(c){
+  const pts = c > 0 ? [[.5-c,-.5],[.5,-.5+c],[.5,.5-c],[.5-c,.5],[-.5+c,.5],[-.5,.5-c],[-.5,-.5+c],[-.5+c,-.5]] : [[.5,-.5],[.5,.5],[-.5,.5],[-.5,-.5]];
+  const pos = [], nrm = [], uv = []; let u = 0;
+  for(let i=0;i<pts.length;i++){ const [x0,z0] = pts[i], [x1,z1] = pts[(i+1)%pts.length], len = Math.hypot(x1-x0, z1-z0);
+    pos.push(x0,0,z0, x1,1,z1, x1,0,z1,  x0,0,z0, x0,1,z0, x1,1,z1);
+    for(let k=0;k<6;k++) nrm.push((z1-z0)/len, 0, -(x1-x0)/len);
+    uv.push(u,0, u+len,1, u+len,0,  u,0, u,1, u+len,1); u += len; }
+  const sides = pos.length/3;
+  for(let i=0;i<pts.length;i++){ const [x0,z0] = pts[i], [x1,z1] = pts[(i+1)%pts.length]; pos.push(0,1,0, x1,1,z1, x0,1,z0); nrm.push(0,1,0, 0,1,0, 0,1,0); uv.push(0,0,0,0,0,0); }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos,3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(nrm,3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv,2));
+  g.addGroup(0, sides, 0); g.addGroup(sides, pos.length/3 - sides, 1); return g;
+}
+function prismMesh(geo, list){
+  if(!list.length) return;
+  const n = list.length, aUv = new Float32Array(n*4), aLit = new Float32Array(n), m = new THREE.InstancedMesh(geo, [facadeMat, roofMat], n);
+  list.forEach((b,k) => {
+    dummy.position.set(b.x,0,b.z); dummy.rotation.set(0,b.ry||0,0); dummy.scale.set(b.w,b.h,b.d); dummy.updateMatrix(); m.setMatrixAt(k, dummy.matrix); m.setColorAt(k, col.set(b.c));
+    aUv.set([(b.w+b.d)/2*DENS/FC, b.h/FLOOR/FR, ((rnd()*FC)|0)/FC, ((rnd()*FR)|0)/FR], k*4); aLit[k] = b.lit;
+  });
+  geo.setAttribute('aUv', new THREE.InstancedBufferAttribute(aUv,4)); geo.setAttribute('aLit', new THREE.InstancedBufferAttribute(aLit,1));
+  m.castShadow = m.receiveShadow = true; scene.add(m); return m;
+}
+const OLD_WALLS = ['#efe2c8','#e9d2a4','#f3ead9','#e3c58f','#ddb98e','#f0dcb4','#e8cfb8','#f2e6cf','#e6c9a0'];
+const ROOFS = ['#b5603b','#a9573a','#c06e48','#9e5235','#b86a4a','#a8623f'];
+const BLOCK_WALLS = ['#efe6d6','#e8d6b5','#f2eee6','#e3cfa9','#eadccd','#dcc6a6','#f0e2c2','#e6d2bf','#f1dfb8','#e9d9bd'];
+const CABANYAL = ['#e9d9c0','#cfe0e3','#e8c9b5','#d7e4cf','#f1e3b8','#cdd7ea','#efd2c7','#f3efe6'];
+const TOWER = ['#e9ecee','#dfe6ea','#efe9df','#d9dfe3','#e6e1d6'];
+const sq = [], oc = [], roofs = [];
+const trees = [], palms = [], oranges = [], fields = [], reeds = [], parasols = [];
+function addTree(x, z, type, s=1){
+  if(type === 'palm'){ const h = rr(.55,.85)*s; trees.push({x,z,type,h,s}); palms.push({x,y:h,z,s}); }
+  else trees.push({x,z,type,s});
+}
+
+// Ciutat Vella: dense, low, irregular, terracotta roofs, narrow lanes
+const OLD_STREETS = [
+  [[-9.3,-2.5],[-7.9,-3.75],[-6.2,-4.05],[-4.7,-4.25]], [[-3.6,-5.1],[-4.3,-4.5]], [[-4.75,-1.85],[-4.95,-.4],[-5.0,.2]],
+  [[-4.3,-1.5],[-2.4,-1.35],[-.3,-1.1]], [[-9.2,-1.7],[-7.95,-1.15],[-7.2,-1.7]], [[-6.0,-1.9],[-5.3,-2.0],[-4.95,-1.9]],
+  [[-2.6,-2.1],[-1.0,-2.7],[-.4,-3.4]], [[-7.2,-4.3],[-7.4,-5.6]], [[-5.6,-4.2],[-5.9,-5.7]], [[-2.0,-.7],[-2.6,.9],[-3.2,1.6]],
+  [[-8.6,.2],[-7.2,.6],[-5.9,.9]], [[-2.9,-4.5],[-1.6,-5.0]],
+].map(mkPath);
+for(let gx=OT.x-OT.r; gx<=OT.x+OT.r; gx+=.47) for(let gz=OT.z-OT.r; gz<=OT.z+OT.r; gz+=.47){
+  const x = gx + rr(-.07,.07), z = gz + rr(-.07,.07), a = Math.atan2(z-OT.z, x-OT.x);
+  if(Math.hypot(x-OT.x, z-OT.z) > OT.r - .1 + .2*Math.sin(a*5)) continue;
+  if(isTuria(x,z,.4) || blocked(x,z,.1) || OLD_STREETS.some(p => p.near(x,z).d < .17) || rnd() < .04) continue;
+  const ry = .35*Math.sin(x*.55+z*.3) + .25*Math.cos(z*.7) + rr(-.06,.06), w = rr(.34,.44), d = rr(.34,.44), h = rr(.34,.78);
+  sq.push({x,z,w,d,h,ry,c:pick(OLD_WALLS),lit:rnd() < .15 ? 0 : rr(.25,1.05)});
+  if(rnd() < .82) roofs.push({x,z,w:w+.05,d:d+.05,h:rr(.12,.2),y:h,ry,c:pick(ROOFS)});
+}
+// Eixample / Russafa / Extramurs: chamfered blocks on the rotated grid of the Gran Vía
+function parkSquare(x, z, ry){ decor.box('body', '#8aab66', 1.1, .02, 1.1, x, 0, z, {ry}); for(let i=0;i<5;i++) addTree(x+rr(-.4,.4), z+rr(-.4,.4), rnd() < .3 ? 'palm' : 'round'); }
+{ const th = .71, ca = Math.cos(th), sa = Math.sin(th), P = 1.7, ox = 3.36 + ca*P/2, oz = .2 + sa*P/2;
+  for(let i=-18;i<=18;i++) for(let j=-18;j<=18;j++){
+    let x = ox + (i*ca - j*sa)*P, z = oz + (i*sa + j*ca)*P;
+    if(!visible(x,z) || x > 12.1) continue;
+    const t = turiaInfo(x,z); if(t.off < 0 || t.d < t.half + 1.0) continue;
+    const dOld = Math.hypot(x-OT.x, z-OT.z); if(dOld < 6.3) continue;
+    if(rural(x,z) || huertaW(x,z) || blocked(x,z,.6) || AV.port.near(x,z).d < .95) continue;
+    let w = 1.22; const gv = AV.granVia.near(x,z);
+    if(gv.d < 1.0){ w -= .22; const sg = Math.sign((x-gv.px)*ca + (z-gv.pz)*sa); x += ca*.11*sg; z += sa*.11*sg; }
+    if(rnd() < .05){ parkSquare(x, z, -th); continue; }
+    let h = dOld < 10 ? rr(1.05,1.65) : rr(.85,1.4); if(rnd() < .05) h += rr(.6,1.2);
+    oc.push({x,z,ry:-th,w:w+rr(-.04,.04),d:1.22+rr(-.04,.04),h,c:pick(BLOCK_WALLS),lit:rnd() < .08 ? 0 : rr(.45,1.2)});
+    if(rnd() < .4){ const cx = (rnd()<.5?-1:1)*.26, cz = (rnd()<.5?-1:1)*.28; sq.push({x:x+cx*ca-cz*sa, z:z+cx*sa+cz*ca, ry:-th, w:.5, d:.5, h:h+rr(.2,.5), c:pick(BLOCK_WALLS), lit:rr(.4,1.1)}); }
+  }
+}
+// north of the Turia: grid along Blasco Ibáñez, towers in Campanar and Av. de Francia
+exclCircle(.2, -9.7, 1.6);
+decor.add('body', G.disc, '#8aab66', .2, .005, -9.7, {sx:1.7, sy:.02, sz:1.5});
+for(let i=0;i<26;i++){ const a = rnd()*6.28, r = Math.sqrt(rnd())*1.35; addTree(.2+Math.cos(a)*r*1.1, -9.7+Math.sin(a)*r, rnd() < .25 ? 'palm' : rnd() < .5 ? 'pine' : 'round'); }
+{ const th = .125, ca = Math.cos(th), sa = Math.sin(th), P = 1.6, ox = 3.1 - sa*P/2, oz = -6.6 + ca*P/2;
+  for(let i=-22;i<=22;i++) for(let j=-14;j<=14;j++){
+    let x = ox + (i*ca - j*sa)*P, z = oz + (i*sa + j*ca)*P;
+    if(!visible(x,z) || x > 12.15) continue;
+    const t = turiaInfo(x,z); if(t.off > 0 || t.d < t.half + .95) continue;
+    if(huertaN(x,z) || huertaW(x,z) || blocked(x,z,.6) || AV.port.near(x,z).d < .95) continue;
+    if(x > 10.4 && z > -7.6 && z < 3.6) continue;
+    let d = 1.15; const bl = AV.blasco.near(x,z);
+    if(bl.d < 1.0){ d -= .2; const sg = Math.sign(bl.off); x += -sa*.1*sg; z += ca*.1*sg; }
+    const nw = x < -8.5, fr = x > 7.4 && x < 11 && z > -.5 && z < 4.8;
+    if((nw && rnd() < .38) || (fr && rnd() < .45)){
+      const n = rnd() < .5 ? 1 : 2;
+      for(let q=0;q<n;q++){ const dx = n === 1 ? 0 : (q ? .3 : -.3); sq.push({x:x+dx*ca, z:z+dx*sa+rr(-.15,.15), ry:-th, w:.55, d:.55, h:rr(2.5,4.3), c:pick(TOWER), lit:rr(.6,1.3)}); }
+      continue;
+    }
+    if(rnd() < .05){ parkSquare(x, z, -th); continue; }
+    oc.push({x,z,ry:-th,w:1.15+rr(-.05,.05),d:d+rr(-.05,.05),h:rr(.85,1.45),c:pick(BLOCK_WALLS),lit:rnd() < .08 ? 0 : rr(.45,1.2)});
+  }
+}
+// El Cabanyal: long rows of low, colourful fishermen's houses
+for(const rx of [10.75, 11.2, 11.85, 12.3]){ let z = -7.4, k = 0;
+  while(z < 3.4){ if(k%9 === 8){ z += .45; k++; continue; } const d = rr(.28,.36);
+    if(!blocked(rx,z,.1) && AV.port.near(rx,z).d > .5) sq.push({x:rx, z:z+d/2, ry:0, w:.4, d:d-.03, h:rr(.26,.5), c:pick(CABANYAL), lit:rnd() < .2 ? 0 : rr(.3,1)});
+    z += d; k++; } }
+// the huerta: orange groves, fields and alquerías
+for(let x=-34; x<12; x+=2.1) for(let z=-34; z<14; z+=2.1){
+  const cx = x + rr(-.15,.15), cz = z + rr(-.15,.15);
+  if(!(huertaN(cx,cz-1) || huertaW(cx-1,cz)) || !visible(cx,cz) || isTuria(cx,cz,1.3) || rural(cx,cz)) continue;
+  const r = rnd();
+  if(r < .58){ fields.push({x:cx,z:cz,w:1.85,d:1.85,c:'#8f7d56'}); const s0 = rr(.15,.19);
+    for(let i=0;i<4;i++) for(let j=0;j<4;j++) oranges.push({x:cx-.6+i*.4+rr(-.03,.03), z:cz-.6+j*.4+rr(-.03,.03), s:s0*rr(.9,1.1)}); }
+  else if(r < .9) fields.push({x:cx,z:cz,w:1.85,d:1.85,c:pick(['#8fae5a','#a7b866','#7c9a4c','#b9a86a','#93a95c'])});
+  else { decor.at(cx, cz, rr(-.3,.3), () => { decor.box('body', '#f3efe6', .55, .34, .38, 0, 0, 0); decor.add('body', G.gable, '#b5603b', 0, .34, 0, {ry:Math.PI/2, sx:.44, sy:.22, sz:.6}); });
+    addTree(cx+.55, cz+.3, 'round'); addTree(cx-.45, cz+.45, 'palm'); fields.push({x:cx,z:cz,w:1.85,d:1.85,c:'#9aa865'}); }
+}
+// south: rice paddies, L'Albufera with reeds and barracas
+[[-1.5,16.4],[.3,16.7],[7.4,16.5]].forEach(([x,z]) => { exclCircle(x, z, .5); decor.at(x, z, .15, () => {
+  decor.box('body', '#f6f3ec', .46, .26, .32, 0, 0, 0);
+  decor.add('body', G.gable, '#7d6a48', 0, .26, 0, {ry:Math.PI/2, sx:.38, sy:.42, sz:.52});
+  decor.box('body', '#f6f3ec', .02, .1, .02, .27, .64, 0); decor.box('body', '#f6f3ec', .02, .02, .07, .27, .7, 0);
+  decor.box('glow', DARK, .1, .16, .02, 0, 0, .165); }); });
+for(let x=-34; x<14; x+=1.6) for(let z=13; z<30; z+=1.1){
+  const cx = x + rr(-.1,.1), cz = z;
+  if(!rural(cx,cz-.4) || inLake(cx,cz,1.08) || !visible(cx,cz) || blocked(cx,cz,.3) || cx > COAST - 1.2) continue;
+  fields.push({x:cx, z:cz, w:1.45, d:.95, c:pick(['#7fae5a','#93bd66','#6f9f86','#86b0a0','#9cc06a'])});
+}
+{ const lake = new THREE.Mesh(new THREE.CircleGeometry(1,56).rotateX(-Math.PI/2), null); lake.userData.water = true;
+  lake.scale.set(LAKE.rx, 1, LAKE.rz); lake.position.set(LAKE.x, .012, LAKE.z); lake.receiveShadow = true; scene.add(lake);
+  for(let a=0; a<Math.PI*2; a+=.025){ const k = rr(.96,1.05), x = LAKE.x + Math.cos(a)*LAKE.rx*k, z = LAKE.z + Math.sin(a)*LAKE.rz*k; if(!visible(x,z) || x > COAST-1) continue;
+    for(let q=0;q<4;q++) reeds.push({x:x+rr(-.25,.25), z:z+rr(-.2,.2), h:rr(.18,.34)}); }
+  for(let i=0;i<5;i++){ const cx = LAKE.x + rr(-6,6), cz = LAKE.z + rr(-2.6,-1); for(let q=0;q<26;q++) reeds.push({x:cx+rr(-.5,.5), z:cz+rr(-.25,.25), h:rr(.15,.3)}); }
+}
+
+// ---------- coast: Malvarrosa, the Marina, the port ----------
+decor.box('body', '#e8d6aa', 1.6, .03, 44, 13.8, 0, -18.35);
+decor.box('body', '#e8d6aa', 1.6, .03, 30, 13.8, 0, 31);
+decor.box('body', '#f2f6f5', .08, .02, 44, 14.62, 0, -18.35);
+decor.box('body', '#e9e1cf', .45, .025, 30, 12.78, 0, -11.5);
+for(let z=-22; z<3.4; z+=.75){ addTree(12.78+.18, z, 'palm', .9); lampPts.push([12.6, .3, z+.35]); }
+for(let i=0;i<46;i++){ const z = rr(-20,2.8); if(visible(13.9,z)) parasols.push({x:rr(13.4,14.3), z, c:pick(['#e2762b','#2f86b3','#f4f1ea','#d94b3d','#f2c14e','#3b8a5a'])}); }
+const Q = '#c9c3b6';
+decor.box('body', Q, 5.2, .14, .8, 17.2, 0, 4.05);           // north quay
+decor.box('body', Q, 4.2, .14, .65, 16.7, 0, 9.68);          // south marina quay
+decor.box('body', Q, 6.0, .14, 5.6, 17.6, 0, 13.4);          // container terminal
+decor.box('body', '#d9d3c6', 2.0, .02, 6.0, 13.6, 0, 7.6);   // port esplanade
+[[13.75,5.7],[13.75,8.3]].forEach(([x,z]) => { decor.box('body', '#f1ebdf', .75, .42, 1.6, x, 0, z); decor.add('body', G.vault, '#9aa3a8', x, .42, z, {sx:.37, sy:.18, sz:1.6}); });
+{ const a = [19.6,4.0], b = [21.9,6.6], dx = b[0]-a[0], dz = b[1]-a[1], L = Math.hypot(dx,dz), ry = Math.atan2(-dz, dx);
+  decor.box('body', '#77736c', L, .18, .75, (a[0]+b[0])/2, 0, (a[1]+b[1])/2, {ry}); decor.box('body', '#bdb7aa', L, .24, .32, (a[0]+b[0])/2, 0, (a[1]+b[1])/2, {ry});
+  for(let t=.1; t<1; t+=.12) lampPts.push([a[0]+dx*t, .45, a[1]+dz*t]); }
+for(let x=15.2; x<=18.4; x+=.8){ decor.box('body', '#b9b2a4', .08, .06, .95, x, 0, 4.95); decor.box('body', '#b9b2a4', .08, .06, .9, x, 0, 8.9); }
+for(const z of [11.4,12.8,14.2,15.6]) decor.at(20.1, z, 0, () => {
+  [[-.35,-.3],[.35,-.3],[-.35,.3],[.35,.3]].forEach(([dx,dz]) => decor.box('body', '#d9572b', .07, 1.45, .07, dx, .14, dz));
+  decor.box('body', '#d9572b', .82, .1, .72, 0, 1.55, 0);
+  decor.box('body', '#2d6fa3', 3.2, .08, .1, .6, 1.85, 0);
+  decor.box('body', '#d9572b', .3, .25, .3, -.1, 1.65, 0);
+  decor.box('blink', '#400000', .06, .06, .06, 2.15, 1.93, 0);
+});
+const containers = [];
+for(let x=15.2; x<=19.3; x+=.64) for(let z=11.0; z<=15.8; z+=.3){ if(rnd() < .15 || Math.abs(z-13.4) < .2) continue;
+  const n = 1 + (rnd()*3|0); for(let q=0;q<n;q++) containers.push({x, y:.14+q*.25, z, c:pick(['#c2452d','#2f6f9f','#e0a530','#3b8a5a','#d9d4c8','#7b4a8a','#c96f2c'])}); }
+
+// ---------- street trees, park trees ----------
+for(let s=.3; s<AV.granVia.len; s+=.55){ const p = AV.granVia.at(s); for(const o of [-.22,.22]) addTree(p.x - p.tz*o, p.z + p.tx*o, 'round', .8); }
+for(let s=.3; s<AV.blasco.len; s+=.6){ const p = AV.blasco.at(s); for(const o of [-.25,.25]) addTree(p.x - p.tz*o, p.z + p.tx*o, 'round', .8); }
+for(let s=.4; s<AV.port.len; s+=.7){ const p = AV.port.at(s); for(const o of [-.28,.28]) addTree(p.x - p.tz*o, p.z + p.tx*o, 'palm', .75); }
+for(let s=.5; s<sCAC-1.0; s+=.3){
+  const p = turia.at(s), h = turiaHalf(s); if(!visible(p.x,p.z)) continue;
+  for(let k=0;k<2;k++){
+    const off = rr(-h+.22, h-.22);
+    if(Math.abs(off-pathOff(s,1)) < .2 || Math.abs(off-pathOff(s,-1)) < .2) continue;
+    if(bridgeS.some(b => Math.abs(b-s) < .5)) continue;
+    if(Math.abs(s-sWest) < 1.6 && Math.abs(off) < .75) continue;
+    const r = rnd(); addTree(p.x - p.tz*off, p.z + p.tx*off, r < .45 ? 'round' : r < .73 ? 'pine' : 'palm', rr(.85,1.15));
+  }
+  if(((s*10)|0) % 8 === 0) for(const side of [1,-1]){ const o = pathOff(s,side) + .14*side; parkLampPts.push([p.x - p.tz*o, .22, p.z + p.tx*o]); }
+}
+for(let x=-2.6; x<=2.7; x+=.55){ for(const z of [1.98,-1.35]){ if(z < 0 && (x < -.5 || x > 2.4)) continue; const w = cacGroup.localToWorld(new THREE.Vector3(x,0,z)); addTree(w.x, w.z, 'palm', .85); } }
+// old-town plazas
+[[-4.65,-1.55],[-4.7,-4.3],[-6.45,-1.88],[-2.0,-3.55]].forEach(([x,z]) => { addTree(x+.3, z+.25, 'round', .8); addTree(x-.3, z-.2, 'palm', .8); });
+
+// ---------- lamps ----------
+function lampsAlong(path, step, off, y=.28){ for(let s=step/2; s<path.len; s+=step){ const p = path.at(s); for(const o of off){ const x = p.x - p.tz*o, z = p.z + p.tx*o; if(visible(x,z) && !isTuria(x,z,-.05)) lampPts.push([x, y, z]); } } }
+lampsAlong(AV.ring, .55, [-.3,.3]); lampsAlong(AV.granVia, .55, [-.36,.36]); lampsAlong(AV.port, .55, [-.36,.36]);
+lampsAlong(AV.blasco, .55, [-.36,.36]); lampsAlong(AV.bankS, .6, [-.22]); lampsAlong(AV.bankN, .6, [.22]);
+OLD_STREETS.forEach(p => lampsAlong(p, .55, [0], .2));
+
+// ---------- build instanced city ----------
+const sqMesh = prismMesh(prismGeo(0), sq);
+const ocMesh = prismMesh(prismGeo(.14), oc);
+function instanced(geo, mat, list, place, shadow=true){
+  if(!list.length) return null;
+  const m = new THREE.InstancedMesh(geo, mat, list.length);
+  list.forEach((it,k) => { place(it); dummy.updateMatrix(); m.setMatrixAt(k, dummy.matrix); if(it.c) m.setColorAt(k, col.set(it.c)); });
+  m.castShadow = shadow; m.receiveShadow = true; scene.add(m); return m;
+}
+const std = (o) => new THREE.MeshStandardMaterial(Object.assign({roughness:.9}, o));
+instanced(new THREE.ConeGeometry(Math.SQRT1_2,1,4,1).rotateY(Math.PI/4).translate(0,.5,0), std({}), roofs, r => { dummy.position.set(r.x, r.y, r.z); dummy.rotation.set(0, r.ry, 0); dummy.scale.set(r.w, r.h, r.d); });
+instanced(new THREE.BoxGeometry(1,1,1).translate(0,.5,0), std({roughness:1}), fields, f => { dummy.position.set(f.x, 0, f.z); dummy.rotation.set(0,0,0); dummy.scale.set(f.w, .02, f.d); }, false);
+instanced(new THREE.BoxGeometry(.58,.24,.26).translate(0,.12,0), std({roughness:.7}), containers, c => { dummy.position.set(c.x, c.y, c.z); dummy.rotation.set(0,0,0); dummy.scale.set(1,1,1); });
+const GREENS = ['#4e7a3c','#5b8744','#46703a','#62904a','#557f3f'];
+const trunkList = [], canopyList = [];
+trees.forEach(t => {
+  if(t.type === 'round'){ trunkList.push({x:t.x, z:t.z, h:.2*t.s, r:.03*t.s, c:'#6e5a44'}); canopyList.push({x:t.x, y:.32*t.s, z:t.z, sx:.22*t.s, sy:.24*t.s, sz:.22*t.s, c:pick(GREENS)}); }
+  else if(t.type === 'pine'){ trunkList.push({x:t.x, z:t.z, h:.46*t.s, r:.028*t.s, c:'#6b5845'}); canopyList.push({x:t.x, y:.5*t.s, z:t.z, sx:.32*t.s, sy:.12*t.s, sz:.32*t.s, c:pick(['#3f6534','#47703a','#3b5f30'])}); }
+  else trunkList.push({x:t.x, z:t.z, h:t.h, r:.024*t.s, c:'#8a7a62'});
+});
+instanced(new THREE.CylinderGeometry(.7,1,1,5).translate(0,.5,0), std({}), trunkList, t => { dummy.position.set(t.x,0,t.z); dummy.rotation.set(0,0,0); dummy.scale.set(t.r, t.h, t.r); });
+instanced(G.ico, std({flatShading:true}), canopyList, t => { dummy.position.set(t.x,t.y,t.z); dummy.rotation.set(0, t.x*7%6, 0); dummy.scale.set(t.sx, t.sy, t.sz); });
+{ const pk = new Kit();
+  for(let i=0;i<7;i++){ const a = i/7*Math.PI*2; pk.add('body', G.box, i%2 ? '#5f8d40' : '#6c9846', Math.cos(a)*.16, -.04, Math.sin(a)*.16, {ry:-a, rz:-.5, sx:.34, sy:.02, sz:.08}); }
+  pk.add('body', G.ico, '#6b5f3e', 0, 0, 0, {sx:.05, sy:.05, sz:.05});
+  instanced(pk.geometry('body'), std({vertexColors:true, side:THREE.DoubleSide}), palms, p => { dummy.position.set(p.x, p.y, p.z); dummy.rotation.set(0, p.x*13%6.28, 0); dummy.scale.setScalar(p.s); });
+}
+{ const g = new THREE.IcosahedronGeometry(1,1).toNonIndexed(), n = g.attributes.position.count, c = new Float32Array(n*3), cc = new THREE.Color();
+  for(let f=0; f<n/3; f++){ cc.set(rnd() < .16 ? '#f08a1c' : pick(['#3f6a32','#4a7738','#41702f'])); for(let v=0;v<3;v++) c.set([cc.r,cc.g,cc.b], (f*3+v)*3); }
+  g.setAttribute('color', new THREE.BufferAttribute(c,3));
+  instanced(g, std({vertexColors:true, flatShading:true}), oranges, o => { dummy.position.set(o.x, o.s*.9, o.z); dummy.rotation.set(0, o.x*5%6, 0); dummy.scale.setScalar(o.s); }, false);
+}
+instanced(new THREE.ConeGeometry(.035,1,4).translate(0,.5,0), std({color:0xa59c62}), reeds, r => { dummy.position.set(r.x,0,r.z); dummy.rotation.set(rr(-.15,.15),0,rr(-.15,.15)); dummy.scale.set(1, r.h, 1); }, false);
+{ const pk = new Kit(); pk.box('body', '#f4f1ea', .012, .2, .012, 0, 0, 0); pk.cone('body', '#ffffff', .13, .06, 0, .18, 0, 8);
+  instanced(pk.geometry('body'), std({vertexColors:true}), parasols, p => { dummy.position.set(p.x,0,p.z); dummy.rotation.set(0,0,0); dummy.scale.setScalar(1); }); }
+
+// boats: sailing offshore, moored in the Marina, two on the Albufera
+const boatKit = new Kit();
+boatKit.box('body', '#f6f4ef', .42, .08, .15, 0, 0, 0);
+boatKit.add('body', G.cone4, '#f6f4ef', .27, .04, 0, {rz:-Math.PI/2, sx:.1, sy:.14, sz:.075});
+boatKit.box('body', '#2d4f6e', .43, .02, .155, 0, .06, 0);
+boatKit.box('body', '#8a8d90', .012, .62, .012, -.02, .08, 0);
+boatKit.add('body', G.sail, '#f7f3ea', -.03, .14, 0);
+const boats = [];
+[[19.2,-3.5,2.4,1.4],[23,-8.5,3,1.6],[18.6,1.2,1.6,.9],[25.5,2.5,2.2,1.5],[20.5,-12.5,2.6,1.4],[24.5,-2.2,1.8,1.2],[27.5,-7,2.5,1.8],[22.5,11.5,1.8,1.0]].forEach(([cx,cz,rx,rz]) =>
+  boats.push({cx, cz, rx, rz, a:rnd()*6.28, w:rr(.05,.11)*(rnd()<.5?1:-1), moving:true}));
+for(let x=15.2; x<=18.4; x+=.8) for(const [z0,z1] of [[4.55,5.35],[8.4,9.25]]) for(let z=z0; z<=z1; z+=.32) for(const sd of [-.17,.17]) if(rnd() < .75) boats.push({x:x+sd, z, ry:Math.PI/2, moving:false});
+boats.push({x:LAKE.x-3, z:LAKE.z-1.5, ry:.5, moving:false}, {x:LAKE.x+2.5, z:LAKE.z-2.2, ry:2.2, moving:false});
+const boatMesh = new THREE.InstancedMesh(boatKit.geometry('body'), std({vertexColors:true, roughness:.6}), boats.length);
+boatMesh.castShadow = true; scene.add(boatMesh);
+const boatLightPos = new Float32Array(boats.length*3);
+function placeBoats(t){
+  boats.forEach((b,i) => {
+    let x = b.x, z = b.z, ry = b.ry, bob = 0;
+    if(b.moving){ const a = b.a + t*b.w; x = b.cx + Math.cos(a)*b.rx; z = b.cz + Math.sin(a)*b.rz;
+      const tx = -Math.sin(a)*b.rx*Math.sign(b.w), tz = Math.cos(a)*b.rz*Math.sign(b.w); ry = Math.atan2(-tz, tx); bob = Math.sin(t*1.7+i)*.015; }
+    dummy.position.set(x, -.02+bob, z); dummy.rotation.set(0, ry, b.moving ? Math.sin(t+i)*.04 : 0); dummy.scale.setScalar(b.moving ? 1.25 : .9); dummy.updateMatrix(); boatMesh.setMatrixAt(i, dummy.matrix);
+    boatLightPos.set([x, b.moving ? .82 : .58, z], i*3);
+  });
+  boatMesh.instanceMatrix.needsUpdate = true;
+}
+placeBoats(0);
+
+// ---------- ground, sea ----------
+const groundGeo = new THREE.PlaneGeometry(COAST+60, 170, 60, 85).rotateX(-Math.PI/2).translate((COAST-60)/2, 0, 0);
+{ const p = groundGeo.attributes.position, c = new Float32Array(p.count*3), city = new THREE.Color('#a39c90'), farm = new THREE.Color('#87915c'), wet = new THREE.Color('#8fa268'), tmpc = new THREE.Color();
+  for(let i=0;i<p.count;i++){ const x = p.getX(i), z = p.getZ(i);
+    const hN = ss(-11.4, -13.2, z + .9*Math.sin(x*.33) - 0), hW = ss(-16.5, -18.3, x - .9*Math.sin(z*.45)), r = ss(12.6, 13.8, z - .6*Math.sin(x*.4));
+    tmpc.copy(city).lerp(farm, Math.max(hN, hW)).lerp(wet, r); c.set([tmpc.r, tmpc.g, tmpc.b], i*3); }
+  groundGeo.setAttribute('color', new THREE.BufferAttribute(c,3)); }
+const ground = new THREE.Mesh(groundGeo, new THREE.MeshStandardMaterial({vertexColors:true, roughness:1})); ground.receiveShadow = true; scene.add(ground);
+const waterMat = new THREE.MeshStandardMaterial({color:0x2c6f8f, roughness:.32, metalness:.1});
+const water = new THREE.Mesh(new THREE.PlaneGeometry(160, 260).rotateX(-Math.PI/2), waterMat);
+water.position.set(COAST+80, -.05, 0); water.receiveShadow = true; scene.add(water);
+scene.traverse(o => { if(o.userData.water) o.material = waterMat; });
+
+// merged decorative layers
+const monuSet = matSet(null, '#ffae68', .12, '#ffcf8a', 1.4), decorSet = matSet(null, '#000000', 0, '#ffd08a', 1.3);
+monu.build(scene, monuSet.mats); decor.build(scene, decorSet.mats);
+
+// street lights, cars and boat lights (additive glow sprites)
+const spr = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'), gr = g.createRadialGradient(32,32,0,32,32,32);
+  gr.addColorStop(0,'rgba(255,255,255,1)'); gr.addColorStop(.22,'rgba(255,255,255,.9)'); gr.addColorStop(.5,'rgba(255,255,255,.25)'); gr.addColorStop(1,'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0,0,64,64); return new THREE.CanvasTexture(c); })();
+function points(arr, color, size, vertexColors){
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(arr instanceof Float32Array ? arr : new Float32Array(arr.flat()), 3));
+  const m = new THREE.PointsMaterial({color, size:size*PR, map:spr, sizeAttenuation:false, transparent:true, opacity:0, depthWrite:false, blending:THREE.AdditiveBlending, vertexColors:!!vertexColors});
+  const p = new THREE.Points(g, m); p.frustumCulled = false; scene.add(p); return p;
+}
+const lamps = points(lampPts, 0xffc06a, 9);
+const parkLamps = points(parkLampPts, 0xffd59a, 7);
+const boatLights = points(boatLightPos, 0xfff0c8, 6);
+const carPaths = [AV.granVia, AV.port, AV.blasco, AV.ring, AV.bankS, AV.bankN], carTotal = carPaths.reduce((a,p) => a + p.len, 0);
+const CARS = 120, carPos = new Float32Array(CARS*3), carCol = new Float32Array(CARS*3), cars = [];
+for(let k=0;k<CARS;k++){
+  let r = rnd()*carTotal, path = carPaths[0]; for(const p of carPaths){ if(r < p.len){ path = p; break; } r -= p.len; }
+  const v = rr(.5,1.2)*(rnd()<.5?1:-1); cars.push({path, s:rnd()*path.len, v});
+  col.set(v > 0 ? '#fff1d6' : '#ff5a3c'); carCol.set([col.r,col.g,col.b], k*3);
+}
+function placeCars(dt){ cars.forEach((c,i) => { c.s += c.v*dt; if(c.s > c.path.len) c.s -= c.path.len; if(c.s < 0) c.s += c.path.len;
+  const p = c.path.at(c.s), o = c.v > 0 ? .12 : -.12; carPos[i*3] = p.x - p.tz*o; carPos[i*3+1] = .1; carPos[i*3+2] = p.z + p.tx*o; }); }
+placeCars(0);
+const carPts = points(carPos, 0xffffff, 5, true); carPts.geometry.setAttribute('color', new THREE.BufferAttribute(carCol,3));
+
+// lights
+const hemi = new THREE.HemisphereLight(0xffffff, 0x8a7660, .6); scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xffffff, 1.5);
+sun.castShadow = true; sun.shadow.mapSize.set(2048,2048);
+Object.assign(sun.shadow.camera, {left:-27,right:27,top:27,bottom:-27,near:1,far:140}); sun.shadow.bias = -0.0005; sun.shadow.normalBias = .02;
+scene.add(sun, sun.target);
+
+// ---------- day / night ----------
+const SKY = [[0,'#0a1024'],[4.5,'#151a38'],[6,'#e7a07d'],[7.5,'#bcd8ea'],[12,'#9fd0f2'],[17,'#b9d4e6'],[19,'#f0a46e'],[20.5,'#4b3d6b'],[22,'#121836'],[24,'#0a1024']];
+const SUNC = [[0,'#7f93d6'],[6,'#ffb08a'],[8,'#fff0d8'],[12,'#fff6e8'],[17,'#ffeccc'],[19,'#ff9a5c'],[20.5,'#8f86c9'],[24,'#7f93d6']];
+const WATER = [[0,'#0d1f33'],[6,'#4e6f8a'],[9,'#2a7499'],[17,'#2f6b88'],[19.5,'#5b4b6b'],[21,'#132538'],[24,'#0d1f33']];
+const c1 = new THREE.Color(), c2 = new THREE.Color();
+function stopColor(stops, h, out){
+  for(let k=0;k<stops.length-1;k++){ const [a,ca]=stops[k],[b,cb]=stops[k+1];
+    if(h>=a && h<=b){ const t=(h-a)/(b-a); c1.set(ca); c2.set(cb); return out.copy(c1).lerp(c2,t); } }
+  return out.set(stops[0][1]);
+}
+let hour = 12, night = 0;
+const skyCol = new THREE.Color(), white = new THREE.Color('#ffffff');
+function applyHour(h){
+  hour = (h+24)%24;
+  const ang = (hour-6)/12*Math.PI, elev = Math.sin(ang);
+  night = 1 - ss(-0.12, 0.22, elev);
+  stopColor(SKY, hour, skyCol); scene.background = skyCol; scene.fog.color.copy(skyCol);
+  const isDay = elev > -0.05;
+  const dir = isDay ? new THREE.Vector3(Math.cos(ang)*24, Math.max(elev,.07)*24, 13) : new THREE.Vector3(8, 22, 10);
+  sun.position.copy(center).add(dir); sun.target.position.copy(center);
+  stopColor(SUNC, hour, sun.color);
+  sun.intensity = isDay ? .35 + 2.0*ss(-0.05,.5,elev) : .45;
+  hemi.intensity = .38 + .5*(1-night);
+  hemi.color.copy(skyCol).lerp(white, .5);
+  stopColor(WATER, hour, waterMat.color);
+  const late = 1 - .55*ss(.5,3.5,hour)*(1-ss(5.5,7,hour));
+  facadeMat.emissiveIntensity = night*1.35*late;
+  MATSETS.forEach(s => { const u = night*s.upK; ['body','shiny','glow'].forEach(k => s.mats[k].userData.uUp.value.copy(s.up).multiplyScalar(u)); s.mats.glow.emissiveIntensity = night*s.glowK; });
+  lamps.material.opacity = night; parkLamps.material.opacity = night*.9; boatLights.material.opacity = night;
+  carPts.material.opacity = .1 + night*.9;
+  if(beam) beam.children[0].material.opacity = night*.2;
+  renderer.toneMappingExposure = .95 + night*.15;
+  document.documentElement.dataset.mode = night > .5 ? 'night' : 'day';
+  const hh = Math.floor(hour), mm = Math.floor((hour-hh)*60);
+  document.getElementById('clockTime').textContent = String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+  slider.value = hour;
+}
+
+// ---------- UI ----------
+const slider = document.getElementById('hour');
+const realBtn = document.getElementById('realBtn'), playBtn = document.getElementById('playBtn');
+const clockLabel = document.getElementById('clockLabel');
+let mode = 'real';
+function nowHour(){ const d = new Date(); return d.getHours() + d.getMinutes()/60; }
+function setMode(m){ mode = m; realBtn.setAttribute('aria-pressed', m==='real'); playBtn.setAttribute('aria-pressed', m==='play');
+  clockLabel.textContent = m==='real' ? 'tu hora' : m==='play' ? 'un día en 24 s' : 'hora elegida'; if(m==='real') applyHour(nowHour()); }
+slider.addEventListener('input', () => { setMode('manual'); applyHour(+slider.value); });
+realBtn.addEventListener('click', () => setMode('real'));
+playBtn.addEventListener('click', () => setMode(mode==='play' ? 'manual' : 'play'));
+
+const dock = document.getElementById('dock');
+const pinsEl = document.getElementById('pins');
+const pins = {};
+PLACES.forEach(p => {
+  const b = document.createElement('button'); b.type='button'; b.dataset.id = p.id;
+  b.innerHTML = `<b>${p.name}</b><span>${p.short}</span>`; b.addEventListener('click', () => focusPlace(p.id)); dock.appendChild(b);
+  const pin = document.createElement('div'); pin.className = 'pin'; pin.innerHTML = `<span>${p.short}</span><i></i>`; pinsEl.appendChild(pin); pins[p.id] = pin;
+});
+const hero = document.getElementById('hero'), sheet = document.getElementById('sheet');
+let focused = null, hovered = null;
+function focusPlace(id){
+  const p = PLACES.find(x=>x.id===id); focused = id;
+  document.getElementById('sheetKicker').textContent = p.kicker;
+  document.getElementById('sheetTitle').textContent = p.name;
+  document.getElementById('sheetText').textContent = p.text;
+  document.getElementById('sheetList').innerHTML = p.list.map(t=>`<li>${t}</li>`).join('');
+  document.getElementById('sheetCta').textContent = id==='faro' ? 'Escribirme' : 'Cuéntame tu proyecto';
+  sheet.classList.add('open'); hero.classList.add('hide');
+  dock.querySelectorAll('button').forEach(b => b.setAttribute('aria-current', b.dataset.id===id));
+  const a = anchors[id]; camGoal.target.set(a.x, 1, a.z);
+  const narrow = innerWidth < 700;
+  const vh = cam.top - cam.bottom;
+  camGoal.zoom = narrow ? vh/15 : 2.6;
+  if(!narrow){ const shift = SCREEN_RIGHT.clone().multiplyScalar(VIEW*.17/camGoal.zoom*2); camGoal.target.add(shift); }
+  else { camGoal.target.addScaledVector(SCREEN_UP, -vh/camGoal.zoom*.25/.546); }
+  if(reduce){ camState.target.copy(camGoal.target); camState.zoom = camGoal.zoom; }
+}
+function unfocus(){
+  focused = null; sheet.classList.remove('open'); hero.classList.remove('hide');
+  dock.querySelectorAll('button').forEach(b => b.setAttribute('aria-current', false));
+  camGoal.target.copy(homeTarget()); camGoal.zoom = 1;
+  if(reduce){ camState.target.copy(camGoal.target); camState.zoom = 1; }
+}
+document.getElementById('sheetBack').addEventListener('click', unfocus);
+document.getElementById('sheetCta').addEventListener('click', () => focusPlace('faro'));
+addEventListener('keydown', e => { if(e.key==='Escape' && focused) unfocus(); });
+
+// picking: only the six clickable landmarks
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+const el = renderer.domElement;
+let parX = 0, parY = 0;
+el.addEventListener('pointermove', e => {
+  const r = el.getBoundingClientRect(); ptr.set((e.clientX-r.left)/r.width*2-1, -(e.clientY-r.top)/r.height*2+1);
+  parX = ptr.x; parY = ptr.y;
+  ray.setFromCamera(ptr, cam); const hit = ray.intersectObjects(pickables, false)[0];
+  setHover(hit ? hit.object.userData.place : null);
+});
+el.addEventListener('pointerleave', () => setHover(null));
+el.addEventListener('click', () => { if(hovered) focusPlace(hovered); else if(focused) unfocus(); });
+function setHover(id){
+  if(id === hovered) return; hovered = id; el.style.cursor = id ? 'pointer' : 'default';
+  MATSETS.forEach(s => { if(s.place) ['body','shiny','glow'].forEach(k => s.mats[k].userData.uHover.value.set(s.place===id ? 0x553311 : 0)); });
+  Object.entries(pins).forEach(([k,p]) => p.classList.toggle('hot', k===id));
+}
+
+// resize
+function resize(){
+  const w = innerWidth, h = innerHeight, a = w/h;
+  const v = a < 1 ? Math.max(VIEW*1.35, 26/a) : VIEW;
+  cam.left = -v*a/2; cam.right = v*a/2; cam.top = v/2; cam.bottom = -v/2; cam.updateProjectionMatrix();
+  renderer.setSize(w,h,false);
+  if(!focused){ camGoal.target.copy(homeTarget()); }
+}
+addEventListener('resize', resize); resize();
+camState.target.copy(camGoal.target);
+
+// loop
+const tmp = new THREE.Vector3(), clock = new THREE.Clock();
+setMode('real');
+let realTick = 0;
+function frame(){
+  const dt = Math.min(clock.getDelta(), .05), t = clock.elapsedTime;
+  if(mode==='play') applyHour(hour + dt*1.0);
+  else if(mode==='real' && (realTick += dt) > 20){ realTick = 0; applyHour(nowHour()); }
+
+  const k = reduce ? 1 : 1 - Math.pow(.0025, dt);
+  camState.target.lerp(camGoal.target, k); camState.zoom += (camGoal.zoom - camState.zoom)*k;
+  const par = (reduce || focused) ? 0 : 1;
+  cam.position.copy(camState.target).add(OFFSET).addScaledVector(SCREEN_RIGHT, parX*1.7*par).add(tmp.set(0, parY*.8*par, 0));
+  cam.lookAt(camState.target); cam.zoom = camState.zoom; cam.updateProjectionMatrix();
+
+  if(!reduce){
+    if(beam) beam.rotation.y = t*.9;
+    placeCars(dt); carPts.geometry.attributes.position.needsUpdate = true;
+    placeBoats(t); boatLights.geometry.attributes.position.needsUpdate = true;
+    const on = (Math.sin(t*3) > 0 ? 1 : 0) * (.4 + night*1.6);
+    MATSETS.forEach(s => s.mats.blink.emissiveIntensity = on);
+  }
+
+  // pins follow landmarks
+  Object.entries(anchors).forEach(([id,a]) => {
+    tmp.copy(a).project(cam);
+    const p = pins[id]; p.style.transform = `translate(${(tmp.x*.5+.5)*innerWidth}px,${(-tmp.y*.5+.5)*innerHeight}px) translate(-50%,-100%)`;
+    p.classList.toggle('dim', !!focused && focused !== id);
+  });
+
+  renderer.render(scene, cam);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+})();
+</script>
