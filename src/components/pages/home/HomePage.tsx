@@ -1,22 +1,40 @@
-import Image from 'next/image';
-
-import avatar from '@/assets/avatar.webp';
 import { CityExperience } from '@/components/city/CityExperience';
+import type { PlacePageLinks } from '@/components/city/ui/PlaceSheet';
 import { HomeBrandChip } from '@/components/layout/SiteHeader';
-import type { Locale } from '@/content';
+import { getContent, type Locale } from '@/content';
 import { getCityCopy } from '@/content/site';
 
-/** Fragment id of the places section, target of the city's skip link and scroll cue. */
+import { HomeSections, SERVICE_PLACES } from './HomeSections';
+
+/** Fragment id of the content below the city, target of the city's skip link and scroll cue. */
 const PLACES_ID = 'lugares';
+
+/** Where each place of the city leads: its own page, and the contact form as the one CTA. */
+function placePageLinks(locale: Locale): PlacePageLinks {
+  const { meta, home } = getContent(locale);
+  const { routes } = meta;
+  return {
+    contact: routes.contact,
+    places: {
+      [SERVICE_PLACES.web]: { href: routes.services.web, label: home.services.linkLabel },
+      [SERVICE_PLACES.ai]: { href: routes.services.ai, label: home.services.linkLabel },
+      [SERVICE_PLACES.apps]: { href: routes.services.apps, label: home.services.linkLabel },
+      mercado: { href: routes.casePixelYPapel, label: home.featuredCase.link.label },
+      torre: { href: routes.about, label: meta.nav.about },
+    },
+  };
+}
 
 /**
  * Home: the city (client, progressive) over server-rendered content. The
- * brand, the hero and the six places are plain HTML, complete for crawlers
- * and for visitors without JavaScript or WebGL.
+ * brand, the hero and every section below are plain HTML, complete for
+ * crawlers and for visitors without JavaScript or WebGL. Each place of the
+ * dock lands on the section that stands for it; with the city running, its
+ * sheet leads to the place's page and to the contact form.
  */
 export function HomePage({ locale }: { locale: Locale }) {
   const copy = getCityCopy(locale);
-  const { hero, places, placesSection } = copy;
+  const { hero } = copy;
 
   return (
     <>
@@ -30,6 +48,7 @@ export function HomePage({ locale }: { locale: Locale }) {
       <CityExperience
         copy={copy}
         header={<HomeBrandChip locale={locale} />}
+        pageLinks={placePageLinks(locale)}
         hero={
           <div className="grid max-w-[520px] gap-3 glass px-[22px] pt-[22px] pb-5 max-[700px]:p-4">
             <p className="kicker">{hero.kicker}</p>
@@ -42,62 +61,9 @@ export function HomePage({ locale }: { locale: Locale }) {
         }
       />
 
-      <section
-        id={PLACES_ID}
-        aria-labelledby={`${PLACES_ID}-title`}
-        className="mx-auto grid max-w-6xl scroll-mt-4 gap-10 px-4 py-16 sm:px-6 sm:py-24"
-      >
-        <div className="grid max-w-2xl gap-3">
-          <h2
-            id={`${PLACES_ID}-title`}
-            className="font-display text-4xl leading-none font-extrabold tracking-[-0.02em] sm:text-5xl"
-          >
-            {placesSection.title}
-          </h2>
-          <p className="text-lg text-text-muted">{placesSection.intro}</p>
-        </div>
-
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {places.map((p) => (
-            <li key={p.id}>
-              <article
-                id={p.slug}
-                aria-labelledby={`${p.slug}-title`}
-                className="grid h-full scroll-mt-4 content-start gap-3 rounded-[14px] border border-line bg-surface p-6"
-              >
-                {p.id === 'torre' && (
-                  <Image
-                    src={avatar}
-                    alt={copy.avatarAlt}
-                    sizes="112px"
-                    placeholder="blur"
-                    className="size-28 rounded-full border border-line bg-surface object-cover"
-                  />
-                )}
-                <p className="kicker">{p.landmark}</p>
-                <h3
-                  id={`${p.slug}-title`}
-                  className="font-display text-2xl leading-tight font-bold"
-                >
-                  {p.title}
-                </h3>
-                <p className="text-text-muted">{p.text}</p>
-                <ul className="grid gap-2">
-                  {p.points.map((t) => (
-                    <li key={t} className="grid grid-cols-[14px_1fr] gap-2 text-[14.5px]">
-                      <span
-                        aria-hidden="true"
-                        className="mt-2 size-1.5 rotate-45 rounded-[1px] bg-accent"
-                      />
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <div id={PLACES_ID} className="scroll-mt-4">
+        <HomeSections locale={locale} />
+      </div>
     </>
   );
 }

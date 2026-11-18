@@ -17,11 +17,5 @@ export async function generateMetadata({ params }: LocaleParams): Promise<Metada
 
 export default async function Page({ params }: LocaleParams) {
   const locale = await resolveLocale(params);
-  return (
-    <LegalDocument
-      locale={locale}
-      page={getContent(locale).legal.notice}
-      draftNotice={getContent(locale).legal.draftNotice}
-    />
-  );
+  return <LegalDocument locale={locale} document="notice" />;
 }

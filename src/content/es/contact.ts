@@ -108,3 +108,18 @@ export const contact: ContactContent = {
     link: { label: 'Política de privacidad completa', href: meta.routes.legal.privacy },
   },
 };
+
+/**
+ * Interface copy of the contact form not covered by `ContactContent` yet.
+ * TODO: move into `ContactContent.form` (src/content/types.ts).
+ */
+export const contactFormUi = {
+  /** Heading of the error summary shown above the form after a failed submit. */
+  errorSummary: 'Revisa el formulario:',
+  /** Sending is switched off (no email provider configured). */
+  unavailable: `El formulario no está disponible temporalmente. Escríbeme a ${CONTACT_EMAIL} y te responderé igual.`,
+  /** Accessible name of the honeypot field (hidden from people). */
+  honeypot: 'No rellenes este campo',
+};
+
+export type ContactFormUi = typeof contactFormUi;

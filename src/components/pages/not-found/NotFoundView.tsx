@@ -2,7 +2,7 @@ import { getContent, type Locale } from '@/content';
 import { Link } from '@/i18n/navigation';
 import { paths } from '@/i18n/routing';
 
-/** Body of the 404 page, shared by `app/not-found.tsx` and `app/[locale]/not-found.tsx`. */
+/** Body of the 404 page, shared by `app/global-not-found.tsx` and `app/[locale]/not-found.tsx`. */
 export function NotFoundView({ locale }: { locale: Locale }) {
   const { notFound } = getContent(locale).meta;
 

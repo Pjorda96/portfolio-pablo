@@ -21,7 +21,7 @@ import { createTimeStore } from './time-store';
 import { Clock } from './ui/Clock';
 import { Dock } from './ui/Dock';
 import { Pins } from './ui/Pins';
-import { PlaceSheet } from './ui/PlaceSheet';
+import { PlaceSheet, type PlacePageLinks } from './ui/PlaceSheet';
 import { SkyFallback } from './ui/SkyFallback';
 
 // WebGL never renders on the server, and its chunk (three.js) only loads
@@ -75,6 +75,8 @@ interface CityExperienceProps {
   header?: ReactNode;
   /** Hero with the page's h1, server-rendered. */
   hero: ReactNode;
+  /** Public URLs the detail sheet leads to: each place's page and the contact form. */
+  pageLinks?: PlacePageLinks;
 }
 
 /**
@@ -82,7 +84,7 @@ interface CityExperienceProps {
  * dock, detail sheet, pins). Everything here is server-rendered except the
  * canvas, which is progressive enhancement over the static sky.
  */
-export function CityExperience({ copy, header, hero }: CityExperienceProps) {
+export function CityExperience({ copy, header, hero, pageLinks }: CityExperienceProps) {
   const { ui } = copy;
   const reducedMotion = useSyncExternalStore(subscribeReducedMotion, getReducedMotion, () => false);
   const webgl = useSyncExternalStore(noopSubscribe, detectWebgl, () => 'unknown' as const);
@@ -275,6 +277,7 @@ export function CityExperience({ copy, header, hero }: CityExperienceProps) {
           place={shown}
           open={!!focused}
           headingRef={sheetHeading}
+          pageLinks={pageLinks}
           onClose={close}
           onOpen={(id) => open(id, true)}
         />

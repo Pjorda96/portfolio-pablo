@@ -21,7 +21,7 @@ Todo el copy de la web vive en `src/content/`, en español (`es/`) e inglés (`e
 2. **Revisión de los textos legales.** Son un borrador basado en la configuración prevista, no asesoría legal. Comprueba en concreto:
    - Plazo de conservación de los mensajes del formulario (he puesto un año desde el último contacto).
    - Proveedores: Vercel, Resend, Cloudflare Turnstile (si finalmente se usa) y Anthropic (si se activa el asistente de F4). Quita los que no se usen.
-   - Cookie `NEXT_LOCALE` de next-intl: activa desde F3, de sesión. La pone el proxy al visitar una URL en inglés o al cambiar de idioma.
+   - Sin cookies: desde F3 la detección de idioma y la cookie `NEXT_LOCALE` de next-intl están desactivadas; la URL decide el idioma.
    - Preferencias en `localStorage`: desde F3 se guarda el tema elegido (`pj-theme`: claro u oscuro; «Auto» no guarda nada). La hora de la ciudad no se guarda.
    - Edad mínima de 14 años (LOPDGDD) y fuero de Valencia.
 3. **Píxel y Papel.** Los socios han aprobado el caso tal como está: cualitativo, contigo como cofundador y responsable técnico de un proyecto de cuatro socios. No hay cifras ni capturas; se pueden añadir más adelante si los socios las facilitan. El stack listado (Next.js, React, TypeScript, Tailwind, next-intl, PostgreSQL, Vercel) lo he sacado de los repos `pixelypapel` y `wedding`: confírmalo.

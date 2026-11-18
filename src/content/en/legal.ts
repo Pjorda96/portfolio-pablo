@@ -1,4 +1,5 @@
 import { owner } from '../owner';
+import type { LegalUi } from '../es/legal';
 import type { LegalContent } from '../types';
 
 /*
@@ -186,10 +187,9 @@ export const legal: LegalContent = {
       {
         title: 'What this site uses',
         paragraphs: [
-          'This site uses no advertising, tracking or social media cookies. It only uses strictly technical storage, or preferences you choose yourself:',
+          'This site sets no cookies: no advertising, tracking or social media cookies. It only stores in your browser the preferences you choose yourself:',
         ],
         items: [
-          'A technical cookie to remember the language you chose.',
           'Local storage (localStorage) to remember display preferences, such as the theme or the time of day in the city.',
         ],
       },
@@ -226,13 +226,6 @@ export const legal: LegalContent = {
       },
       rows: [
         {
-          name: 'NEXT_LOCALE',
-          provider: 'pablojorda.es',
-          purpose: 'Remember the language you chose',
-          duration: 'Session',
-          kind: 'Technical cookie',
-        },
-        {
           name: 'Display preferences',
           provider: 'pablojorda.es',
           purpose: 'Remember the theme or city time you choose',
@@ -249,4 +242,10 @@ export const legal: LegalContent = {
       ],
     },
   },
+};
+
+/** Interface copy of the legal pages not covered by `LegalContent` yet. */
+export const legalUi: LegalUi = {
+  pending: 'pending',
+  related: 'Other legal texts',
 };

@@ -29,8 +29,11 @@ export const routing = defineRouting({
   locales: LOCALES,
   defaultLocale: DEFAULT_LOCALE,
   localePrefix: 'as-needed',
-  // A session cookie (`NEXT_LOCALE`), set only when the visitor switches
-  // language; documented in the cookie policy.
+  // Every URL always serves its own language: no redirects based on
+  // Accept-Language or a remembered choice (crawlers and shared links get what
+  // the URL says), and so no NEXT_LOCALE cookie either.
+  localeDetection: false,
+  localeCookie: false,
   pathnames: {
     '/': '/',
     [r.services.web]: localized(r.services.web, e.services.web),

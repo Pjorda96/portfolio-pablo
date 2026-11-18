@@ -22,8 +22,9 @@ export async function generateMetadata(): Promise<Metadata> {
  * 404 for every URL that matches no page: `/en/nope`, `/servicios/nada`,
  * `/missing.png`. The proxy tells next-intl the locale of the URL (`/en/...`
  * is English, anything else Spanish), so the page is localized and fully
- * server-rendered with a real 404 status. It renders its own document because
- * the root layout is a pass-through.
+ * server-rendered with a real 404 status. It is a global-not-found (see
+ * next.config.ts) so reading the request here doesn't make every page dynamic;
+ * it renders its own document because it bypasses the layouts.
  */
 export default async function RootNotFound() {
   const locale = await getLocale();

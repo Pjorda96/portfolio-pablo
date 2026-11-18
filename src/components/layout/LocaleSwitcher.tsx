@@ -12,10 +12,8 @@ export const otherLocale = (locale: string) => LOCALES.find((l) => l !== locale)
 /**
  * Link to the same page in the other language. `usePathname` returns the
  * internal pathname (`/sobre-mi`) and `Link` with `locale` renders its public
- * URL in that language (`/en/about`). Towards the default locale it links to
- * the prefixed URL (`/es/sobre-mi`): the proxy stores the choice in the
- * `NEXT_LOCALE` session cookie and redirects to the canonical `/sobre-mi`, so
- * locale detection does not send the visitor back to English.
+ * URL in that language (`/en/about` ↔ `/sobre-mi`). There is no locale
+ * detection or cookie (see routing.ts): the URL alone decides the language.
  */
 export function LocaleSwitcher({ className }: { className?: string }) {
   const t = useTranslations('LocaleSwitcher');

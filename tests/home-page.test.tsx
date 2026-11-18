@@ -51,17 +51,11 @@ describe.each(LOCALES)('HomePage (%s)', (locale) => {
       expect(html).toContain(hero.lead);
     });
 
-    it('contains all six places as headed articles with their copy', () => {
-      const articles = doc.querySelectorAll('#lugares article');
-      expect(articles).toHaveLength(6);
-
+    it('lands every place of the dock on a section below the city', () => {
       for (const p of places) {
-        const article = doc.getElementById(p.slug);
-        expect(article?.tagName).toBe('ARTICLE');
-        expect(article?.querySelector('h3')?.textContent).toBe(p.title);
-        expect(article?.textContent).toContain(p.landmark);
-        expect(article?.textContent).toContain(p.text);
-        for (const point of p.points) expect(article?.textContent).toContain(point);
+        const target = doc.getElementById(p.slug);
+        expect(target, p.slug).not.toBeNull();
+        expect(doc.getElementById('lugares')?.contains(target)).toBe(true);
       }
     });
 

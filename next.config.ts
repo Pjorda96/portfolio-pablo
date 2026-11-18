@@ -11,6 +11,12 @@ const nextConfig: NextConfig = {
   // devDependency: a missing plugin is a build failure, not a silent no-op.
   reactCompiler: true,
   poweredByHeader: false,
+  experimental: {
+    // Unmatched URLs get app/global-not-found.tsx, outside the normal render
+    // tree. A root not-found.tsx would read the request (for its locale) inside
+    // every route's tree and force all pages into dynamic rendering.
+    globalNotFound: true,
+  },
 };
 
 // Points next-intl at the per-request config (locale + messages).

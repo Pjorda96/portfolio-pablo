@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 /**
  * `notFound()` called by a page under a locale (e.g. a missing entry once
  * pages load data). Unknown URLs never reach this file: they match no route
- * and get `app/not-found.tsx`, localized from the proxy's locale.
+ * and get `app/global-not-found.tsx`, localized from the proxy's locale.
  */
 export default async function LocaleNotFound() {
   return <NotFoundView locale={await getLocale()} />;

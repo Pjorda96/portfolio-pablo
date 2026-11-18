@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import NextLink from 'next/link';
 import type { RefObject } from 'react';
 
 import avatar from '@/assets/avatar.webp';
@@ -9,20 +10,38 @@ import type { PlaceId } from '@/content/site';
 
 import { placeIn, useCityCopy } from '../copy-context';
 
+/** Public, localized URLs (content routes): render them with `next/link`. */
+export interface PlacePageLinks {
+  /** The contact page: target of the sheet's call to action. */
+  contact: string;
+  /** Page of each place, with the label of its link. */
+  places: Partial<Record<PlaceId, { href: string; label: string }>>;
+}
+
 interface PlaceSheetProps {
   /** Place shown; the sheet keeps the last one while it fades out. */
   place: PlaceId | null;
   open: boolean;
   headingRef: RefObject<HTMLHeadingElement | null>;
+  /** When given, the sheet leads to the real pages instead of the home sections. */
+  pageLinks?: PlacePageLinks;
   onClose(): void;
   onOpen(id: PlaceId): void;
 }
 
 /** Detail of the landmark the camera is visiting. */
-export function PlaceSheet({ place, open, headingRef, onClose, onOpen }: PlaceSheetProps) {
+export function PlaceSheet({
+  place,
+  open,
+  headingRef,
+  pageLinks,
+  onClose,
+  onOpen,
+}: PlaceSheetProps) {
   const copy = useCityCopy();
   const { ui } = copy;
   const p = place ? placeIn(copy, place) : null;
+  const page = p ? pageLinks?.places[p.id] : undefined;
 
   return (
     <aside
@@ -62,8 +81,22 @@ export function PlaceSheet({ place, open, headingRef, onClose, onOpen }: PlaceSh
               </li>
             ))}
           </ul>
+          {page && (
+            <p>
+              <NextLink
+                href={page.href}
+                className="font-semibold text-accent-strong underline-offset-4 hover:underline"
+              >
+                {page.label} <span aria-hidden="true">→</span>
+              </NextLink>
+            </p>
+          )}
           <div className="mt-1 flex flex-wrap gap-2">
-            {p.id === 'faro' ? (
+            {pageLinks ? (
+              <NextLink href={pageLinks.contact} className="btn-primary">
+                {p.id === 'faro' ? ui.sheet.contactCta : ui.sheet.cta}
+              </NextLink>
+            ) : p.id === 'faro' ? (
               <a href={`#${p.slug}`} className="btn-primary">
                 {ui.sheet.contactCta}
               </a>
