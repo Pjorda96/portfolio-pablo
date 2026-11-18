@@ -1,0 +1,68 @@
+{
+  "name": "portfolio-pablo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "pablojorda.es — desarrollo web, integraciones de IA y producto",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --max-warnings=0",
+    "typescript": "tsc --noEmit",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "verify:quick": "npm run typescript && npm run lint && npm run prettier:check && npm run test && npm run build",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.3.5",
+    "next": "16.4.6",
+    "postcss": "^8.5.33",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "tailwindcss": "^4.3.5",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "@vitest/coverage-v8": "^5.1.1",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.6",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "husky": "^9.1.7",
+    "jsdom": "^31.0.1",
+    "lint-staged": "^17.6.1",
+    "prettier": "^3.10.1",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.73.0",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.1"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,mjs,mts}": [
+      "prettier --write",
+      "eslint --fix --max-warnings=0"
+    ],
+    "*.{json,css,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}

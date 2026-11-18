@@ -1,0 +1,63 @@
+@import 'tailwindcss';
+
+/* ============================================================
+   DESIGN TOKENS — placeholder
+
+   A deliberately small, neutral set so the scaffold renders with sane
+   contrast in both colour schemes. The real identity (palette, type scale,
+   motion) is designed in F1 and replaces these values; the token names are
+   the contract components will use.
+   ============================================================ */
+
+@theme inline {
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --color-ground: var(--ground);
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--accent);
+}
+
+:root {
+  color-scheme: light dark;
+
+  --ground: #fafaf9;
+  --surface: #ffffff;
+  --text: #1c1917;
+  --text-muted: #57534e;
+  --accent: #1d4ed8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ground: #0c0a09;
+    --surface: #1c1917;
+    --text: #fafaf9;
+    --text-muted: #a8a29e;
+    --accent: #93c5fd;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--ground);
+    color: var(--text);
+    font-family: var(--font-sans);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
