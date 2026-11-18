@@ -185,3 +185,22 @@
   text-transform: uppercase;
   color: var(--accent-strong);
 }
+
+/* Scroll cue under the hero: a gentle nudge that there is more below. */
+@keyframes scroll-cue-bob {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 3px;
+  }
+}
+.scroll-cue-arrow {
+  animation: scroll-cue-bob 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue-arrow {
+    animation: none;
+  }
+}

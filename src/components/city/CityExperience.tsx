@@ -229,6 +229,22 @@ export function CityExperience({ header, hero }: CityExperienceProps) {
           data-hidden={focused || undefined}
         >
           {hero}
+          <a
+            href="#lugares"
+            className="scroll-cue mt-3 inline-flex items-center gap-2 glass px-4 py-2.5 text-sm font-semibold"
+          >
+            {ui.scrollCue}
+            <svg aria-hidden="true" viewBox="0 0 16 16" className="scroll-cue-arrow size-4">
+              <path
+                d="M8 2v11M3 8l5 5 5-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
           {unsupported && (
             <p role="status" className="mt-3 max-w-[470px] glass p-4 text-sm text-text-muted">
               {ui.noWebgl}

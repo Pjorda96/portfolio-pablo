@@ -33,9 +33,9 @@ export default function HomePage() {
             </header>
           }
           hero={
-            <div className="grid max-w-[470px] gap-3 glass px-[22px] pt-[22px] pb-5 max-[700px]:p-4">
+            <div className="grid max-w-[520px] gap-3 glass px-[22px] pt-[22px] pb-5 max-[700px]:p-4">
               <p className="kicker">{hero.kicker}</p>
-              <h1 className="font-display text-[clamp(30px,4.6vw,52px)] leading-[0.98] font-extrabold tracking-[-0.03em] text-balance">
+              <h1 className="font-display text-[clamp(28px,3.9vw,46px)] leading-[1.02] font-extrabold tracking-[-0.03em] text-balance break-words hyphens-none">
                 {hero.title}
               </h1>
               <p className="max-w-[44ch] text-text-muted max-[700px]:hidden">{hero.lead}</p>

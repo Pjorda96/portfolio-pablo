@@ -34,7 +34,7 @@ export const site = {
 export const hero = {
   kicker: 'Desarrollo web · IA · Producto',
   title: 'Una ciudad de cosas bien construidas.',
-  lead: 'Soy Pablo Jordá, desarrollador full-stack en Valencia. Cada edificio de esta ciudad es algo que puedo construir para ti.',
+  lead: 'Soy Pablo Jordá, desarrollador full-stack potenciado por IA en Valencia. Cada edificio de esta ciudad es algo que puedo construir contigo.',
   hint: 'Pulsa un edificio o elige un lugar abajo · arrastra la hora',
 } as const;
 
@@ -60,15 +60,15 @@ export const places: readonly Place[] = [
   },
   {
     id: 'lab',
-    slug: 'integraciones-ia',
+    slug: 'soluciones-ia',
     landmark: 'La Ciudad de las Ciencias',
-    short: 'Integraciones de IA',
-    title: 'Integraciones de IA',
-    text: 'Llevo la IA a tu producto donde de verdad ahorra tiempo o vende más: asistentes, automatizaciones y búsqueda inteligente sobre tus datos.',
+    short: 'Soluciones con IA',
+    title: 'Soluciones con IA',
+    text: 'Te ayudo a conseguir más con menos esfuerzo apoyándote en la IA: detectamos qué tareas de tu negocio puede acelerar y construyo la solución que lo hace realidad.',
     points: [
-      'Asistentes que responden con tu contenido',
-      'Automatización de procesos con agentes',
-      'Integración con tus sistemas y APIs',
+      'Asistentes que atienden con tu propio contenido',
+      'Tareas repetitivas que pasan a hacerse solas',
+      'Respuestas al instante sobre tus documentos y datos',
     ],
   },
   {
@@ -102,8 +102,9 @@ export const places: readonly Place[] = [
     landmark: 'El Micalet',
     short: 'Sobre mí',
     title: 'Sobre mí',
-    text: 'Más de 7 años construyendo aplicaciones web para seguros, fintech y arquitectura. Desde aquí arriba se ve todo el proyecto.',
+    text: 'Desarrollador full-stack potenciado por IA, con más de 7 años construyendo aplicaciones web para seguros, fintech y arquitectura. Hoy uso la IA en cada fase del trabajo para entregar antes sin rebajar la calidad, y te acompaño para que tu equipo también le saque partido.',
     points: [
+      'Desarrollo potenciado por IA: más rápido, igual de riguroso',
       'React, Next.js, TypeScript y Node.js',
       'Calidad medible: tests, accesibilidad y rendimiento',
       'En remoto, en español e inglés',
@@ -138,6 +139,7 @@ export const ui = {
     announce: (landmark: string, title: string) => `${landmark}: ${title}`,
   },
   placeLink: 'Ver en la ciudad',
+  scrollCue: 'Descubre todo lo que hago',
   noWebgl:
     'Tu navegador no puede mostrar la escena 3D. Usa los lugares de abajo para recorrer la ciudad.',
 } as const;

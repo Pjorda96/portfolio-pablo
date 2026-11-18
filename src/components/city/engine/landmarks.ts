@@ -189,7 +189,7 @@ export function buildLandmarks(ctx: BuildContext): Landmarks {
     return new Vector3(0.42, 1.95, -0.1);
   });
 
-  // La Ciudad de las Artes y las Ciencias, on the old riverbed (Integraciones de IA)
+  // La Ciudad de las Artes y las Ciencias, on the old riverbed (Soluciones con IA)
   const cacN = geo.turia.near(10.1, 7.06);
   landmark(
     'lab',
