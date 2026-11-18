@@ -1,8 +1,11 @@
 'use client';
 
+import Image from 'next/image';
 import type { RefObject } from 'react';
 
-import { placeById, ui, type PlaceId } from '@/content/site';
+import avatar from '@/assets/avatar.webp';
+
+import { placeById, site, ui, type PlaceId } from '@/content/site';
 
 interface PlaceSheetProps {
   /** Place shown; the sheet keeps the last one while it fades out. */
@@ -26,6 +29,14 @@ export function PlaceSheet({ place, open, headingRef, onClose, onOpen }: PlaceSh
     >
       {p && (
         <>
+          {p.id === 'torre' && (
+            <Image
+              src={avatar}
+              alt={site.avatarAlt}
+              sizes="80px"
+              className="size-20 rounded-full border border-line object-cover"
+            />
+          )}
           <p className="kicker">{p.title}</p>
           <h2
             id="place-sheet-title"

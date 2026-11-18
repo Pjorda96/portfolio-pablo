@@ -1,3 +1,6 @@
+import Image from 'next/image';
+
+import avatar from '@/assets/avatar.webp';
 import { Monogram } from '@/components/brand/Monogram';
 import { CityExperience } from '@/components/city/CityExperience';
 import { hero, places, placesSection, site } from '@/content/site';
@@ -67,6 +70,15 @@ export default function HomePage() {
                   aria-labelledby={`${p.slug}-title`}
                   className="grid h-full scroll-mt-4 content-start gap-3 rounded-[14px] border border-line bg-surface p-6"
                 >
+                  {p.id === 'torre' && (
+                    <Image
+                      src={avatar}
+                      alt={site.avatarAlt}
+                      sizes="112px"
+                      placeholder="blur"
+                      className="size-28 rounded-full border border-line bg-surface object-cover"
+                    />
+                  )}
                   <p className="kicker">{p.landmark}</p>
                   <h3
                     id={`${p.slug}-title`}

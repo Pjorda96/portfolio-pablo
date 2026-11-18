@@ -29,6 +29,7 @@ export const site = {
   coordinates: '39.4699° N · 0.3763° W · Valencia',
   skipLink: 'Saltar a los lugares',
   footer: 'Hecho a mano en Valencia.',
+  avatarAlt: 'Retrato ilustrado de Pablo Jordá',
 } as const;
 
 export const hero = {
