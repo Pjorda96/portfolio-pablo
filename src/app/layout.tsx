@@ -3,10 +3,10 @@ import type { ReactNode } from 'react';
 
 import './globals.css';
 
-const siteUrl = process.env.SITE_URL ?? 'http://localhost:3000';
+import { env } from '@/env';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(env.SITE_URL),
   title: {
     default: 'Pablo Jordá — Desarrollo web, IA y producto',
     template: '%s · Pablo Jordá',
