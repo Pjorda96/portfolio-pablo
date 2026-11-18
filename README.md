@@ -66,6 +66,8 @@ La web queda disponible en <http://localhost:3000>.
 | `npm run test:coverage`  | Tests con informe de cobertura                                    |
 | `npm run verify:quick`   | Tipos, lint, formato, tests y build: lo mismo que comprueba la CI |
 
+Las versiones (release candidates por pull request, `CHANGELOG.md` y etiquetas) siguen el esquema descrito en [docs/VERSIONING.md](docs/VERSIONING.md).
+
 ## Estándares de calidad
 
 - **TypeScript estricto**, incluido `noUncheckedIndexedAccess`.

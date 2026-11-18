@@ -2,6 +2,8 @@ name: Pull Request
 
 on:
   pull_request:
+    # labeled/unlabeled: adding `skip-version-check` re-runs the check.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
     branches:
       - develop
       - master
@@ -25,6 +27,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          # The version check compares against the base branch.
+          fetch-depth: 0
 
       - name: Use node
         uses: actions/setup-node@v7
@@ -32,6 +37,12 @@ jobs:
           node-version-file: '.nvmrc'
           check-latest: true
           cache: 'npm'
+
+      # Part of `verify` (not a job of its own) so it is enforced by the
+      # required `verify` status check. Needs no dependencies, so it runs first.
+      - name: Check the version bump
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-version-check') }}
+        run: 'npm run version:check -- "origin/${{ github.base_ref }}"'
 
       - name: Install dependencies
         run: 'npm ci'
