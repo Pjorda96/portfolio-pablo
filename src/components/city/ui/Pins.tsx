@@ -1,0 +1,44 @@
+'use client';
+
+import type { RefObject } from 'react';
+
+import { places, type PlaceId } from '@/content/site';
+
+interface PinsProps {
+  pins: RefObject<Partial<Record<PlaceId, HTMLElement | null>>>;
+  hovered: PlaceId | null;
+  focused: PlaceId | null;
+  visible: boolean;
+}
+
+/**
+ * Labels floating over the six landmarks; the canvas moves them every frame.
+ * Decorative for assistive tech: the dock offers the same six places as
+ * links, so pins are hidden from the accessibility tree and not focusable.
+ */
+export function Pins({ pins, hovered, focused, visible }: PinsProps) {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 overflow-hidden transition-opacity duration-500"
+      style={{ opacity: visible ? 1 : 0 }}
+    >
+      {places.map((p) => (
+        <div
+          key={p.id}
+          ref={(el) => {
+            pins.current[p.id] = el;
+          }}
+          data-hot={hovered === p.id || undefined}
+          data-dim={(focused && focused !== p.id) || undefined}
+          className="group absolute top-0 left-0 flex flex-col items-center gap-1 transition-opacity duration-300 data-dim:opacity-0"
+        >
+          <span className="rounded-full border border-line bg-glass px-[7px] py-1 font-mono text-[11px] leading-none font-semibold tracking-[0.06em] whitespace-nowrap text-text uppercase backdrop-blur-sm group-data-hot:border-transparent group-data-hot:bg-accent-strong group-data-hot:text-accent-ink">
+            {p.short}
+          </span>
+          <i className="h-[18px] w-px bg-text opacity-50" />
+        </div>
+      ))}
+    </div>
+  );
+}
