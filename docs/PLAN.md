@@ -50,6 +50,7 @@ Misma base probada en attrezzo / pixelypapel / viajapp (coherencia y velocidad),
 | `/servicios/apps-saas-mvp`           | `/en/services/saas-mvp-development`   | Servicio                                       |
 | `/proyectos/pixel-y-papel`           | `/en/projects/pixel-y-papel`          | Caso de estudio                                |
 | `/sobre-mi`                          | `/en/about`                           | Marca personal / E-E-A-T                       |
+| `/preguntas-frecuentes`              | `/en/faq`                             | FAQ (dudas antes de contratar, FAQPage)        |
 | `/contacto`                          | `/en/contact`                         | Conversión                                     |
 | `/blog` (fase 2, opcional)           | `/en/blog`                            | Long-tail y autoridad                          |
 | `/legal/*`                           | `/en/legal/*`                         | Privacidad, cookies, aviso legal               |
