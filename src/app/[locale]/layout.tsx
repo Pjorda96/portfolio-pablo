@@ -1,3 +1,5 @@
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata, Viewport } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import type { ReactNode } from 'react';
@@ -75,6 +77,14 @@ export default async function LocaleLayout({
           </main>
           <SiteFooter locale={locale} />
         </NextIntlClientProvider>
+        {/* Cookieless, first-party (/_vercel/...). Only on Vercel deployments:
+            elsewhere they would load debug scripts from another origin. */}
+        {env.VERCEL_ENV && (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        )}
       </body>
     </html>
   );

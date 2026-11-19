@@ -51,8 +51,8 @@ export function cspDirectives(target: SecurityTarget): Directives {
     'style-src': ["'self'", "'unsafe-inline'"],
     'style-src-elem': ["'self'", ...(target.dev ? ["'unsafe-inline'"] : [])],
     'style-src-attr': ["'unsafe-inline'"],
-    // Same origin covers the assistant's fetch, the contact Server Action and,
-    // when installed, Vercel Analytics/Speed Insights (served under /_vercel).
+    // Same origin covers the assistant's fetch, the contact Server Action and
+    // Vercel Analytics/Speed Insights (scripts and beacons under /_vercel).
     'connect-src': ["'self'"],
     // data: for next/image blur placeholders, blob: for canvas/WebGL textures.
     'img-src': ["'self'", 'data:', 'blob:'],

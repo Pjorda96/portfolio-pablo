@@ -29,6 +29,8 @@
     "@anthropic-ai/sdk": "^1.10.0",
     "@react-three/fiber": "~9.8.2",
     "@tailwindcss/postcss": "^4.3.5",
+    "@vercel/analytics": "2.0.1",
+    "@vercel/speed-insights": "2.1.0",
     "next": "16.4.6",
     "next-intl": "^4.15.1",
     "postcss": "^8.5.33",
