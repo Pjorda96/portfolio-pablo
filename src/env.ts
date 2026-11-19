@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { DEPLOYMENT_ENVS } from './lib/indexing';
+
 /**
  * Runtime-validated environment.
  *
@@ -48,6 +50,12 @@ const createServerSchema = (isProduction: boolean) =>
     // Model the assistant runs on; defaults to claude-opus-5-5. Set it to
     // claude-haiku-5-5 to cut cost.
     ASSISTANT_MODEL: optional(z.string().regex(/^claude-[a-z0-9.-]+$/)),
+
+    // Deployment environment, set by Vercel (production | preview |
+    // development). Only `production` can be indexed by search engines, and
+    // only once INDEXABLE is on (src/lib/indexing.ts); unset counts as
+    // non-production.
+    VERCEL_ENV: optional(z.enum(DEPLOYMENT_ENVS)),
 
     // Anti-spam (Cloudflare Turnstile) — F3
     // TURNSTILE_SECRET_KEY: optional(z.string().min(1)),
@@ -99,6 +107,7 @@ const runtimeEnv: EnvSource = {
   CONTACT_FORM_SECRET: process.env.CONTACT_FORM_SECRET,
   ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
   ASSISTANT_MODEL: process.env.ASSISTANT_MODEL,
+  VERCEL_ENV: process.env.VERCEL_ENV,
   // NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
 };
 

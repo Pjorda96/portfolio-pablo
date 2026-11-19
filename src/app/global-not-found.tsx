@@ -8,14 +8,14 @@ import { SiteFooter } from '@/components/layout/SiteFooter';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { NotFoundView } from '@/components/pages/not-found/NotFoundView';
 import { getContent } from '@/content';
-import { robots } from '@/lib/seo';
+import { notFoundMetadata } from '@/lib/seo';
 import { themeBootScript } from '@/lib/theme/boot-script';
 
 import { fontVariables } from './fonts';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { notFound } = getContent(await getLocale()).meta;
-  return { title: { absolute: notFound.title }, description: notFound.description, robots };
+  // Never indexed (noindex even after launch) and without a canonical.
+  return notFoundMetadata(await getLocale());
 }
 
 /**

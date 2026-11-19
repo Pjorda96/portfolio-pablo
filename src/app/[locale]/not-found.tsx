@@ -2,12 +2,11 @@ import type { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
 
 import { NotFoundView } from '@/components/pages/not-found/NotFoundView';
-import { getContent } from '@/content';
-import { robots } from '@/lib/seo';
+import { notFoundMetadata } from '@/lib/seo';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { notFound } = getContent(await getLocale()).meta;
-  return { title: { absolute: notFound.title }, description: notFound.description, robots };
+  // Never indexed (noindex even after launch) and without a canonical.
+  return notFoundMetadata(await getLocale());
 }
 
 /**

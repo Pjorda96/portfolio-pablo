@@ -1,22 +1,22 @@
 import type { Metadata } from 'next';
 
 import { CasePixelYPapelPage } from '@/components/pages/case-pixel-y-papel/CasePixelYPapelPage';
+import { JsonLd } from '@/components/seo/JsonLd';
 import { getContent } from '@/content';
 import { resolveLocale, type LocaleParams } from '@/i18n/locale';
-import { paths } from '@/i18n/routing';
-import { pageMetadata } from '@/lib/seo';
+import { metadataFor } from '@/lib/seo';
+import { structuredDataFor } from '@/lib/structured-data';
 
 export async function generateMetadata({ params }: LocaleParams): Promise<Metadata> {
-  const locale = await resolveLocale(params);
-  return pageMetadata({
-    locale,
-    pathname: paths.casePixelYPapel,
-    meta: getContent(locale).casePixelYPapel.meta,
-    ogType: 'article',
-  });
+  return metadataFor(await resolveLocale(params), 'casePixelYPapel');
 }
 
 export default async function Page({ params }: LocaleParams) {
   const locale = await resolveLocale(params);
-  return <CasePixelYPapelPage locale={locale} content={getContent(locale).casePixelYPapel} />;
+  return (
+    <>
+      <JsonLd data={structuredDataFor(locale, 'casePixelYPapel')} />
+      <CasePixelYPapelPage locale={locale} content={getContent(locale).casePixelYPapel} />
+    </>
+  );
 }
