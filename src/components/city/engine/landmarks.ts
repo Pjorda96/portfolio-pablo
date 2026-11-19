@@ -26,8 +26,12 @@ export interface Landmarks {
   beamMaterial: MeshBasicMaterial;
 }
 
-/** The six clickable landmarks, one per section of the site. */
-export function buildLandmarks(ctx: BuildContext): Landmarks {
+/**
+ * The six clickable landmarks, one per section of the site. A generator: it
+ * yields after each landmark so the caller can split the work (see
+ * `buildCitySteps`).
+ */
+export function* buildLandmarks(ctx: BuildContext): Generator<void, Landmarks> {
   const { G, geo, root } = ctx;
   const groups = {} as Record<PlaceId, Group>;
   const anchors = {} as Record<PlaceId, Vector3>;
@@ -121,6 +125,8 @@ export function buildLandmarks(ctx: BuildContext): Landmarks {
     return new Vector3(-1.5, 3.75, 0.78);
   });
 
+  yield;
+
   // El Mercado Central (Proyectos)
   landmark('mercado', -6.6, -0.7, 0, '#ffb070', 0.16, '#ffd08a', 1.6, (k) => {
     const W = '#e6d4b2';
@@ -160,6 +166,8 @@ export function buildLandmarks(ctx: BuildContext): Landmarks {
     return new Vector3(-0.35, 2.35, 0);
   });
 
+  yield;
+
   // La Lonja de la Seda (Desarrollo web a medida)
   landmark('taller', -6.5, -3.1, 0, '#ffb070', 0.17, '#ffc778', 1.6, (k) => {
     const S = '#d9c29b';
@@ -188,6 +196,8 @@ export function buildLandmarks(ctx: BuildContext): Landmarks {
     k.box('body', S, 1.0, 0.25, 0.04, 1.0, 0, -1.06);
     return new Vector3(0.42, 1.95, -0.1);
   });
+
+  yield;
 
   // La Ciudad de las Artes y las Ciencias, on the old riverbed (Soluciones con IA)
   const cacN = geo.turia.near(10.1, 7.06);
@@ -262,6 +272,8 @@ export function buildLandmarks(ctx: BuildContext): Landmarks {
     },
   );
 
+  yield;
+
   // La Marina: Veles e Vents on its quay (Apps, SaaS y MVPs)
   landmark('puerto', 15.9, 6.8, 0, '#ffe2bd', 0.22, '#ffd08a', 1.6, (k) => {
     const Q = '#c9c3b6';
@@ -285,6 +297,8 @@ export function buildLandmarks(ctx: BuildContext): Landmarks {
     k.box('body', Wt, 0.05, 0.3, 0.05, -0.2, 1.47, -0.3);
     return new Vector3(0.3, 1.95, 0);
   });
+
+  yield;
 
   // El Faro on the breakwater (Contacto)
   const faro = landmark('faro', 21.9, 7.0, 0, '#ffe2bd', 0.18, '#fff1c2', 2.2, (k) => {

@@ -9,7 +9,7 @@ import {
 
 import type { PlaceId } from '@/content/site';
 
-import { buildCity, type CityModel } from './build-city';
+import type { CityModel } from './build-city';
 import { fitFrustum, focusGoal, homeGoal, OFFSET, SCREEN_RIGHT, type CameraGoal } from './camera';
 
 export interface ControllerCallbacks {
@@ -38,7 +38,6 @@ export interface ControllerOptions {
  * React render code.
  */
 export class CityController {
-  readonly model: CityModel;
   private readonly current: CameraGoal;
   private readonly goal: CameraGoal;
   private readonly parallax = new Vector2();
@@ -52,15 +51,14 @@ export class CityController {
   private snap = true;
   private detachDom: (() => void) | null = null;
 
+  /** `model` is built ahead (in slices, see `buildCitySteps`); the caller owns and disposes it. */
   constructor(
     private readonly gl: WebGLRenderer,
     private readonly camera: OrthographicCamera,
+    readonly model: CityModel,
     private callbacks: ControllerCallbacks,
   ) {
-    this.model = buildCity({
-      pixelRatio: gl.getPixelRatio(),
-      maxAnisotropy: gl.capabilities.getMaxAnisotropy(),
-    });
+    model.setMaxAnisotropy(gl.capabilities.getMaxAnisotropy());
     this.current = { target: this.model.center.clone(), zoom: 1 };
     this.goal = { target: this.model.center.clone(), zoom: 1 };
   }
@@ -109,10 +107,6 @@ export class CityController {
     this.detachDom?.();
     this.detachDom = null;
     this.model.detach(scene);
-  }
-
-  dispose() {
-    this.model.dispose();
   }
 
   /** Per-frame update; R3F renders right after it. */

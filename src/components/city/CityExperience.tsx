@@ -17,6 +17,7 @@ import { applyPreference } from '@/lib/theme/preference';
 import { colorAt, SKY_STOPS } from '@/lib/time-of-day';
 
 import { announcePlace, CityCopyProvider, placeIn } from './copy-context';
+import { whenCityShouldStart } from './schedule';
 import { createTimeStore } from './time-store';
 import { Clock } from './ui/Clock';
 import { Dock } from './ui/Dock';
@@ -25,7 +26,8 @@ import { PlaceSheet, type PlacePageLinks } from './ui/PlaceSheet';
 import { SkyFallback } from './ui/SkyFallback';
 
 // WebGL never renders on the server, and its chunk (three.js) only loads
-// once the page is idle, so it never competes with the LCP.
+// after `load`, once the visitor engages (see schedule.ts), so it never
+// competes with the LCP, hydration or the first input.
 const CityCanvas = dynamic(() => import('./CityCanvas'), { ssr: false });
 
 type WebglSupport = 'unknown' | 'yes' | 'no';
@@ -123,15 +125,11 @@ export function CityExperience({ copy, header, hero, pageLinks }: CityExperience
 
   useEffect(() => () => store.dispose(), [store]);
 
-  // Load the 3D city once the browser is idle.
+  // Load the 3D city after `load`, on the first interaction (or a quiet
+  // fallback delay), during idle time. The static sky covers the wait.
   useEffect(() => {
     if (webgl !== 'yes') return;
-    if ('requestIdleCallback' in window) {
-      const id = window.requestIdleCallback(() => setMountCanvas(true), { timeout: 2000 });
-      return () => window.cancelIdleCallback(id);
-    }
-    const id = setTimeout(() => setMountCanvas(true), 300);
-    return () => clearTimeout(id);
+    return whenCityShouldStart(() => setMountCanvas(true));
   }, [webgl]);
 
   // Pause rendering while the stage is off screen or the tab is hidden.

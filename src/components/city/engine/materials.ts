@@ -84,7 +84,7 @@ export const std = (params: MeshStandardMaterialParameters = {}) =>
 /** Facade atlas: FC columns × FR floors of CELL px windows. */
 export const FACADE = { FC: 8, FR: 16, CELL: 32, DENS: 3.6, FLOOR: 0.2 } as const;
 
-function facadeTex(rng: Rng, lit: boolean, maxAnisotropy: number): CanvasTexture {
+function facadeTex(rng: Rng, lit: boolean): CanvasTexture {
   const { FC, FR, CELL } = FACADE;
   const c = document.createElement('canvas');
   c.width = FC * CELL;
@@ -125,7 +125,6 @@ function facadeTex(rng: Rng, lit: boolean, maxAnisotropy: number): CanvasTexture
   const t = new CanvasTexture(c);
   t.colorSpace = SRGBColorSpace;
   t.wrapS = t.wrapT = RepeatWrapping;
-  t.anisotropy = Math.min(8, maxAnisotropy);
   return t;
 }
 
@@ -134,10 +133,10 @@ function facadeTex(rng: Rng, lit: boolean, maxAnisotropy: number): CanvasTexture
  * per-building lit windows at night. Each instance picks its own window
  * pattern (aUv) and how many lights are on (aLit).
  */
-export function createFacadeMaterials(rng: Rng, maxAnisotropy: number) {
+export function createFacadeMaterials(rng: Rng) {
   const facade = new MeshStandardMaterial({
-    map: facadeTex(rng, false, maxAnisotropy),
-    emissiveMap: facadeTex(rng, true, maxAnisotropy),
+    map: facadeTex(rng, false),
+    emissiveMap: facadeTex(rng, true),
     emissive: 0xffffff,
     emissiveIntensity: 0,
     roughness: 0.92,
