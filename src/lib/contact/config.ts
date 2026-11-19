@@ -2,8 +2,9 @@ import { owner } from '@/content/owner';
 import { env } from '@/env';
 
 import { resolveTokenSecret } from './anti-spam';
-import { createResendMailer, type Mailer } from './mailer';
+import type { Mailer } from './mailer';
 import { CONTACT_RATE_LIMIT, createMemoryRateLimiter, type RateLimiter } from './rate-limit';
+import { selectContactMailer } from './transport';
 
 /** Resend's shared test sender, usable until pablojorda.es is verified there. */
 export const DEFAULT_FROM_EMAIL = 'Web pablojorda.es <onboarding@resend.dev>';
@@ -18,9 +19,11 @@ export const contactConfig = {
   }),
 };
 
-export const contactMailer: Mailer | null = env.RESEND_API_KEY
-  ? createResendMailer(env.RESEND_API_KEY)
-  : null;
+export const contactMailer: Mailer | null = selectContactMailer({
+  resendApiKey: env.RESEND_API_KEY,
+  testMailer: env.CONTACT_TEST_MAILER,
+  vercelEnv: env.VERCEL_ENV,
+});
 
 /**
  * Module-level, so it lives as long as the server instance. Swap for a

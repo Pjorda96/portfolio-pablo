@@ -51,7 +51,15 @@ const config = [
   prettier,
 
   {
-    ignores: ['.next/**', 'node_modules/**', 'coverage/**', 'next-env.d.ts'],
+    ignores: [
+      '.next/**',
+      'node_modules/**',
+      'coverage/**',
+      'playwright-report/**',
+      'test-results/**',
+      '.lighthouseci/**',
+      'next-env.d.ts',
+    ],
   },
 ];
 
