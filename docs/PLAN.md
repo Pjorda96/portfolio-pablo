@@ -17,7 +17,7 @@
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Dominio   | `pablojorda.es` (hoy aparcado en Strato sin HTTPS → DNS a Vercel)                                                                                                                                                        |
 | Idiomas   | Español (raíz, sin prefijo) + Inglés (`/en`), slugs traducidos, `hreflang` + `x-default`                                                                                                                                 |
-| Servicios | 1) Desarrollo web a medida · 2) Integraciones de IA · 3) Apps / SaaS / MVPs                                                                                                                                              |
+| Servicios | 1) Desarrollo web a medida · 2) Soluciones con IA · 3) Apps / SaaS / MVPs                                                                                                                                                |
 | Proyectos | Solo lo que está en producción: **Píxel y Papel** (web comercial + plataforma de bodas). Proyecto de 4 socios: se presenta como cofundador, explicando el papel técnico propio y sin atribuirse el proyecto en exclusiva |
 | Precios   | No se muestran                                                                                                                                                                                                           |
 | Contacto  | Solo formulario (Resend + Zod + rate limit + anti-spam)                                                                                                                                                                  |
@@ -34,9 +34,9 @@ Misma base probada en attrezzo / pixelypapel / viajapp (coherencia y velocidad),
 - **next-intl** (`as-needed`) · contenido de casos y servicios en **MDX** tipado
 - **Motion** + scroll suave (Lenis) + **View Transitions API** entre páginas, todo con `prefers-reduced-motion`
 - **WebGL** ligero en el hero (shader / R3F cargado de forma diferida, fallback estático, sin penalizar LCP)
-- **IA real en la web:** asistente "pregúntame sobre mis servicios" con la API de Claude, respuestas basadas solo en el contenido del sitio, streaming, rate limit y coste acotado → demuestra el servicio de integraciones de IA en vivo
+- **IA real en la web:** asistente "pregúntame sobre mis servicios" con la API de Claude, respuestas basadas solo en el contenido del sitio, streaming, rate limit y coste acotado → demuestra el servicio de soluciones con IA en vivo
 - **Resend** + Zod + rate limit + honeypot / Cloudflare Turnstile en el formulario
-- **Seguridad:** CSP con nonce, HSTS, COOP/CORP, Permissions-Policy
+- **Seguridad:** CSP estática (sin nonce, para no perder el prerenderizado), HSTS, COOP/CORP, Permissions-Policy ([SECURITY.md](SECURITY.md))
 - **Calidad:** Vitest + Testing Library, Playwright E2E, axe, Lighthouse CI con presupuestos, GitHub Actions, Husky
 - **Hosting:** Vercel (región fra1) · Vercel Analytics + Speed Insights
 
@@ -46,10 +46,11 @@ Misma base probada en attrezzo / pixelypapel / viajapp (coherencia y velocidad),
 | ------------------------------------ | ------------------------------------- | ---------------------------------------------- |
 | `/`                                  | `/en`                                 | Marca + "desarrollador web freelance Valencia" |
 | `/servicios/desarrollo-web-a-medida` | `/en/services/custom-web-development` | Servicio                                       |
-| `/servicios/integraciones-ia`        | `/en/services/ai-integrations`        | Servicio                                       |
+| `/servicios/soluciones-ia`           | `/en/services/ai-solutions`           | Servicio                                       |
 | `/servicios/apps-saas-mvp`           | `/en/services/saas-mvp-development`   | Servicio                                       |
 | `/proyectos/pixel-y-papel`           | `/en/projects/pixel-y-papel`          | Caso de estudio                                |
 | `/sobre-mi`                          | `/en/about`                           | Marca personal / E-E-A-T                       |
+| `/preguntas-frecuentes`              | `/en/faq`                             | FAQ (dudas antes de contratar, FAQPage)        |
 | `/contacto`                          | `/en/contact`                         | Conversión                                     |
 | `/blog` (fase 2, opcional)           | `/en/blog`                            | Long-tail y autoridad                          |
 | `/legal/*`                           | `/en/legal/*`                         | Privacidad, cookies, aviso legal               |

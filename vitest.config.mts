@@ -1,9 +1,23 @@
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
-import { defineConfig } from 'vitest/config';
+import { defineConfig, type Plugin } from 'vitest/config';
+
+/**
+ * Next turns static image imports into StaticImageData ({ src, width, height });
+ * Vite would give a bare URL string, which next/image rejects. Mirror Next here.
+ */
+const staticImages = (): Plugin => ({
+  name: 'next-static-images',
+  enforce: 'pre',
+  load(id) {
+    const file = id.split('?')[0] ?? id;
+    if (!/\.(png|jpe?g|webp|avif|gif)$/.test(file)) return null;
+    return `export default { src: ${JSON.stringify(file)}, width: 960, height: 960, blurDataURL: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=' };`;
+  },
+});
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), staticImages()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -13,10 +27,27 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['tests/**/*.test.{ts,tsx}'],
     setupFiles: ['./tests/setup.ts'],
+    // next-intl imports `next/navigation` without an extension, which Node's
+    // ESM resolver rejects; let Vite resolve it instead.
+    server: { deps: { inline: ['next-intl'] } },
+    // Some suites import heavy modules afresh (the Anthropic SDK, three.js);
+    // on a cold, instrumented run (`--coverage` in CI) that alone can pass 5 s.
+    testTimeout: 15_000,
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
-      reporter: ['text', 'html'],
+      // `text-summary` for the CI log, `html` to browse, `json-summary` for tools.
+      reporter: ['text-summary', 'html', 'json-summary'],
+      // Floors just under the current numbers, so coverage cannot quietly
+      // drop. Not 100%: the WebGL city, the thin App Router files (page,
+      // opengraph-image) and the layout shell are covered by the E2E tests
+      // (`e2e/`) instead. Raise them as the suite grows.
+      thresholds: {
+        statements: 84,
+        branches: 81,
+        functions: 80,
+        lines: 84,
+      },
     },
   },
 });

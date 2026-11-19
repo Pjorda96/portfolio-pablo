@@ -1,34 +1,11 @@
-import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 
-import './globals.css';
-
-import { env } from '@/env';
-
-export const metadata: Metadata = {
-  metadataBase: new URL(env.SITE_URL),
-  title: {
-    default: 'Pablo Jordá — Desarrollo web, IA y producto',
-    template: '%s · Pablo Jordá',
-  },
-  description:
-    'Desarrollo web a medida, integraciones de inteligencia artificial y producto digital.',
-  applicationName: 'pablojorda.es',
-  // Placeholder while the site is under construction.
-  robots: { index: false, follow: false },
-};
-
-export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fafaf9' },
-    { media: '(prefers-color-scheme: dark)', color: '#0c0a09' },
-  ],
-};
-
+/**
+ * Pass-through root layout. The document (`<html lang>`, fonts, theme boot
+ * script) is rendered by `[locale]/layout.tsx`, which knows the language;
+ * `global-not-found.tsx` next to this file renders its own document for every URL
+ * that matches no page.
+ */
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-  return (
-    <html lang="es">
-      <body className="min-h-dvh antialiased">{children}</body>
-    </html>
-  );
+  return children;
 }

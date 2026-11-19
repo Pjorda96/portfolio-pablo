@@ -1,43 +1,96 @@
 @import 'tailwindcss';
 
 /* ============================================================
-   DESIGN TOKENS — placeholder
+   DESIGN TOKENS — "La ciudad"
 
-   A deliberately small, neutral set so the scaffold renders with sane
-   contrast in both colour schemes. The real identity (palette, type scale,
-   motion) is designed in F1 and replaces these values; the token names are
-   the contract components will use.
+   Raw values per theme live in the two marked blocks below and mirror
+   `src/lib/theme/tokens.ts` (tests/theme-contrast.test.ts keeps them in sync
+   and checks WCAG AA for every pair). Components only use the semantic
+   tokens, which pick the day or night value with `light-dark()`.
+
+   The theme follows the visitor's system / browser setting unless they pin
+   Light or Dark: the boot script in the root layout sets `data-mode` on
+   <html> before first paint, which pins `color-scheme`. Without JavaScript
+   `color-scheme: light dark` lets the OS preference decide as well.
    ============================================================ */
 
 @theme inline {
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-display: var(--font-syne), 'Arial Black', system-ui, sans-serif;
+  --font-sans: var(--font-inter-tight), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, Menlo, monospace;
 
   --color-ground: var(--ground);
   --color-surface: var(--surface);
+  --color-glass: var(--glass);
   --color-text: var(--text);
   --color-text-muted: var(--text-muted);
+  --color-line: var(--line);
   --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-ink: var(--accent-ink);
+  --color-skyline: var(--skyline);
+  --color-skyline-light: var(--skyline-light);
+  --color-sky: var(--sky);
+}
+
+/* tokens:day */
+:root {
+  --day-ground: #faf6ee;
+  --day-surface: #faf6ee;
+  --day-surface-alpha: 0.9;
+  --day-text: #1a1f2b;
+  --day-text-muted: #4b5466;
+  --day-line: rgb(26 31 43 / 0.14);
+  --day-accent: #c0541c;
+  --day-accent-strong: #a3401a;
+  --day-accent-ink: #ffffff;
+  --day-skyline: #b9ae9b;
+  --day-skyline-light: #b9ae9b;
+}
+
+/* tokens:night */
+:root {
+  --night-ground: #0d1222;
+  --night-surface: #0a0e1c;
+  --night-surface-alpha: 0.82;
+  --night-text: #eef1f8;
+  --night-text-muted: #a9b2c8;
+  --night-line: rgb(238 241 248 / 0.16);
+  --night-accent: #ffb067;
+  --night-accent-strong: #ffb067;
+  --night-accent-ink: #1a1206;
+  --night-skyline: #1b2240;
+  --night-skyline-light: #ffc477;
 }
 
 :root {
   color-scheme: light dark;
 
-  --ground: #fafaf9;
-  --surface: #ffffff;
-  --text: #1c1917;
-  --text-muted: #57534e;
-  --accent: #1d4ed8;
+  --ground: light-dark(var(--day-ground), var(--night-ground));
+  --surface: light-dark(var(--day-surface), var(--night-surface));
+  --glass: light-dark(
+    color-mix(in srgb, var(--day-surface) calc(var(--day-surface-alpha) * 100%), transparent),
+    color-mix(in srgb, var(--night-surface) calc(var(--night-surface-alpha) * 100%), transparent)
+  );
+  --text: light-dark(var(--day-text), var(--night-text));
+  --text-muted: light-dark(var(--day-text-muted), var(--night-text-muted));
+  --line: light-dark(var(--day-line), var(--night-line));
+  --accent: light-dark(var(--day-accent), var(--night-accent));
+  --accent-strong: light-dark(var(--day-accent-strong), var(--night-accent-strong));
+  --accent-ink: light-dark(var(--day-accent-ink), var(--night-accent-ink));
+  --skyline: light-dark(var(--day-skyline), var(--night-skyline));
+  --skyline-light: light-dark(var(--day-skyline-light), var(--night-skyline-light));
+
+  /* Sky colour of the current hour; the boot script and the clock update it. */
+  --sky: light-dark(#9fd0f2, #0a1024);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ground: #0c0a09;
-    --surface: #1c1917;
-    --text: #fafaf9;
-    --text-muted: #a8a29e;
-    --accent: #93c5fd;
-  }
+:root[data-mode='day'] {
+  color-scheme: light;
+}
+
+:root[data-mode='night'] {
+  color-scheme: dark;
 }
 
 @layer base {
@@ -45,10 +98,24 @@
     -webkit-text-size-adjust: 100%;
   }
 
+  /* In-page anchors glide; route changes jump (data-scroll-behavior on <html>). */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
   body {
     background-color: var(--ground);
     color: var(--text);
     font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -59,5 +126,199 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+@utility glass {
+  background-color: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+}
+
+@utility chip {
+  border: 1px solid var(--line);
+  background: transparent;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+
+  &[aria-pressed='true'] {
+    background: var(--text);
+    color: var(--ground);
+    border-color: var(--text);
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+@utility btn-primary {
+  display: inline-block;
+  border: 0;
+  border-radius: 10px;
+  padding: 11px 16px;
+  background: var(--accent-strong);
+  color: var(--accent-ink);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@utility btn-secondary {
+  display: inline-block;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+@utility kicker {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+}
+
+/* Scroll cue under the hero: a gentle nudge that there is more below. */
+@keyframes scroll-cue-bob {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 3px;
+  }
+}
+.scroll-cue-arrow {
+  animation: scroll-cue-bob 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue-arrow {
+    animation: none;
+  }
+}
+
+/* Header navigation: quiet links that light up on hover and on their own page. */
+@utility nav-link {
+  display: inline-block;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover,
+  &[aria-current='page'],
+  &[aria-expanded='true'] {
+    color: var(--text);
+    background: var(--line);
+  }
+}
+
+/* Links of the menu dialog and the services dropdown. */
+@utility menu-link {
+  display: block;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  text-decoration: none;
+
+  &:hover,
+  &[aria-current='page'] {
+    background: var(--line);
+  }
+
+  &[aria-current='page'] {
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+}
+
+/* ============================================================
+   MOTION
+
+   Page transitions: React's <ViewTransition> (PageTransition in each page)
+   fades the old page out where it was and the new one in. Only the page
+   takes part: the header is pinned above the snapshots and the footer stays
+   live. Browsers without the View Transitions API swap pages as before.
+   ============================================================ */
+
+/* Clicks during the short animation reach the live page. */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-old(.page-exit) {
+  animation: 140ms ease-in both page-fade-out;
+}
+
+::view-transition-new(.page-enter) {
+  animation: 220ms cubic-bezier(0.2, 0.7, 0.2, 1) 60ms both page-fade-in;
+}
+
+@keyframes page-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+
+/* The header is an anchor, not part of the page: no movement, no flash. */
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+/* Scroll reveal (.reveal, see src/components/motion/reveal.ts): sections fade
+   and rise in as they enter the viewport, driven by the scroll position, not
+   by JavaScript. Without support or with reduced motion nothing is hidden. */
+@media screen and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    translate: 0 24px;
+  }
+}
+
+/* Reduced motion: page changes are an instant swap. The universal rule in
+   the base layer does not reach view-transition pseudo-elements. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

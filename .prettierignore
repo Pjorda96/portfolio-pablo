@@ -1,6 +1,9 @@
 .next/
 node_modules/
 coverage/
-design/private/
+design/
 package-lock.json
 next-env.d.ts
+playwright-report/
+test-results/
+.lighthouseci/

@@ -2,6 +2,8 @@ name: Pull Request
 
 on:
   pull_request:
+    # labeled/unlabeled: adding `skip-version-check` re-runs the check.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
     branches:
       - develop
       - master
@@ -25,6 +27,70 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          # The version check compares against the base branch.
+          fetch-depth: 0
+
+      - name: Use node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          check-latest: true
+          cache: 'npm'
+
+      # Part of `verify` (not a job of its own) so it is enforced by the
+      # required `verify` status check. Needs no dependencies, so it runs first.
+      - name: Check the version bump
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-version-check') }}
+        run: 'npm run version:check -- "origin/${{ github.base_ref }}"'
+
+      - name: Install dependencies
+        run: 'npm ci'
+
+      # Known high/critical vulnerabilities in what ships (docs/SECURITY.md).
+      - name: Audit production dependencies
+        run: 'npm audit --omit=dev --audit-level=high'
+
+      - name: Typecheck
+        run: 'npm run typescript'
+
+      - name: Linter
+        run: 'npm run lint'
+
+      - name: Format
+        run: 'npm run prettier:check'
+
+      # Unit tests with the coverage report; fails under the thresholds of
+      # vitest.config.mts.
+      - name: Unit tests
+        run: 'npm run test:coverage'
+
+      - name: Upload coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
+
+      - name: Build
+        run: 'npm run build'
+
+  # End-to-end and accessibility tests (Playwright + axe, see README) on a
+  # production build: navigation, language switch, contact form, and axe on
+  # every page in ES/EN, light and dark. The contact form runs with its test
+  # mailer (CONTACT_TEST_MAILER) and no provider keys: nothing is ever sent.
+  e2e:
+    if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
+    runs-on: ubuntu-latest
+
+    env:
+      # Required by src/env.ts in production builds; the origin the tests serve.
+      SITE_URL: http://localhost:3100
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
 
       - name: Use node
         uses: actions/setup-node@v7
@@ -36,17 +102,81 @@ jobs:
       - name: Install dependencies
         run: 'npm ci'
 
-      - name: Typecheck
-        run: 'npm run typescript'
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
 
-      - name: Linter
-        run: 'npm run lint'
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
 
-      - name: Format
-        run: 'npm run prettier:check'
+      - name: Install Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: 'npx playwright install --with-deps chromium'
 
-      - name: Unit tests
-        run: 'npm run test'
+      - name: Install Chromium system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: 'npx playwright install-deps chromium'
 
       - name: Build
         run: 'npm run build'
+
+      # Starts `next start -p 3100` itself (playwright.config.ts).
+      - name: End-to-end tests
+        run: 'npm run test:e2e'
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+
+  # Lighthouse budgets (docs/PERFORMANCE.md): performance, plus accessibility,
+  # best practices and SEO >= 95, on ES and EN pages of a production build,
+  # mobile, 3 runs per URL, median. A job of its own and NOT a required
+  # check: lab timings vary between runners, so it must never make `verify`
+  # flaky. A red result is a regression to look at, with the reports attached.
+  lighthouse:
+    if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
+    runs-on: ubuntu-latest
+
+    env:
+      # Required by src/env.ts in production builds. The origin Lighthouse
+      # audits (lighthouserc.json), so canonical URLs point at the page itself.
+      SITE_URL: http://localhost:3400
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Use node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          check-latest: true
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: 'npm ci'
+
+      - name: Build
+        run: 'npm run build'
+
+      # Starts `next start -p 3400` itself and asserts lighthouserc.json.
+      - name: Lighthouse CI
+        run: 'npm run lhci'
+
+      - name: Upload Lighthouse reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          retention-days: 14
