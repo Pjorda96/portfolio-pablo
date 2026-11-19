@@ -119,7 +119,6 @@ describe('theme boot script', () => {
 
       const h = hh + mm / 60;
       const root = document.documentElement;
-      expect(root.getAttribute('data-mode')).toBe(uiModeOf(h));
       expect(root.style.getPropertyValue('--sky')).toBe(colorAt(SKY_STOPS, h));
     });
   }

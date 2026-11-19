@@ -13,7 +13,7 @@ Todo el copy de la web vive en `src/content/`, en español (`es/`) e inglés (`e
 | `legal.ts`              | Aviso legal, privacidad y cookies                                           |
 | `contact.ts`            | Página de contacto, etiquetas y errores del formulario, aviso de privacidad |
 | `../owner.ts`           | Tus datos identificativos (compartidos por ambos idiomas)                   |
-| `../site.ts`            | Adaptador de la home actual (F1): toma sus textos de `es/`                  |
+| `../site.ts`            | Adaptador de la ciudad de la home: `getCityCopy(locale)`                    |
 
 ## Pendiente de ti
 
@@ -21,8 +21,8 @@ Todo el copy de la web vive en `src/content/`, en español (`es/`) e inglés (`e
 2. **Revisión de los textos legales.** Son un borrador basado en la configuración prevista, no asesoría legal. Comprueba en concreto:
    - Plazo de conservación de los mensajes del formulario (he puesto un año desde el último contacto).
    - Proveedores: Vercel, Resend, Cloudflare Turnstile (si finalmente se usa) y Anthropic (si se activa el asistente de F4). Quita los que no se usen.
-   - Cookie `NEXT_LOCALE` de next-intl: confirmar en F3 si se activa y su duración real (he puesto «Sesión»).
-   - Preferencias en `localStorage`: hoy la web no guarda nada; la tabla lo anticipa. Ajustar al implementarlo.
+   - Sin cookies: desde F3 la detección de idioma y la cookie `NEXT_LOCALE` de next-intl están desactivadas; la URL decide el idioma.
+   - Preferencias en `localStorage`: desde F3 se guarda el tema elegido (`pj-theme`: claro u oscuro; «Auto» no guarda nada). La hora de la ciudad no se guarda.
    - Edad mínima de 14 años (LOPDGDD) y fuero de Valencia.
 3. **Píxel y Papel.** Los socios han aprobado el caso tal como está: cualitativo, contigo como cofundador y responsable técnico de un proyecto de cuatro socios. No hay cifras ni capturas; se pueden añadir más adelante si los socios las facilitan. El stack listado (Next.js, React, TypeScript, Tailwind, next-intl, PostgreSQL, Vercel) lo he sacado de los repos `pixelypapel` y `wedding`: confírmalo.
 4. **Correo publicado.** `pjorda96@gmail.com` aparece en los textos legales, el aviso de privacidad del formulario y el mensaje de error genérico. Si más adelante usas un correo del dominio, cámbialo solo en `owner.ts`.
@@ -36,4 +36,4 @@ Todo el copy de la web vive en `src/content/`, en español (`es/`) e inglés (`e
 - **Sectores de experiencia.** Seguros, fintech y blockchain, y software de arquitectura, sin nombres de empresa y sin hablar de empleo actual.
 - **Inglés.** Escrito como copy propio, no traducido literal. SEO orientado a «freelance web developer in Spain». Los textos legales en inglés indican que prevalece la versión en español.
 - **Home F1.** Cambio de copy: en el Mercado Central, «Caso de estudio completo, próximamente» pasa a «Caso de estudio: contexto, reto y solución». Lo demás de la home se mantiene igual.
-- **Interfaz de la ciudad.** Los textos de la interfaz 3D (`ui` en `site.ts`: reloj, botones, avisos) siguen solo en español; se localizan en F3 junto con next-intl.
+- **Interfaz de la ciudad.** Desde F3 los textos de la interfaz 3D (reloj, botones, avisos) están en `home.city.ui` de cada idioma.

@@ -31,8 +31,12 @@ export const meta = {
     about: 'About',
     faq: 'FAQ',
     contact: 'Contact',
+    cta: 'Tell me about your project',
+    home: 'Pablo Jordá, home',
   },
+  menu: { open: 'Open menu', close: 'Close menu', title: 'Menu' },
   languageSwitch: { label: 'Change language', target: 'Español' },
+  theme: { label: 'Theme', auto: 'Auto', light: 'Light', dark: 'Dark' },
   skipLink: 'Skip to content',
   footer: {
     tagline: 'Handmade in Valencia, Spain.',
@@ -46,6 +50,12 @@ export const meta = {
     description:
       'This street does not exist in the city. Head back home to see services and projects.',
     text: 'This street does not exist in the city. The link may be wrong, or the page may have moved.',
+    back: 'Back to home',
+  },
+  error: {
+    title: 'Something went wrong',
+    text: 'This page could not be loaded. It may be a temporary glitch: try again in a moment.',
+    retry: 'Try again',
     back: 'Back to home',
   },
 } as const satisfies MetaContent;

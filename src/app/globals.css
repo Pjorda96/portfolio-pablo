@@ -8,10 +8,10 @@
    and checks WCAG AA for every pair). Components only use the semantic
    tokens, which pick the day or night value with `light-dark()`.
 
-   The theme follows the city's hour: the boot script in the root layout sets
-   `data-mode` on <html> before first paint, which pins `color-scheme`.
-   Without JavaScript `color-scheme: light dark` lets the OS preference
-   decide.
+   The theme follows the visitor's system / browser setting unless they pin
+   Light or Dark: the boot script in the root layout sets `data-mode` on
+   <html> before first paint, which pins `color-scheme`. Without JavaScript
+   `color-scheme: light dark` lets the OS preference decide as well.
    ============================================================ */
 
 @theme inline {
@@ -202,5 +202,44 @@
 @media (prefers-reduced-motion: reduce) {
   .scroll-cue-arrow {
     animation: none;
+  }
+}
+
+/* Header navigation: quiet links that light up on hover and on their own page. */
+@utility nav-link {
+  display: inline-block;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover,
+  &[aria-current='page'],
+  &[aria-expanded='true'] {
+    color: var(--text);
+    background: var(--line);
+  }
+}
+
+/* Links of the menu dialog and the services dropdown. */
+@utility menu-link {
+  display: block;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  text-decoration: none;
+
+  &:hover,
+  &[aria-current='page'] {
+    background: var(--line);
+  }
+
+  &[aria-current='page'] {
+    box-shadow: inset 3px 0 0 var(--accent);
   }
 }

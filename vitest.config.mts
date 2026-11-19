@@ -27,6 +27,9 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['tests/**/*.test.{ts,tsx}'],
     setupFiles: ['./tests/setup.ts'],
+    // next-intl imports `next/navigation` without an extension, which Node's
+    // ESM resolver rejects; let Vite resolve it instead.
+    server: { deps: { inline: ['next-intl'] } },
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],

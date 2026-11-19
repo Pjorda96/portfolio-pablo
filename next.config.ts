@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import createNextIntlPlugin from 'next-intl/plugin';
 
 // Validates the environment as soon as Next loads its config, so `next dev`
 // and `next build` stop with a readable list of invalid variables.
@@ -10,6 +11,15 @@ const nextConfig: NextConfig = {
   // devDependency: a missing plugin is a build failure, not a silent no-op.
   reactCompiler: true,
   poweredByHeader: false,
+  experimental: {
+    // Unmatched URLs get app/global-not-found.tsx, outside the normal render
+    // tree. A root not-found.tsx would read the request (for its locale) inside
+    // every route's tree and force all pages into dynamic rendering.
+    globalNotFound: true,
+  },
 };
 
-export default nextConfig;
+// Points next-intl at the per-request config (locale + messages).
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
+
+export default withNextIntl(nextConfig);

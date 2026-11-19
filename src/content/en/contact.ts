@@ -1,4 +1,5 @@
 import { owner } from '../owner';
+import type { ContactFormUi } from '../es/contact';
 import type { ContactContent } from '../types';
 import { meta } from './meta';
 
@@ -103,4 +104,11 @@ export const contact: ContactContent = {
     ],
     link: { label: 'Full privacy policy', href: meta.routes.legal.privacy },
   },
+};
+
+/** Interface copy of the contact form not covered by `ContactContent` yet. */
+export const contactFormUi: ContactFormUi = {
+  errorSummary: 'Please check the form:',
+  unavailable: `The form is temporarily unavailable. Email me at ${CONTACT_EMAIL} and I’ll reply all the same.`,
+  honeypot: 'Leave this field empty',
 };

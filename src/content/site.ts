@@ -1,13 +1,15 @@
 /**
- * Strings of the F1 home (the city). The copy itself lives in the Spanish
- * content tree (`src/content/es/`), the single source of truth shared with the
- * future pages; this module only adapts it to the shape the city components
- * use. The city's own interface strings (`ui`) stay here until F3 localises
- * the home.
+ * Copy of the home city, per locale. The text lives in the content trees
+ * (`src/content/<locale>/home.ts`, `meta.ts`, `about.ts`); this module only
+ * adapts it to the shape the city components use.
+ *
+ * `CityCopy` is plain, serializable data: the home page (a Server Component)
+ * builds it with `getCityCopy(locale)` and hands it to the client city, so
+ * the browser only receives the strings of the current locale.
  */
 
-import { content as es } from './es';
-import { PLACE_IDS, type PlaceId } from './types';
+import { getContent } from './index';
+import { PLACE_IDS, type CityUi, type Locale, type PlaceId } from './types';
 
 export { PLACE_IDS, type PlaceId };
 
@@ -25,68 +27,28 @@ export interface Place {
   points: readonly string[];
 }
 
-export const site = {
-  name: es.meta.siteName,
-  domain: 'pablojorda.es',
-  coordinates: '39.4699° N · 0.3763° W · Valencia',
-  skipLink: 'Saltar a los lugares',
-  footer: es.meta.footer.tagline,
-  avatarAlt: es.about.avatarAlt,
-} as const;
+export interface CityCopy {
+  name: string;
+  avatarAlt: string;
+  hero: { kicker: string; title: string; lead: string; hint: string };
+  placesSection: { title: string; intro: string };
+  places: readonly Place[];
+  ui: CityUi;
+}
 
-export const hero = {
-  kicker: es.home.hero.kicker,
-  title: es.home.hero.title,
-  lead: es.home.hero.lead,
-  hint: es.home.hero.hint,
-} as const;
-
-export const placesSection = {
-  title: es.home.city.title,
-  intro: es.home.city.intro,
-} as const;
-
-/** Fragment ids of the places' sections on the home page. */
-const PLACE_SLUGS: Record<PlaceId, string> = {
-  taller: 'desarrollo-web',
-  lab: 'soluciones-ia',
-  puerto: 'apps-saas-mvp',
-  mercado: 'proyectos',
-  torre: 'sobre-mi',
-  faro: 'contacto',
-};
-
-export const places: readonly Place[] = PLACE_IDS.map((id) => ({
-  id,
-  slug: PLACE_SLUGS[id],
-  ...es.home.city.places[id],
-}));
-
-export const ui = {
-  stageLabel: 'La ciudad',
-  dockLabel: 'Lugares de la ciudad',
-  clock: {
-    label: 'Hora de la ciudad',
-    slider: 'Hora del día en la ciudad',
-    real: 'Hora real',
-    play: 'Ver un día entero',
-    modes: { real: 'tu hora', play: 'un día en 24 s', manual: 'hora elegida' },
-    placeholder: '--:--',
-  },
-  sheet: {
-    cta: 'Cuéntame tu proyecto',
-    contactCta: 'Escribirme',
-    back: 'Volver a la ciudad',
-    announce: (landmark: string, title: string) => `${landmark}: ${title}`,
-  },
-  placeLink: 'Ver en la ciudad',
-  scrollCue: 'Descubre todo lo que hago',
-  noWebgl:
-    'Tu navegador no puede mostrar la escena 3D. Usa los lugares de abajo para recorrer la ciudad.',
-} as const;
-
-export const placeById = (id: PlaceId): Place => {
-  const place = places.find((p) => p.id === id);
-  if (!place) throw new Error(`Unknown place: ${id}`);
-  return place;
-};
+export function getCityCopy(locale: Locale): CityCopy {
+  const c = getContent(locale);
+  const { kicker, title, lead, hint } = c.home.hero;
+  return {
+    name: c.meta.siteName,
+    avatarAlt: c.about.avatarAlt,
+    hero: { kicker, title, lead, hint },
+    placesSection: { title: c.home.city.title, intro: c.home.city.intro },
+    places: PLACE_IDS.map((id) => ({
+      id,
+      slug: c.home.city.anchors[id],
+      ...c.home.city.places[id],
+    })),
+    ui: c.home.city.ui,
+  };
+}

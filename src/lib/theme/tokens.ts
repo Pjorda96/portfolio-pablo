@@ -6,7 +6,8 @@
  * sync) and the contrast test checks every text/background pair against WCAG
  * AA in both themes.
  *
- * The UI follows the city's time of day: the boot script sets
+ * The UI follows the system colour scheme (or the visitor's pinned choice):
+ * the boot script sets
  * `data-mode="day" | "night"` on <html>, which pins `color-scheme`, and the
  * semantic tokens resolve with `light-dark()`. Without JavaScript nothing pins
  * it, so `prefers-color-scheme` decides.

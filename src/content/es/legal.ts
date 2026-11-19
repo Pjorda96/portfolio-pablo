@@ -185,10 +185,9 @@ export const legal: LegalContent = {
       {
         title: 'Qué usa este sitio',
         paragraphs: [
-          'Este sitio no usa cookies publicitarias, de seguimiento ni de redes sociales. Solo usa almacenamiento estrictamente técnico o de preferencias que tú mismo eliges:',
+          'Este sitio no instala cookies: ni publicitarias, ni de seguimiento, ni de redes sociales. Solo guarda en tu navegador las preferencias que tú mismo eliges:',
         ],
         items: [
-          'Una cookie técnica para recordar el idioma elegido.',
           'Almacenamiento local (localStorage) para recordar preferencias de visualización, como el tema o la hora de la ciudad.',
         ],
       },
@@ -225,13 +224,6 @@ export const legal: LegalContent = {
       },
       rows: [
         {
-          name: 'NEXT_LOCALE',
-          provider: 'pablojorda.es',
-          purpose: 'Recordar el idioma elegido',
-          duration: 'Sesión',
-          kind: 'Cookie técnica',
-        },
-        {
           name: 'Preferencias de visualización',
           provider: 'pablojorda.es',
           purpose: 'Recordar el tema o la hora de la ciudad que elijas',
@@ -249,3 +241,16 @@ export const legal: LegalContent = {
     },
   },
 };
+
+/**
+ * Interface copy of the legal pages not covered by `LegalContent` yet.
+ * TODO: move into `LegalContent` (src/content/types.ts).
+ */
+export const legalUi = {
+  /** Shown instead of a `{{…}}` placeholder the owner has not filled yet. */
+  pending: 'pendiente',
+  /** Heading of the links to the other legal texts. */
+  related: 'Otros textos legales',
+};
+
+export type LegalUi = typeof legalUi;
