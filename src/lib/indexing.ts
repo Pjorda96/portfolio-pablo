@@ -4,12 +4,14 @@
  */
 
 /**
- * The single switch that opens the site to search engines: on since the
- * launch (F7). Only the Vercel production deployment is indexable; previews
- * and local builds never are. Set it back to `false` to take the whole site
- * out of search engines (noindex on every page and `X-Robots-Tag`).
+ * The single switch that opens the site to search engines. Off for now: the
+ * site is published on pablojorda.es for a soft launch (Search Console and
+ * Bing set up ahead) and turned on at the public launch. Off means noindex on
+ * every page plus `X-Robots-Tag`, while robots.txt still allows crawling so
+ * search engines can see the noindex. Even when on, only the Vercel
+ * production deployment is indexable: previews and local builds never are.
  */
-export const INDEXABLE = true;
+export const INDEXABLE = false;
 
 /** `VERCEL_ENV` as Vercel sets it; undefined outside Vercel. */
 export type DeploymentEnv = 'production' | 'preview' | 'development';
