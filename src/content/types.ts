@@ -410,6 +410,60 @@ export interface ContactContent {
   };
 }
 
+/* ------------------------------------------------------------- assistant */
+
+/** Error states of the AI assistant, shown instead of an answer. */
+export interface AssistantErrors {
+  /** No API key configured, or the provider rejected ours. */
+  unavailable: string;
+  /** Too many questions from this visitor in a short time. */
+  rateLimited: string;
+  /** The model provider is overloaded or rate limited. */
+  busy: string;
+  /** The model declined to answer. */
+  refusal: string;
+  /** The question was empty, too long or the conversation too long. */
+  invalid: string;
+  /** Network failure or anything unexpected. */
+  generic: string;
+}
+
+/** "Ask me about my services": AI assistant over the site's own content (home). */
+export interface AssistantContent {
+  kicker: string;
+  title: string;
+  intro: string;
+  suggestions: {
+    label: string;
+    items: readonly string[];
+  };
+  form: {
+    label: string;
+    placeholder: string;
+    help: string;
+    submit: string;
+    stop: string;
+    reset: string;
+  };
+  conversation: {
+    label: string;
+    you: string;
+    assistant: string;
+    /** Live-region text while the answer is being written. */
+    thinking: string;
+    /** Appended when the answer was cut at the length limit. */
+    truncated: string;
+    /** Appended when the visitor stopped the answer. */
+    stopped: string;
+  };
+  /** Shown when the conversation reached its maximum number of questions. */
+  limitReached: string;
+  /** AI-generated, from the site's content, may contain errors. */
+  disclaimer: string;
+  contact: Link;
+  errors: AssistantErrors;
+}
+
 /* ------------------------------------------------------------------ root */
 
 export interface SiteContent {
@@ -421,4 +475,5 @@ export interface SiteContent {
   faq: FaqContent;
   legal: LegalContent;
   contact: ContactContent;
+  assistant: AssistantContent;
 }

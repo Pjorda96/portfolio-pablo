@@ -3,7 +3,8 @@ import { z } from 'zod';
 /**
  * Runtime-validated environment.
  *
- * `SITE_URL` plus the optional contact form (Resend) settings. Variables for
+ * `SITE_URL` plus the optional contact form (Resend) and AI assistant
+ * (Anthropic) settings. Variables for
  * services that are not integrated yet are listed commented out, next to the
  * phase that wires them in; when a service lands, uncomment its lines here, in
  * `.env.example` and in the CI workflows in the same change.
@@ -40,8 +41,13 @@ const createServerSchema = (isProduction: boolean) =>
     // derived from RESEND_API_KEY, which is stable across instances.
     CONTACT_FORM_SECRET: optional(z.string().min(16)),
 
-    // AI assistant (Anthropic) — F4
-    // ANTHROPIC_API_KEY: optional(z.string().startsWith('sk-ant-')),
+    // AI assistant (Anthropic) — F4. Optional: without the key the home
+    // assistant shows "temporarily unavailable" and its API answers 503
+    // (see src/lib/assistant/handler.ts).
+    ANTHROPIC_API_KEY: optional(z.string().startsWith('sk-ant-')),
+    // Model the assistant runs on; defaults to claude-opus-5-5. Set it to
+    // claude-haiku-5-5 to cut cost.
+    ASSISTANT_MODEL: optional(z.string().regex(/^claude-[a-z0-9.-]+$/)),
 
     // Anti-spam (Cloudflare Turnstile) — F3
     // TURNSTILE_SECRET_KEY: optional(z.string().min(1)),
@@ -91,6 +97,8 @@ const runtimeEnv: EnvSource = {
   CONTACT_FROM_EMAIL: process.env.CONTACT_FROM_EMAIL,
   CONTACT_TO_EMAIL: process.env.CONTACT_TO_EMAIL,
   CONTACT_FORM_SECRET: process.env.CONTACT_FORM_SECRET,
+  ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
+  ASSISTANT_MODEL: process.env.ASSISTANT_MODEL,
   // NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
 };
 

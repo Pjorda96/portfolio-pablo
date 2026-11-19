@@ -1,5 +1,6 @@
 import type { SiteContent } from '../types';
 import { about } from './about';
+import { assistant } from './assistant';
 import { casePixelYPapel } from './case-pixel-y-papel';
 import { contact } from './contact';
 import { faq } from './faq';
@@ -17,4 +18,5 @@ export const content: SiteContent = {
   faq,
   legal,
   contact,
+  assistant,
 };
