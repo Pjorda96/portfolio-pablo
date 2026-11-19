@@ -291,6 +291,8 @@ export interface AboutContent {
   hero: PageHero;
   avatarAlt: string;
   intro: readonly string[];
+  /** Line before the GitHub and LinkedIn links, under the intro. */
+  profiles: { label: string };
   experience: {
     title: string;
     text: string;

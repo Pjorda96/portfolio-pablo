@@ -2,9 +2,9 @@ import Image from 'next/image';
 
 import avatar from '@/assets/avatar.webp';
 import { PageTransition } from '@/components/motion/PageTransition';
-import type { AboutContent, Locale } from '@/content';
+import { owner, type AboutContent, type Locale } from '@/content';
 
-import { CARD, DiamondList, SECTION, SectionHeading } from '../home/primitives';
+import { CARD, DiamondList, SECTION, SectionHeading, TEXT_LINK } from '../home/primitives';
 import { CtaSection } from '../shared/CtaSection';
 import { PageIntro } from '../shared/PageIntro';
 
@@ -19,7 +19,7 @@ interface AboutPageProps {
  * of working together, closing on the contact CTA.
  */
 export function AboutPage({ content }: AboutPageProps) {
-  const { hero, intro, experience, specialties, quality, working } = content;
+  const { hero, intro, profiles, experience, specialties, quality, working } = content;
 
   return (
     <PageTransition>
@@ -38,6 +38,20 @@ export function AboutPage({ content }: AboutPageProps) {
           {intro.map((p) => (
             <p key={p}>{p}</p>
           ))}
+          <p className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-base text-text-muted">
+            <span>{profiles.label}</span>
+            <a href={owner.profiles.github} rel="me noopener" target="_blank" className={TEXT_LINK}>
+              GitHub
+            </a>
+            <a
+              href={owner.profiles.linkedin}
+              rel="me noopener"
+              target="_blank"
+              className={TEXT_LINK}
+            >
+              LinkedIn
+            </a>
+          </p>
         </div>
       </div>
 

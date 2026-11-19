@@ -18,6 +18,7 @@ export const about: AboutContent = {
     'Today I work with companies and founders who have a specific problem or an idea to take to production. You bring the knowledge of your business; I take care of everything technical.',
     'AI is my everyday working tool. It helps me analyse, code, test and document much faster. What doesn’t change is the judgement: every decision and every line I deliver goes through my own review.',
   ],
+  profiles: { label: 'You can also find me on' },
   experience: {
     title: 'Experience',
     text: 'I’ve worked in sectors where mistakes are expensive and quality isn’t optional:',
