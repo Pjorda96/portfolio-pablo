@@ -76,6 +76,7 @@ Las versiones (release candidates por pull request, `CHANGELOG.md` y etiquetas) 
 - **Conventional Commits** verificados con commitlint en cada commit; lint y formato de los archivos modificados con lint-staged.
 - **Integración continua:** cada push a `develop` y cada pull request ejecutan tipos, lint, formato, tests y build en GitHub Actions.
 - **Dependencias al día** con Dependabot, agrupando actualizaciones menores.
+- **Cabeceras de seguridad:** CSP estática, HSTS, COOP/CORP y Permissions-Policy, con `npm audit` en cada pull request; detalles en [docs/SECURITY.md](docs/SECURITY.md).
 
 ## Licencia
 

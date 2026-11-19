@@ -33,6 +33,20 @@ const config = [
     },
   },
 
+  // Zod must come configured for the CSP (no `new Function` probe), see src/lib/zod.ts.
+  {
+    files: ['src/**/*.ts', 'src/**/*.tsx'],
+    ignores: ['src/lib/zod.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [{ name: 'zod', message: "Import { z } from '@/lib/zod' (CSP-safe config)." }],
+        },
+      ],
+    },
+  },
+
   // Last, so formatting is Prettier's job and never a lint error.
   prettier,
 

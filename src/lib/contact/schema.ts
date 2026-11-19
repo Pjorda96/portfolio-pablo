@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from '@/lib/zod';
 
 import { SERVICE_IDS, type ContactContent } from '@/content/types';
 

@@ -1,6 +1,5 @@
-import { z } from 'zod';
-
 import { DEPLOYMENT_ENVS } from './lib/indexing';
+import { z } from './lib/zod';
 
 /**
  * Runtime-validated environment.
