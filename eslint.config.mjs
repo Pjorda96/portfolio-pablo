@@ -36,12 +36,15 @@ const config = [
   // Zod must come configured for the CSP (no `new Function` probe), see src/lib/zod.ts.
   {
     files: ['src/**/*.ts', 'src/**/*.tsx'],
-    ignores: ['src/lib/zod.ts'],
+    // env.ts is server-only and needs full Zod (preprocess, extend...).
+    ignores: ['src/lib/zod.ts', 'src/env.ts'],
     rules: {
       'no-restricted-imports': [
         'error',
         {
-          paths: [{ name: 'zod', message: "Import { z } from '@/lib/zod' (CSP-safe config)." }],
+          paths: [
+            { name: 'zod', message: "Import * as z from '@/lib/zod' (Zod Mini, CSP-safe config)." },
+          ],
         },
       ],
     },

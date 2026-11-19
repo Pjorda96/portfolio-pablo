@@ -1,5 +1,7 @@
 import { DEPLOYMENT_ENVS } from './lib/indexing';
-import { z } from './lib/zod';
+// Server only (and next.config.ts): full Zod is fine here, it never reaches
+// the browser bundle nor runs under the CSP.
+import { z } from 'zod';
 
 /**
  * Runtime-validated environment.
