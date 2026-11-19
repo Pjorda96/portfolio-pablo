@@ -1,13 +1,15 @@
 import type { ReactNode } from 'react';
 
+import { REVEAL } from '@/components/motion/reveal';
+
 /**
  * Small building blocks shared by the home, About and FAQ bodies. They mirror
  * the city interface: mono kickers, Syne headings, quiet cards over the
  * ground colour and the accent diamond as bullet.
  */
 
-/** Horizontal rhythm of every content section. */
-export const SECTION = 'mx-auto grid max-w-6xl scroll-mt-4 gap-10 px-4 py-16 sm:px-6 sm:py-20';
+/** Horizontal rhythm of every content section; it fades in as it scrolls into view. */
+export const SECTION = `${REVEAL} mx-auto grid max-w-6xl scroll-mt-4 gap-10 px-4 py-16 sm:px-6 sm:py-20`;
 
 /** Quiet card, the same surface as the city's places. */
 export const CARD = 'rounded-[14px] border border-line bg-surface p-6';

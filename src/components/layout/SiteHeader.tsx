@@ -25,7 +25,8 @@ export function SiteHeader({ locale, always = false }: { locale: Locale; always?
 
   return (
     <Wrapper>
-      <header className="sticky top-0 z-40 px-3 pt-3 sm:px-4">
+      {/* Named so page transitions leave it in place, above the page snapshots. */}
+      <header className="sticky top-0 z-40 px-3 pt-3 [view-transition-name:site-header] sm:px-4">
         <div className="mx-auto flex max-w-6xl items-center gap-3 glass py-2 pr-2 pl-2.5">
           <Link
             href={nav.home.href}

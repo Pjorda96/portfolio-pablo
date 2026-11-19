@@ -50,7 +50,14 @@ export default async function LocaleLayout({
 
   return (
     // The boot script sets data-theme, data-mode and --sky on <html> before first paint.
-    <html lang={meta.htmlLang} className={fontVariables} suppressHydrationWarning>
+    // data-scroll-behavior: Next turns the CSS smooth scroll off while it scrolls to the
+    // top of a new page, so only in-page anchors glide.
+    <html
+      lang={meta.htmlLang}
+      className={fontVariables}
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
       </head>

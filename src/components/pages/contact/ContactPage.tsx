@@ -1,5 +1,6 @@
 import NextLink from 'next/link';
 
+import { PageTransition } from '@/components/motion/PageTransition';
 import type { ContactContent, Locale } from '@/content';
 import type { ContactFormUi } from '@/content/es/contact';
 
@@ -22,7 +23,7 @@ export function ContactPage({ locale, content, ui, formToken }: ContactPageProps
   const { hero, nextSteps, form, privacyNotice } = content;
 
   return (
-    <>
+    <PageTransition>
       <PageIntro kicker={hero.kicker} title={hero.title} lead={hero.lead} />
 
       <div className="mx-auto grid max-w-6xl gap-10 px-4 pb-20 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(260px,340px)] lg:gap-14">
@@ -90,6 +91,6 @@ export function ContactPage({ locale, content, ui, formToken }: ContactPageProps
           </div>
         </aside>
       </div>
-    </>
+    </PageTransition>
   );
 }

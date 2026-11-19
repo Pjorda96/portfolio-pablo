@@ -1,6 +1,7 @@
 import Image from 'next/image';
 
 import avatar from '@/assets/avatar.webp';
+import { AssistantSection } from '@/components/assistant/AssistantSection';
 import {
   getContent,
   getFaqItems,
@@ -43,6 +44,7 @@ export function HomeSections({ locale }: { locale: Locale }) {
       />
       <ProcessSection locale={locale} />
       <CapabilitiesSection locale={locale} />
+      <AssistantSection locale={locale} />
       <FaqTeaserSection locale={locale} />
       <div id={anchors.faro} className="scroll-mt-4">
         <CtaSection cta={c.home.finalCta} />

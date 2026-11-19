@@ -1,5 +1,6 @@
 import Image, { type StaticImageData } from 'next/image';
 
+import { PageTransition } from '@/components/motion/PageTransition';
 import type { CaseStudyContent, Link as ContentLink, Locale } from '@/content';
 
 import { CardGrid, ContentSection, DiamondList, Prose } from '../service/ContentSection';
@@ -50,7 +51,7 @@ export function CasePixelYPapelPage({ locale, content, gallery }: CasePixelYPape
   const { context, challenge, solution, role, result, stack } = content;
 
   return (
-    <>
+    <PageTransition>
       <PageIntro kicker={content.hero.kicker} title={content.hero.title} lead={content.hero.lead}>
         <dl className="mt-4 grid gap-px overflow-hidden rounded-[14px] border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
           {content.facts.map((fact) => (
@@ -130,6 +131,6 @@ export function CasePixelYPapelPage({ locale, content, gallery }: CasePixelYPape
       </ContentSection>
 
       <CtaSection cta={content.cta} />
-    </>
+    </PageTransition>
   );
 }

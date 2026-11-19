@@ -1,3 +1,4 @@
+import { PageTransition } from '@/components/motion/PageTransition';
 import { getContent, getService, SERVICE_IDS, type Locale, type ServiceContent } from '@/content';
 import { Link } from '@/i18n/navigation';
 import { paths } from '@/i18n/routing';
@@ -27,7 +28,7 @@ export function ServicePage({ locale, service }: ServicePageProps) {
   const sid = (part: string) => `${service.id}-${part}`;
 
   return (
-    <>
+    <PageTransition>
       <PageIntro kicker={service.hero.kicker} title={service.hero.title} lead={service.hero.lead}>
         <p className="mt-2 flex items-end gap-3 text-text">
           <LandmarkSilhouette service={service.id} className="h-10 w-auto shrink-0 sm:h-12" />
@@ -126,6 +127,6 @@ export function ServicePage({ locale, service }: ServicePageProps) {
       </ContentSection>
 
       <CtaSection cta={service.cta} />
-    </>
+    </PageTransition>
   );
 }

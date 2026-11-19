@@ -1,6 +1,7 @@
 import NextLink from 'next/link';
 import { Fragment, type ReactNode } from 'react';
 
+import { PageTransition } from '@/components/motion/PageTransition';
 import { getContent, type LegalContent, type LegalSection, type Locale } from '@/content';
 
 import { PageIntro } from '../shared/PageIntro';
@@ -38,7 +39,7 @@ export function LegalDocument({ locale, document }: LegalDocumentProps) {
   ).filter((link) => link.id !== document);
 
   return (
-    <>
+    <PageTransition>
       <PageIntro title={page.title} lead={page.updated}>
         {isDraft && (
           <p role="note" className="max-w-[60ch] glass px-4 py-3 text-sm">
@@ -77,7 +78,7 @@ export function LegalDocument({ locale, document }: LegalDocumentProps) {
           </ul>
         </nav>
       </div>
-    </>
+    </PageTransition>
   );
 }
 

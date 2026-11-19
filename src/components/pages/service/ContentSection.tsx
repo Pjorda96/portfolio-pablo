@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
 
+import { REVEAL } from '@/components/motion/reveal';
+
 interface ContentSectionProps {
   /** Id of the section's `h2`; the section is labelled by it. */
   id: string;
@@ -12,11 +14,12 @@ interface ContentSectionProps {
 /**
  * One block of an inner page body: an `h2` (with an optional intro) beside its
  * content on wide screens, stacked on small ones. Sections are divided by a
- * hairline so long pages read as a sequence of streets, not one wall of text.
+ * hairline so long pages read as a sequence of streets, not one wall of text,
+ * and fades in as it scrolls into view.
  */
 export function ContentSection({ id, title, intro, children }: ContentSectionProps) {
   return (
-    <section aria-labelledby={id} className="mx-auto max-w-6xl px-4 sm:px-6">
+    <section aria-labelledby={id} className={`${REVEAL} mx-auto max-w-6xl px-4 sm:px-6`}>
       <div className="grid gap-6 border-t border-line py-12 sm:py-16 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-12">
         <div className="grid content-start gap-3">
           <h2

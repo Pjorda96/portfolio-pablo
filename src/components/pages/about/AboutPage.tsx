@@ -1,6 +1,7 @@
 import Image from 'next/image';
 
 import avatar from '@/assets/avatar.webp';
+import { PageTransition } from '@/components/motion/PageTransition';
 import type { AboutContent, Locale } from '@/content';
 
 import { CARD, DiamondList, SECTION, SectionHeading } from '../home/primitives';
@@ -21,7 +22,7 @@ export function AboutPage({ content }: AboutPageProps) {
   const { hero, intro, experience, specialties, quality, working } = content;
 
   return (
-    <>
+    <PageTransition>
       <PageIntro kicker={hero.kicker} title={hero.title} lead={hero.lead} />
 
       <div className={`${SECTION} pt-0 sm:pt-0 md:grid-cols-[minmax(0,240px)_1fr] md:items-start`}>
@@ -95,6 +96,6 @@ export function AboutPage({ content }: AboutPageProps) {
       </div>
 
       <CtaSection cta={content.cta} />
-    </>
+    </PageTransition>
   );
 }

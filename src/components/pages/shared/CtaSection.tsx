@@ -1,5 +1,6 @@
 import NextLink from 'next/link';
 
+import { REVEAL } from '@/components/motion/reveal';
 import type { CtaBlock } from '@/content';
 
 /**
@@ -8,7 +9,10 @@ import type { CtaBlock } from '@/content';
  */
 export function CtaSection({ cta }: { cta: CtaBlock }) {
   return (
-    <section aria-labelledby="cta-title" className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+    <section
+      aria-labelledby="cta-title"
+      className={`${REVEAL} mx-auto max-w-6xl px-4 py-16 sm:px-6`}
+    >
       <div className="grid gap-4 rounded-[14px] border border-line bg-surface p-6 sm:p-10">
         <h2
           id="cta-title"
