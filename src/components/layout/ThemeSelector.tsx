@@ -13,7 +13,7 @@ import {
 const serverSnapshot = () => 'auto' as const;
 
 /**
- * Auto (the palette follows the city's hour) / Light / Dark. A radio group:
+ * Auto (the palette follows the system / browser setting) / Light / Dark. A radio group:
  * arrow keys move between options, as with any native radio set.
  */
 export function ThemeSelector({ className = '' }: { className?: string }) {

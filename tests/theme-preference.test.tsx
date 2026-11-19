@@ -4,27 +4,72 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ThemeSelector } from '@/components/layout/ThemeSelector';
 import { themeBootScript } from '@/lib/theme/boot-script';
 import { resolveMode, THEME_STORAGE_KEY, writePreference } from '@/lib/theme/preference';
-import { uiModeOf } from '@/lib/time-of-day';
 
 import { renderWithIntl } from './utils/intl';
 
 const root = document.documentElement;
 
+/** jsdom has no matchMedia: fake `prefers-color-scheme` with a switchable value. */
+function mockSystemScheme(dark: boolean) {
+  const listeners = new Set<() => void>();
+  const query = {
+    matches: dark,
+    media: '(prefers-color-scheme: dark)',
+    addEventListener: (_: string, l: () => void) => listeners.add(l),
+    removeEventListener: (_: string, l: () => void) => listeners.delete(l),
+  };
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn(() => query),
+  );
+  return {
+    set(next: boolean) {
+      query.matches = next;
+      for (const l of listeners) l();
+    },
+  };
+}
+
 afterEach(() => {
   writePreference('auto');
   vi.useRealTimers();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
   window.localStorage.clear();
   root.removeAttribute('data-mode');
   root.removeAttribute('data-theme');
 });
 
 describe('theme preference', () => {
-  it('resolves auto from the hour and pins light / dark', () => {
-    expect(resolveMode('auto', 13)).toBe(uiModeOf(13));
-    expect(resolveMode('auto', 1)).toBe('night');
-    expect(resolveMode('light', 1)).toBe('day');
-    expect(resolveMode('dark', 13)).toBe('night');
+  it('resolves auto from the system scheme and pins light / dark', () => {
+    expect(resolveMode('auto', true)).toBe('night');
+    expect(resolveMode('auto', false)).toBe('day');
+    expect(resolveMode('light', true)).toBe('day');
+    expect(resolveMode('dark', false)).toBe('night');
+  });
+
+  it.each([
+    [true, 'night'],
+    [false, 'day'],
+  ] as const)('boot script follows a system dark=%s scheme on auto, at any hour', (dark, mode) => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 5, 21, dark ? 12 : 23, 0));
+    mockSystemScheme(dark);
+
+    new Function(themeBootScript)();
+
+    expect(root.getAttribute('data-theme')).toBe('auto');
+    expect(root.getAttribute('data-mode')).toBe(mode);
+  });
+
+  it('auto reacts when the system scheme changes', () => {
+    const scheme = mockSystemScheme(false);
+    renderWithIntl(<ThemeSelector />, 'es');
+    writePreference('auto');
+    expect(root.getAttribute('data-mode')).toBe('day');
+
+    scheme.set(true);
+    expect(root.getAttribute('data-mode')).toBe('night');
   });
 
   it.each([
@@ -42,8 +87,7 @@ describe('theme preference', () => {
   });
 
   it('boot script falls back to auto when storage is unavailable', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date(2026, 5, 21, 23, 0));
+    mockSystemScheme(true);
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new Error('blocked');
     });

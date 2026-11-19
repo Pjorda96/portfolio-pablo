@@ -13,7 +13,7 @@ import {
 } from 'react';
 
 import type { CityCopy, PlaceId } from '@/content/site';
-import { applyPreference, setAutoHourSource, subscribePreference } from '@/lib/theme/preference';
+import { applyPreference } from '@/lib/theme/preference';
 import { colorAt, SKY_STOPS } from '@/lib/time-of-day';
 
 import { announcePlace, CityCopyProvider, placeIn } from './copy-context';
@@ -108,26 +108,17 @@ export function CityExperience({ copy, header, hero, pageLinks }: CityExperience
   const sheetHeading = useRef<HTMLHeadingElement>(null);
   const moveFocusToSheet = useRef(false);
 
-  // The static sky follows the city's hour, and so does the UI palette while
-  // the theme is on Auto. Layout effect: React's dev remount resets <html>
-  // attributes the boot script had set.
+  // The static sky follows the city's hour; the UI palette follows the theme
+  // preference (`preference.ts`). Layout effect: React's dev remount resets
+  // <html> attributes the boot script had set.
   useLayoutEffect(() => {
     const root = document.documentElement;
-    setAutoHourSource(() => store.getState().hour);
     const sync = () => {
-      applyPreference();
       root.style.setProperty('--sky', colorAt(SKY_STOPS, store.getState().hour));
     };
+    applyPreference();
     sync();
-    const offStore = store.subscribe(sync);
-    const offPreference = subscribePreference(sync);
-    return () => {
-      offStore();
-      offPreference();
-      // Leaving the home: Auto follows the visitor's clock again.
-      setAutoHourSource(null);
-      applyPreference();
-    };
+    return store.subscribe(sync);
   }, [store]);
 
   useEffect(() => () => store.dispose(), [store]);

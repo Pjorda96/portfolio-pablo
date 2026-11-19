@@ -8,10 +8,10 @@
    and checks WCAG AA for every pair). Components only use the semantic
    tokens, which pick the day or night value with `light-dark()`.
 
-   The theme follows the city's hour: the boot script in the root layout sets
-   `data-mode` on <html> before first paint, which pins `color-scheme`.
-   Without JavaScript `color-scheme: light dark` lets the OS preference
-   decide.
+   The theme follows the visitor's system / browser setting unless they pin
+   Light or Dark: the boot script in the root layout sets `data-mode` on
+   <html> before first paint, which pins `color-scheme`. Without JavaScript
+   `color-scheme: light dark` lets the OS preference decide as well.
    ============================================================ */
 
 @theme inline {
