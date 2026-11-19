@@ -14,6 +14,7 @@ import {
   pageMetadata,
   robots,
   robotsFor,
+  robotsTxt,
   SITE_PAGES,
 } from '@/lib/seo';
 
@@ -145,10 +146,13 @@ describe('metadata of every page', () => {
 });
 
 describe('indexing', () => {
-  it('is switched on since launch, but tests and local builds stay noindex', () => {
-    expect(INDEXABLE).toBe(true);
-    // No VERCEL_ENV here, as in any local build: never indexable.
+  it('keeps the site out of search engines until the public launch', () => {
+    expect(INDEXABLE).toBe(false);
     expect(robots).toEqual({ index: false, follow: false });
+  });
+
+  it('still lets crawlers in, so they can read the noindex', () => {
+    expect(robotsTxt('https://pablojorda.es').rules).toMatchObject({ userAgent: '*', allow: '/' });
   });
 
   // INDEXABLE x VERCEL_ENV: only the switched-on production deployment is indexable.
