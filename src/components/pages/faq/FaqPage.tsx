@@ -1,3 +1,4 @@
+import { PageTransition } from '@/components/motion/PageTransition';
 import type { FaqContent, Locale } from '@/content';
 
 import { SECTION } from '../home/primitives';
@@ -18,7 +19,7 @@ interface FaqPageProps {
  */
 export function FaqPage({ content }: FaqPageProps) {
   return (
-    <>
+    <PageTransition>
       <PageIntro kicker={content.hero.kicker} title={content.hero.title} lead={content.hero.lead} />
       <section aria-labelledby="faq-list-title" className={`${SECTION} pt-0 sm:pt-0`}>
         <h2 id="faq-list-title" className="sr-only">
@@ -30,6 +31,6 @@ export function FaqPage({ content }: FaqPageProps) {
         <OpenFaqFromHash />
       </section>
       <CtaSection cta={content.cta} />
-    </>
+    </PageTransition>
   );
 }

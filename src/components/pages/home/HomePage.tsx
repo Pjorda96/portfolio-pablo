@@ -1,6 +1,7 @@
 import { CityExperience } from '@/components/city/CityExperience';
 import type { PlacePageLinks } from '@/components/city/ui/PlaceSheet';
 import { HomeBrandChip } from '@/components/layout/SiteHeader';
+import { PageTransition } from '@/components/motion/PageTransition';
 import { getContent, type Locale } from '@/content';
 import { getCityCopy } from '@/content/site';
 
@@ -37,7 +38,7 @@ export function HomePage({ locale }: { locale: Locale }) {
   const { hero } = copy;
 
   return (
-    <>
+    <PageTransition>
       <a
         href={`#${PLACES_ID}`}
         className="sr-only z-50 glass px-4 py-2 focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
@@ -64,6 +65,6 @@ export function HomePage({ locale }: { locale: Locale }) {
       <div id={PLACES_ID} className="scroll-mt-4">
         <HomeSections locale={locale} />
       </div>
-    </>
+    </PageTransition>
   );
 }
