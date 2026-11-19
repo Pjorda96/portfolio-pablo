@@ -130,6 +130,14 @@ describe('submitContact', () => {
     );
   });
 
+  it.each([
+    ['an unknown', 'fr'],
+    ['a missing', null],
+  ])('tags %s page locale as Spanish', async (_label, locale) => {
+    await submitContact(formData({ locale }), deps());
+    expect(mailer.mock.calls[0]![0].text).toContain('Idioma de la web: ES');
+  });
+
   it('reports a generic error when the provider fails', async () => {
     mailer.mockResolvedValue(false);
     expect(await submitContact(formData(), deps())).toMatchObject({

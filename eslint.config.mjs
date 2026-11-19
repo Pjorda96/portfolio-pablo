@@ -33,11 +33,36 @@ const config = [
     },
   },
 
+  // Zod must come configured for the CSP (no `new Function` probe), see src/lib/zod.ts.
+  {
+    files: ['src/**/*.ts', 'src/**/*.tsx'],
+    // env.ts is server-only and needs full Zod (preprocess, extend...).
+    ignores: ['src/lib/zod.ts', 'src/env.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            { name: 'zod', message: "Import * as z from '@/lib/zod' (Zod Mini, CSP-safe config)." },
+          ],
+        },
+      ],
+    },
+  },
+
   // Last, so formatting is Prettier's job and never a lint error.
   prettier,
 
   {
-    ignores: ['.next/**', 'node_modules/**', 'coverage/**', 'next-env.d.ts'],
+    ignores: [
+      '.next/**',
+      'node_modules/**',
+      'coverage/**',
+      'playwright-report/**',
+      'test-results/**',
+      '.lighthouseci/**',
+      'next-env.d.ts',
+    ],
   },
 ];
 

@@ -1,6 +1,7 @@
-import { z } from 'zod';
-
 import { DEPLOYMENT_ENVS } from './lib/indexing';
+// Server only (and next.config.ts): full Zod is fine here, it never reaches
+// the browser bundle nor runs under the CSP.
+import { z } from 'zod';
 
 /**
  * Runtime-validated environment.
@@ -42,6 +43,15 @@ const createServerSchema = (isProduction: boolean) =>
     // Secret that signs the form's anti-spam timestamp. Falls back to a value
     // derived from RESEND_API_KEY, which is stable across instances.
     CONTACT_FORM_SECRET: optional(z.string().min(16)),
+    // End-to-end tests only: `1` swaps Resend for a mailer that sends nothing
+    // (src/lib/contact/transport.ts). Rejected on the production deployment.
+    CONTACT_TEST_MAILER: z.preprocess(
+      emptyToUndefined,
+      z
+        .enum(['0', '1'])
+        .optional()
+        .transform((value) => value === '1'),
+    ),
 
     // AI assistant (Anthropic) — F4. Optional: without the key the home
     // assistant shows "temporarily unavailable" and its API answers 503
@@ -91,7 +101,16 @@ export function parseEnv(source: EnvSource, { isServer = true } = {}): Env {
     );
   }
 
-  return parsed.data as Env;
+  const data = parsed.data as Env;
+  // The test mailer sends nothing: on the live site it would swallow every
+  // message. Stop the build (next.config.ts parses the environment) instead.
+  if (data.CONTACT_TEST_MAILER && data.VERCEL_ENV === 'production') {
+    throw new Error(
+      'Invalid environment variables:\n  - CONTACT_TEST_MAILER: not allowed when ' +
+        'VERCEL_ENV is production (end-to-end tests only).',
+    );
+  }
+  return data;
 }
 
 /**
@@ -105,6 +124,7 @@ const runtimeEnv: EnvSource = {
   CONTACT_FROM_EMAIL: process.env.CONTACT_FROM_EMAIL,
   CONTACT_TO_EMAIL: process.env.CONTACT_TO_EMAIL,
   CONTACT_FORM_SECRET: process.env.CONTACT_FORM_SECRET,
+  CONTACT_TEST_MAILER: process.env.CONTACT_TEST_MAILER,
   ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
   ASSISTANT_MODEL: process.env.ASSISTANT_MODEL,
   VERCEL_ENV: process.env.VERCEL_ENV,

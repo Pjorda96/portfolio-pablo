@@ -45,14 +45,15 @@ describe('LocaleSwitcher', () => {
     expect(link).toHaveAccessibleName('Cambiar idioma: English');
   });
 
-  // Towards the default locale the link carries the `/es` prefix: the proxy
-  // records the choice in the locale cookie and redirects to the bare URL.
-  it.each(counterparts)('links $en back to $es', ({ es, en }) => {
-    navigation.pathname = en;
+  // Towards the default locale the link is the canonical bare URL, never the
+  // `/es/...` form the proxy would only redirect (there is no locale cookie).
+  it.each(counterparts)('links $en back to $es', ({ es }) => {
+    // `usePathname` gives the internal (Spanish) pathname on every locale.
+    navigation.pathname = es;
     renderWithIntl(<LocaleSwitcher />, 'en');
 
     const link = screen.getByRole('link', { name: /Español/ });
-    expect(link).toHaveAttribute('href', es === '/' ? '/es' : `/es${es}`);
+    expect(link).toHaveAttribute('href', es);
     expect(link).toHaveAttribute('hreflang', 'es');
   });
 });

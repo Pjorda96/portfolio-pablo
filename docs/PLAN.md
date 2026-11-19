@@ -36,7 +36,7 @@ Misma base probada en attrezzo / pixelypapel / viajapp (coherencia y velocidad),
 - **WebGL** ligero en el hero (shader / R3F cargado de forma diferida, fallback estático, sin penalizar LCP)
 - **IA real en la web:** asistente "pregúntame sobre mis servicios" con la API de Claude, respuestas basadas solo en el contenido del sitio, streaming, rate limit y coste acotado → demuestra el servicio de soluciones con IA en vivo
 - **Resend** + Zod + rate limit + honeypot / Cloudflare Turnstile en el formulario
-- **Seguridad:** CSP con nonce, HSTS, COOP/CORP, Permissions-Policy
+- **Seguridad:** CSP estática (sin nonce, para no perder el prerenderizado), HSTS, COOP/CORP, Permissions-Policy ([SECURITY.md](SECURITY.md))
 - **Calidad:** Vitest + Testing Library, Playwright E2E, axe, Lighthouse CI con presupuestos, GitHub Actions, Husky
 - **Hosting:** Vercel (región fra1) · Vercel Analytics + Speed Insights
 

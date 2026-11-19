@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from '@/lib/zod';
 
 import { SERVICE_IDS, type ContactContent } from '@/content/types';
 
@@ -54,20 +54,32 @@ export function readContactValues(formData: FormData): ContactValues {
 const message = (key: ContactErrorKey) => ({ error: key });
 
 export const contactSchema = z.object({
-  name: z.string().trim().min(1, message('nameRequired')).max(NAME_MAX, message('nameRequired')),
-  email: z
+  name: z
     .string()
-    .trim()
-    .min(1, message('emailRequired'))
-    .max(EMAIL_MAX, message('emailInvalid'))
-    .pipe(z.email(message('emailInvalid'))),
-  company: z.string().trim().max(COMPANY_MAX, message('generic')),
+    .check(
+      z.trim(),
+      z.minLength(1, message('nameRequired')),
+      z.maxLength(NAME_MAX, message('nameRequired')),
+    ),
+  email: z.pipe(
+    z
+      .string()
+      .check(
+        z.trim(),
+        z.minLength(1, message('emailRequired')),
+        z.maxLength(EMAIL_MAX, message('emailInvalid')),
+      ),
+    z.email(message('emailInvalid')),
+  ),
+  company: z.string().check(z.trim(), z.maxLength(COMPANY_MAX, message('generic'))),
   service: z.enum(PROJECT_TYPES, message('serviceRequired')),
   message: z
     .string()
-    .trim()
-    .min(MESSAGE_MIN, message('messageTooShort'))
-    .max(MESSAGE_MAX, message('messageTooLong')),
+    .check(
+      z.trim(),
+      z.minLength(MESSAGE_MIN, message('messageTooShort')),
+      z.maxLength(MESSAGE_MAX, message('messageTooLong')),
+    ),
   privacy: z.literal(true, message('privacyRequired')),
 });
 

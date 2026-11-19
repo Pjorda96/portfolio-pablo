@@ -30,10 +30,24 @@ export default defineConfig({
     // next-intl imports `next/navigation` without an extension, which Node's
     // ESM resolver rejects; let Vite resolve it instead.
     server: { deps: { inline: ['next-intl'] } },
+    // Some suites import heavy modules afresh (the Anthropic SDK, three.js);
+    // on a cold, instrumented run (`--coverage` in CI) that alone can pass 5 s.
+    testTimeout: 15_000,
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
-      reporter: ['text', 'html'],
+      // `text-summary` for the CI log, `html` to browse, `json-summary` for tools.
+      reporter: ['text-summary', 'html', 'json-summary'],
+      // Floors just under the current numbers, so coverage cannot quietly
+      // drop. Not 100%: the WebGL city, the thin App Router files (page,
+      // opengraph-image) and the layout shell are covered by the E2E tests
+      // (`e2e/`) instead. Raise them as the suite grows.
+      thresholds: {
+        statements: 84,
+        branches: 81,
+        functions: 80,
+        lines: 84,
+      },
     },
   },
 });
