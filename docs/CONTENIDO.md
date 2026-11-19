@@ -33,7 +33,7 @@ Todo el copy de la web vive en `src/content/`, en español (`es/`) e inglés (`e
 - **Promesas de plazo.** «MVPs en semanas, no en meses» y «una web a medida suele estar en producción en pocas semanas». Ajústalo si no quieres comprometerte con eso.
 - **IA dentro del producto.** En Soluciones con IA digo que, si la mejor solución incluye un modelo de IA en el producto, lo integro con criterio, y si no hace falta, no. El mensaje principal sigue siendo que la IA es tu herramienta.
 - **Datos y modelos.** En la FAQ de IA afirmo que solo usas proveedores cuyas condiciones impiden entrenar con los datos del cliente. Confírmalo con tu forma real de trabajar.
-- **Sectores de experiencia.** Seguros, fintech y blockchain, y software de arquitectura, sin nombres de empresa y sin hablar de empleo actual.
+- **Sectores de experiencia.** Seguros, fintech y blockchain, y consultoría, sin nombres de empresa y sin hablar de empleo actual.
 - **Inglés.** Escrito como copy propio, no traducido literal. SEO orientado a «freelance web developer in Spain». Los textos legales en inglés indican que prevalece la versión en español.
 - **Home F1.** Cambio de copy: en el Mercado Central, «Caso de estudio completo, próximamente» pasa a «Caso de estudio: contexto, reto y solución». Lo demás de la home se mantiene igual.
 - **Interfaz de la ciudad.** Desde F3 los textos de la interfaz 3D (reloj, botones, avisos) están en `home.city.ui` de cada idioma.

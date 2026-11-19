@@ -5,7 +5,7 @@ export const about: AboutContent = {
   meta: {
     title: 'Sobre mí · Pablo Jordá, desarrollador full-stack',
     description:
-      'Desarrollador full-stack potenciado por IA en Valencia, con más de 7 años en seguros, fintech y arquitectura. Cómo trabajo y qué me importa.',
+      'Desarrollador full-stack potenciado por IA en Valencia, con más de 7 años en seguros, fintech y consultoría. Cómo trabajo y qué me importa.',
   },
   hero: {
     kicker: 'Sobre mí',
@@ -32,8 +32,8 @@ export const about: AboutContent = {
         text: 'Productos financieros donde la seguridad, la trazabilidad y la fiabilidad son el punto de partida.',
       },
       {
-        title: 'Software de arquitectura',
-        text: 'Herramientas técnicas para profesionales exigentes, con interfaces ricas y mucho detalle.',
+        title: 'Consultoría',
+        text: 'Proyectos para clientes de distintos sectores, donde cada encargo exige entender un negocio nuevo y entregar con rigor.',
       },
     ],
   },
