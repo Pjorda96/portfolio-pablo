@@ -10,4 +10,9 @@ export const owner = {
   email: 'pjorda96@gmail.com',
   domain: 'pablojorda.es',
   url: 'https://pablojorda.es',
+  /** Public profiles: footer links and `Person.sameAs` in the JSON-LD. */
+  profiles: {
+    github: 'https://github.com/Pjorda96',
+    linkedin: 'https://www.linkedin.com/in/pjorda',
+  },
 } as const;

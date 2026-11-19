@@ -70,6 +70,7 @@ export function personNode(locale: Locale, origin: string = env.SITE_URL): Perso
     knowsLanguage: KNOWS_LANGUAGE,
     knowsAbout: about.specialties.items,
     mainEntityOfPage: pageUrl(locale, paths.about, origin),
+    sameAs: Object.values(owner.profiles),
   };
 }
 

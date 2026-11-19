@@ -87,7 +87,7 @@ export const casePixelYPapel: CaseStudyContent = {
     title: 'Tecnología',
     items: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'next-intl', 'PostgreSQL', 'Vercel'],
   },
-  link: { label: 'Visitar Píxel y Papel', href: 'https://pixelypapel.com' },
+  link: { label: 'Visitar Píxel y Papel', href: 'https://www.pixelypapel.com/' },
   cta: {
     title: '¿Tienes un producto en mente?',
     text: 'Puedo ayudarte a llevarlo a producción con la misma base técnica. Cuéntame tu idea.',

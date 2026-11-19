@@ -55,7 +55,7 @@ describe.each(LOCALES)('CasePixelYPapelPage (%s)', (locale) => {
     const links = screen.getAllByRole('link', { name: new RegExp(c.link.label) });
     expect(links.length).toBeGreaterThan(0);
     for (const link of links) {
-      expect(link).toHaveAttribute('href', 'https://pixelypapel.com');
+      expect(link).toHaveAttribute('href', 'https://www.pixelypapel.com/');
       expect(link).toHaveAttribute('target', '_blank');
       expect(link.getAttribute('rel')).toContain('noopener');
       expect(link.querySelector('.sr-only')?.textContent).toMatch(/\S/);
