@@ -93,6 +93,7 @@ export const home: HomeContent = {
       clock: {
         label: 'Hora de la ciudad',
         slider: 'Hora del día en la ciudad',
+        toggle: 'Cambiar la hora de la ciudad',
         real: 'Hora real',
         play: 'Ver un día entero',
         modes: { real: 'tu hora', play: 'un día en 24 s', manual: 'hora elegida' },

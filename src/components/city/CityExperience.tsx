@@ -220,7 +220,7 @@ export function CityExperience({ copy, header, hero, pageLinks }: CityExperience
 
         <Pins pins={pins} hovered={hovered} focused={focused} visible={cityRunning} />
 
-        <div className="pointer-events-none absolute inset-0 grid grid-rows-[auto_1fr_auto] gap-4 p-[max(16px,env(safe-area-inset-top,0px))_max(16px,env(safe-area-inset-right,0px))_max(16px,env(safe-area-inset-bottom,0px))_max(16px,env(safe-area-inset-left,0px))] *:pointer-events-auto">
+        <div className="pointer-events-none absolute inset-0 grid grid-cols-[minmax(0,1fr)] grid-rows-[auto_1fr_auto] gap-4 p-[max(16px,env(safe-area-inset-top,0px))_max(16px,env(safe-area-inset-right,0px))_max(16px,env(safe-area-inset-bottom,0px))_max(16px,env(safe-area-inset-left,0px))] *:pointer-events-auto">
           <div className="pointer-events-none flex items-start justify-between gap-3 *:pointer-events-auto">
             {header ?? <span aria-hidden="true" />}
             <Clock store={store} />

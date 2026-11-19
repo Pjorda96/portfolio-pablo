@@ -36,9 +36,12 @@ export function Pins({ pins, hovered, focused, visible }: PinsProps) {
           data-dim={(focused && focused !== p.id) || undefined}
           className="group absolute top-0 left-0 flex flex-col items-center gap-1 transition-opacity duration-300 data-dim:opacity-0"
         >
-          <span className="rounded-full border border-line bg-glass px-[7px] py-1 font-mono text-[11px] leading-none font-semibold tracking-[0.06em] whitespace-nowrap text-text uppercase backdrop-blur-sm group-data-hot:border-transparent group-data-hot:bg-accent-strong group-data-hot:text-accent-ink">
+          {/* Phones: a dot instead of the label, which would pile up on a narrow
+              screen; the dock below names the six places. */}
+          <span className="rounded-full border border-line bg-glass px-[7px] py-1 font-mono text-[11px] leading-none font-semibold tracking-[0.06em] whitespace-nowrap text-text uppercase backdrop-blur-sm group-data-hot:border-transparent group-data-hot:bg-accent-strong group-data-hot:text-accent-ink max-sm:hidden">
             {p.short}
           </span>
+          <b className="hidden size-2.5 rounded-full border-2 border-text bg-accent-strong max-sm:block" />
           <i className="h-[18px] w-px bg-text opacity-50" />
         </div>
       ))}
