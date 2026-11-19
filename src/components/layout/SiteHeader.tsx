@@ -34,7 +34,7 @@ export function SiteHeader({ locale, always = false }: { locale: Locale; always?
             className="flex items-center gap-2.5 rounded-[10px] no-underline"
           >
             <Monogram className="size-8 shrink-0" />
-            <span className="font-display text-[15px] leading-none font-extrabold tracking-[0.06em] uppercase">
+            <span className="font-display text-[15px] leading-none font-extrabold tracking-[0.06em] uppercase max-[380px]:text-[12px] max-[380px]:tracking-[0.03em]">
               {siteName}
             </span>
           </Link>
@@ -83,10 +83,10 @@ export function HomeBrandChip({ locale }: { locale: Locale }) {
     <header className="flex min-w-0 items-center gap-2.5 glass py-2 pr-2 pl-2.5">
       <Monogram className="size-8 shrink-0" />
       <div className="grid min-w-0 gap-0.5">
-        <p className="font-display text-[15px] leading-none font-extrabold tracking-[0.06em] uppercase">
+        <p className="font-display text-[15px] leading-none font-extrabold tracking-[0.06em] uppercase max-[380px]:text-[12px] max-[380px]:tracking-[0.03em]">
           {content.meta.siteName}
         </p>
-        <p className="truncate font-mono text-[11px] leading-tight text-text-muted">
+        <p className="truncate font-mono text-[11px] leading-tight text-text-muted max-sm:hidden">
           {content.home.city.ui.coordinates}
         </p>
       </div>
