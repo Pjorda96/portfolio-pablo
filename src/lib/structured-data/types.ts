@@ -35,6 +35,8 @@ export interface PersonLd {
   knowsLanguage: readonly string[];
   knowsAbout?: readonly string[];
   mainEntityOfPage?: string;
+  /** Profiles of the same person elsewhere (GitHub, LinkedIn). */
+  sameAs?: readonly string[];
 }
 
 export interface ProfessionalServiceLd {

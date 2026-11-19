@@ -44,6 +44,7 @@ export const meta = {
     notice: 'Aviso legal',
     privacy: 'Privacidad',
     cookies: 'Cookies',
+    profilesLabel: 'Perfiles',
   },
   notFound: {
     title: 'Página no encontrada · Pablo Jordá',

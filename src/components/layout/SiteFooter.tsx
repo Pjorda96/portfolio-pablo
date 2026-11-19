@@ -14,6 +14,10 @@ export function SiteFooter({ locale }: { locale: Locale }) {
     { href: paths.legal.privacy, label: meta.footer.privacy },
     { href: paths.legal.cookies, label: meta.footer.cookies },
   ];
+  const profiles = [
+    { href: owner.profiles.github, label: 'GitHub' },
+    { href: owner.profiles.linkedin, label: 'LinkedIn' },
+  ];
 
   return (
     <footer className="border-t border-line">
@@ -45,6 +49,20 @@ export function SiteFooter({ locale }: { locale: Locale }) {
               ))}
             </ul>
           </nav>
+          <ul aria-label={meta.footer.profilesLabel} className="flex gap-x-4">
+            {profiles.map((item) => (
+              <li key={item.href}>
+                <a
+                  href={item.href}
+                  rel="me noopener"
+                  target="_blank"
+                  className="underline-offset-4 hover:text-text hover:underline"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
           <ThemeSelector />
           <LocaleSwitcher className="font-mono text-xs underline-offset-4 hover:text-text hover:underline" />
         </div>

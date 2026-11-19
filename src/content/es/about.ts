@@ -18,6 +18,7 @@ export const about: AboutContent = {
     'Hoy trabajo con empresas y emprendedores que tienen un problema concreto o una idea que llevar a producción. Tú pones el conocimiento de tu negocio; yo, la parte técnica completa.',
     'La IA es mi herramienta de trabajo diaria. Me ayuda a analizar, programar, probar y documentar mucho más rápido. Lo que no cambia es el criterio: cada decisión y cada línea entregada pasan por mi revisión.',
   ],
+  profiles: { label: 'También me encuentras en' },
   experience: {
     title: 'Experiencia',
     text: 'He trabajado en sectores donde los errores cuestan caro y la calidad no es negociable:',

@@ -2,7 +2,7 @@ import { screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { AboutPage } from '@/components/pages/about/AboutPage';
-import { getContent, LOCALES } from '@/content';
+import { getContent, LOCALES, owner } from '@/content';
 
 import { renderWithIntl } from './utils/intl';
 
@@ -52,5 +52,16 @@ describe.each(LOCALES)('AboutPage (%s)', (locale) => {
   it('never mentions part-time work, employers or prices', () => {
     render();
     expect(document.body.textContent).not.toMatch(/part[- ]time|media jornada|€|\bprecio|\bprice/i);
+  });
+
+  it('links to the GitHub and LinkedIn profiles under the intro', () => {
+    render();
+    const line = screen.getByText(about.profiles.label).parentElement!;
+    const links = within(line).getAllByRole('link');
+    expect(links.map((a) => [a.textContent, a.getAttribute('href')])).toEqual([
+      ['GitHub', owner.profiles.github],
+      ['LinkedIn', owner.profiles.linkedin],
+    ]);
+    for (const a of links) expect(a.getAttribute('rel')).toMatch(/(^| )me( |$)/);
   });
 });

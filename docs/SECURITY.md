@@ -57,16 +57,16 @@ object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';
 manifest-src 'self'; upgrade-insecure-requests
 ```
 
-| Directiva                   | Por qué                                                                                                                                                                                        |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `script-src`                | Ver arriba. `'unsafe-eval'` solo con `next dev` (React lo usa para depurar).                                                                                                                   |
-| `style-src-elem 'self'`     | Hojas de estilo solo del sitio; ningún `<style>` en línea en producción.                                                                                                                       |
-| `style-src-attr`            | React pinta atributos `style="..."` en el HTML del servidor.                                                                                                                                   |
-| `style-src`                 | Respaldo para navegadores sin las directivas `-elem`/`-attr`.                                                                                                                                  |
-| `connect-src 'self'`        | El asistente (`/api/assistant`) y la Server Action del formulario. Vercel Web Analytics y Speed Insights, si se instalan con sus paquetes, envían a `/_vercel/...`: mismo origen, ya cubierto. |
-| `img-src data: blob:`       | Placeholders de `next/image` (`data:`) y texturas de canvas/WebGL (`blob:`).                                                                                                                   |
-| `worker-src 'self'`         | three.js trabaja en el hilo principal; ningún worker `blob:` ni de terceros.                                                                                                                   |
-| `upgrade-insecure-requests` | Solo en despliegues de Vercel (HTTPS). En `next start` local por http rompería los propios recursos.                                                                                           |
+| Directiva                   | Por qué                                                                                                                                                                                                                              |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `script-src`                | Ver arriba. `'unsafe-eval'` solo con `next dev` (React lo usa para depurar).                                                                                                                                                         |
+| `style-src-elem 'self'`     | Hojas de estilo solo del sitio; ningún `<style>` en línea en producción.                                                                                                                                                             |
+| `style-src-attr`            | React pinta atributos `style="..."` en el HTML del servidor.                                                                                                                                                                         |
+| `style-src`                 | Respaldo para navegadores sin las directivas `-elem`/`-attr`.                                                                                                                                                                        |
+| `connect-src 'self'`        | El asistente (`/api/assistant`) y la Server Action del formulario. Vercel Web Analytics y Speed Insights cargan sus scripts y envían sus datos a `/_vercel/...`: mismo origen, ya cubierto. Solo se montan en despliegues de Vercel. |
+| `img-src data: blob:`       | Placeholders de `next/image` (`data:`) y texturas de canvas/WebGL (`blob:`).                                                                                                                                                         |
+| `worker-src 'self'`         | three.js trabaja en el hilo principal; ningún worker `blob:` ni de terceros.                                                                                                                                                         |
+| `upgrade-insecure-requests` | Solo en despliegues de Vercel (HTTPS). En `next start` local por http rompería los propios recursos.                                                                                                                                 |
 
 Desarrollo (`next dev`) añade `'unsafe-eval'` a `script-src` y `'unsafe-inline'` a `style-src-elem`
 (overlay de errores y HMR).

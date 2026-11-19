@@ -71,9 +71,13 @@ describe.each(cases)('JSON-LD of %s', (_, id: SitePageId, locale: Locale) => {
     const urls = strings(data['@graph']).filter((s) => /^https?:/.test(s));
     expect(urls.length).toBeGreaterThan(0);
     for (const url of urls) {
-      // The only external URL is the Píxel y Papel product itself.
+      // The only external URLs: the Píxel y Papel product and the owner's
+      // profiles (Person.sameAs).
       if (url.startsWith(ORIGIN)) continue;
-      expect(url).toBe(getContent(locale).casePixelYPapel.link.href);
+      expect([
+        getContent(locale).casePixelYPapel.link.href,
+        ...Object.values(owner.profiles),
+      ]).toContain(url);
     }
     expect(forbiddenIn(json)).toEqual([]);
     expect(json).not.toMatch(/streetAddress|offers|priceRange/);
@@ -114,6 +118,7 @@ describe.each(LOCALES)('JSON-LD content (%s)', (locale) => {
       jobTitle: getContent(locale).meta.jobTitle,
       knowsLanguage: ['es', 'en'],
       address: { addressLocality: 'Valencia', addressCountry: 'ES' },
+      sameAs: ['https://github.com/Pjorda96', 'https://www.linkedin.com/in/pjorda'],
     });
     expect(business).toMatchObject({ '@id': ids.business, founder: { '@id': ids.person } });
     expect(business.areaServed.map((a) => a['@type'])).toEqual(['Country', 'City']);

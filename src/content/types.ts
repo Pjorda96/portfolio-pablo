@@ -126,6 +126,8 @@ export interface MetaContent {
     notice: string;
     privacy: string;
     cookies: string;
+    /** Accessible name of the list of profile links (GitHub, LinkedIn). */
+    profilesLabel: string;
   };
   notFound: PageMeta & { text: string; back: string };
   /** Error boundary (`error.tsx`): unexpected failures, with a retry. */
@@ -289,6 +291,8 @@ export interface AboutContent {
   hero: PageHero;
   avatarAlt: string;
   intro: readonly string[];
+  /** Line before the GitHub and LinkedIn links, under the intro. */
+  profiles: { label: string };
   experience: {
     title: string;
     text: string;
