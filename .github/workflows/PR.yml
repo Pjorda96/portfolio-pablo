@@ -138,8 +138,9 @@ jobs:
             test-results/
           retention-days: 14
 
-  # Performance budgets (docs/PERFORMANCE.md): Lighthouse CI on a production
-  # build, mobile, 3 runs per URL, median. A job of its own and NOT a required
+  # Lighthouse budgets (docs/PERFORMANCE.md): performance, plus accessibility,
+  # best practices and SEO >= 95, on ES and EN pages of a production build,
+  # mobile, 3 runs per URL, median. A job of its own and NOT a required
   # check: lab timings vary between runners, so it must never make `verify`
   # flaky. A red result is a regression to look at, with the reports attached.
   lighthouse:
@@ -147,8 +148,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      # Required by src/env.ts in production builds; never contacted in CI.
-      SITE_URL: http://localhost:3000
+      # Required by src/env.ts in production builds. The origin Lighthouse
+      # audits (lighthouserc.json), so canonical URLs point at the page itself.
+      SITE_URL: http://localhost:3400
 
     steps:
       - name: Checkout

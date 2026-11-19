@@ -17,18 +17,38 @@ caso razonable para una web de captación que se abre desde el móvil.
 | Peso total (carga)        | ≤ 425 KB                  | —                | Página de texto + avatar; la ciudad 3D no cuenta (llega después).             |
 | Puntuación de rendimiento | —                         | ≥ 90             | Resumen; las métricas de arriba son las que mandan.                           |
 
+## Accesibilidad, buenas prácticas y SEO
+
+En las mismas pasadas de Lighthouse (F6-03):
+
+| Categoría        | Presupuesto (falla en CI) |
+| ---------------- | ------------------------- |
+| Accesibilidad    | ≥ 95                      |
+| Buenas prácticas | ≥ 95                      |
+| SEO              | ≥ 95                      |
+
+La auditoría `is-crawlable` se omite (`skipAudits`): las previews y las builds
+locales envían `noindex` a propósito (`src/lib/indexing.ts`) y siempre
+fallaría. El resto de SEO (canonical, `hreflang`, títulos, enlaces…) sí cuenta;
+por eso el job compila con `SITE_URL` igual al origen auditado.
+
+Lighthouse mide solo el tema claro (el esquema de color por defecto del
+navegador). El oscuro, y todas las páginas en ES y EN, los cubre axe en los
+tests E2E (`e2e/a11y.spec.ts`), que fallan con cualquier infracción `serious` o
+`critical`.
+
 ## Cómo se comprueba
 
 - **CI**: job `lighthouse` en `.github/workflows/PR.yml`. Compila, arranca
   `next start -p 3400` y pasa Lighthouse CI (`lighthouserc.json`) sobre `/`,
-  `/sobre-mi`, `/servicios/soluciones-ia` y `/en`: 3 pasadas por URL, se
-  evalúa la mediana. Los presupuestos son `error` y los objetivos `warn`.
-  **No es un check requerido**: los tiempos de laboratorio varían entre
-  runners y no debe volver inestable `verify`. Los informes quedan como
-  artefacto `lighthouse-reports`.
-- **Local**: `npm run build && npm run lhci` (informes en `.lighthouseci/`).
-- Para añadir categorías (p. ej. accesibilidad en F6-03) basta con ampliar
-  `onlyCategories` y las aserciones de `lighthouserc.json`.
+  `/sobre-mi`, `/servicios/soluciones-ia`, `/contacto` y sus equivalentes en
+  inglés (`/en`, `/en/about`, `/en/services/ai-solutions`, `/en/contact`): 3
+  pasadas por URL, se evalúa la mediana. Los presupuestos son `error` (el job
+  se pone en rojo) y los objetivos `warn`. **No es un check requerido**: los
+  tiempos de laboratorio varían entre runners y no debe volver inestable
+  `verify`. Los informes quedan como artefacto `lighthouse-reports`.
+- **Local**: `SITE_URL=http://localhost:3400 npm run build && npm run lhci`
+  (informes en `.lighthouseci/`).
 
 ## Decisiones que sostienen los números
 

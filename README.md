@@ -18,7 +18,7 @@ El repositorio es público a propósito. Además de la web, es un escaparate té
 | Lenguaje   | TypeScript en modo estricto (`noUncheckedIndexedAccess`)                             |
 | Estilos    | Tailwind CSS 4 con tokens de diseño en CSS (`@theme`)                                |
 | Validación | Zod 4 (variables de entorno validadas al arrancar y al compilar)                     |
-| Tests      | Vitest + Testing Library + jsdom                                                     |
+| Tests      | Vitest + Testing Library + jsdom; Playwright + axe-core (E2E y accesibilidad)        |
 | Calidad    | ESLint (Next, typescript-eslint, jsx-a11y), Prettier, Husky, lint-staged, commitlint |
 | CI         | GitHub Actions + Dependabot                                                          |
 | Hosting    | Vercel (región `fra1`)                                                               |
@@ -35,6 +35,7 @@ El repositorio es público a propósito. Además de la web, es un escaparate té
 │   ├── content/      # Contenido tipado (servicios, casos)
 │   ├── lib/          # Utilidades y lógica compartida
 │   └── env.ts        # Esquema y validación de variables de entorno
+├── e2e/              # Tests E2E y de accesibilidad (Playwright + axe)
 └── tests/            # Tests unitarios y de componentes
 ```
 
@@ -63,8 +64,33 @@ La web queda disponible en <http://localhost:3000>.
 | `npm run prettier:check` | Comprueba el formato sin modificar archivos                       |
 | `npm run test`           | Ejecuta los tests una vez                                         |
 | `npm run test:watch`     | Tests en modo observación                                         |
-| `npm run test:coverage`  | Tests con informe de cobertura                                    |
+| `npm run test:coverage`  | Tests con informe de cobertura y umbrales mínimos                 |
+| `npm run test:e2e`       | Tests E2E y de accesibilidad sobre el build (requiere `build`)    |
+| `npm run lhci`           | Lighthouse CI sobre el build (requiere `build`)                   |
 | `npm run verify:quick`   | Tipos, lint, formato, tests y build: lo mismo que comprueba la CI |
+
+## Tests
+
+- **Unitarios y de componentes** (`tests/`, Vitest + Testing Library): validación del formulario,
+  antispam, metadata y SEO, utilidades y componentes. `npm run test:coverage` deja el informe en
+  `coverage/` (HTML y `json-summary`) y falla por debajo de los umbrales de `vitest.config.mts`.
+  En CI el job `verify` lo ejecuta y sube el informe como artefacto `coverage-report`.
+- **E2E** (`e2e/`, Playwright, Chromium escritorio y móvil) contra `next build` + `next start`:
+  navegación (cabecera, menú, pie y todas las páginas del sitemap), cambio de idioma con slugs
+  traducidos, canonical y `hreflang`, y el formulario de contacto (éxito, errores de validación,
+  fallo del servidor y token antispam falsificado). Job `e2e` en CI, con el informe de Playwright
+  como artefacto.
+- **El formulario nunca envía correos en los tests:** el servidor E2E arranca con
+  `CONTACT_TEST_MAILER=1` (transporte de pruebas, `src/lib/contact/transport.ts`) y sin claves de
+  Resend ni de Anthropic. Esa variable está prohibida con `VERCEL_ENV=production`: la validación
+  del entorno detiene el build. El antispam sigue activo: los tests esperan el tiempo mínimo de
+  rellenado y dejan vacío el honeypot.
+- **Accesibilidad** (`e2e/a11y.spec.ts`): axe en todas las páginas, ES y EN, tema claro y oscuro;
+  falla con cualquier infracción `serious` o `critical` (WCAG 2.2 A/AA). Lighthouse CI exige
+  además accesibilidad, buenas prácticas y SEO ≥ 0,95 ([docs/PERFORMANCE.md](docs/PERFORMANCE.md)).
+
+Para los E2E en local: `npx playwright install chromium` (una vez), `npm run build` y
+`npm run test:e2e` (usa el puerto 3100; otro con `E2E_PORT`).
 
 Las versiones (release candidates por pull request, `CHANGELOG.md` y etiquetas) siguen el esquema descrito en [docs/VERSIONING.md](docs/VERSIONING.md).
 
@@ -74,7 +100,7 @@ Las versiones (release candidates por pull request, `CHANGELOG.md` y etiquetas) 
 - **Accesibilidad desde el linter:** el conjunto recomendado completo de `jsx-a11y`, no solo las reglas que trae Next.
 - **Entorno validado:** si falta una variable obligatoria o tiene un formato incorrecto, el build se detiene con un mensaje claro.
 - **Conventional Commits** verificados con commitlint en cada commit; lint y formato de los archivos modificados con lint-staged.
-- **Integración continua:** cada push a `develop` y cada pull request ejecutan tipos, lint, formato, tests y build en GitHub Actions.
+- **Integración continua:** cada push a `develop` y cada pull request ejecutan tipos, lint, formato, tests y build en GitHub Actions; las pull requests además pasan los E2E con axe y Lighthouse CI.
 - **Dependencias al día** con Dependabot, agrupando actualizaciones menores.
 - **Cabeceras de seguridad:** CSP estática, HSTS, COOP/CORP y Permissions-Policy, con `npm audit` en cada pull request; detalles en [docs/SECURITY.md](docs/SECURITY.md).
 
