@@ -94,6 +94,8 @@ Para los E2E en local: `npx playwright install chromium` (una vez), `npm run bui
 
 Las versiones (release candidates por pull request, `CHANGELOG.md` y etiquetas) siguen el esquema descrito en [docs/VERSIONING.md](docs/VERSIONING.md).
 
+La web está publicada sin indexar hasta el lanzamiento público: lo que está preparado (Search Console, Bing, DNS) y los pasos de ese día están en [docs/LANZAMIENTO.md](docs/LANZAMIENTO.md).
+
 ## Estándares de calidad
 
 - **TypeScript estricto**, incluido `noUncheckedIndexedAccess`.
