@@ -93,6 +93,7 @@ export const home: HomeContent = {
       clock: {
         label: 'City time',
         slider: 'Time of day in the city',
+        toggle: 'Change the city time',
         real: 'Real time',
         play: 'Watch a whole day',
         modes: { real: 'your time', play: 'a day in 24 s', manual: 'chosen time' },
