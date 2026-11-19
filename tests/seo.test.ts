@@ -145,8 +145,9 @@ describe('metadata of every page', () => {
 });
 
 describe('indexing', () => {
-  it('keeps the site out of search engines until launch (F7)', () => {
-    expect(INDEXABLE).toBe(false);
+  it('is switched on since launch, but tests and local builds stay noindex', () => {
+    expect(INDEXABLE).toBe(true);
+    // No VERCEL_ENV here, as in any local build: never indexable.
     expect(robots).toEqual({ index: false, follow: false });
   });
 
