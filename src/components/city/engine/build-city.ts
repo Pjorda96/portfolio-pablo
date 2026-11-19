@@ -41,7 +41,6 @@ import { buildTerrain } from './terrain';
 export interface CityOptions {
   /** Renderer pixel ratio: glow sprites have a fixed on-screen size. */
   pixelRatio: number;
-  maxAnisotropy: number;
 }
 
 export interface CityModel {
@@ -61,6 +60,8 @@ export interface CityModel {
   setHover(id: PlaceId | null): void;
   /** Tone-mapping exposure for the current hour (a touch brighter at night). */
   exposure(): number;
+  /** Texture filtering once the renderer's capabilities are known. */
+  setMaxAnisotropy(max: number): void;
   /** Frees every GPU resource the city created. */
   dispose(): void;
 }
@@ -75,10 +76,12 @@ function stopColor(stops: ColorStops, h: number, out: Color): Color {
 }
 
 /**
- * Generates the whole city. Builders run in the prototype's order because
- * they share one seeded random stream.
+ * Generates the whole city as a sequence of steps: each `yield` is a point
+ * where the caller may hand the main thread back to the browser (see
+ * `runSliced`), so building never shows up as one long task. Builders run in
+ * the prototype's order because they share one seeded random stream.
  */
-export function buildCity({ pixelRatio, maxAnisotropy }: CityOptions): CityModel {
+export function* buildCitySteps({ pixelRatio }: CityOptions): Generator<void, CityModel> {
   const G = createGeometryLibrary();
   const root = new Group();
   root.name = 'city';
@@ -108,21 +111,31 @@ export function buildCity({ pixelRatio, maxAnisotropy }: CityOptions): CityModel
   };
   const center = new Vector3(2.8, 0, 0.1);
 
-  const landmarks = buildLandmarks(ctx);
+  const landmarks = yield* buildLandmarks(ctx);
+  yield;
   buildMonuments(ctx);
+  yield;
   buildPlazas(ctx);
+  yield;
   const { pathOff } = buildTuriaGardens(ctx);
-  const { facade, roof } = createFacadeMaterials(ctx.rng, maxAnisotropy);
-  placeDistricts(ctx, { cacGroup: landmarks.groups.lab, pathOff });
+  yield;
+  const { facade, roof } = createFacadeMaterials(ctx.rng);
+  yield;
+  yield* placeDistricts(ctx, { cacGroup: landmarks.groups.lab, pathOff });
+  yield;
   buildInstancedCity(ctx, facade, roof);
+  yield;
   const boats = buildBoats(ctx);
   const { waterMat } = buildTerrain(ctx);
+  yield;
 
   const monuSet = matSet(null, '#ffae68', 0.12, '#ffcf8a', 1.4);
   const decorSet = matSet(null, '#000000', 0, '#ffd08a', 1.3);
   ctx.matSets.push(monuSet, decorSet);
   ctx.monu.build(root, monuSet.mats);
+  yield;
   ctx.decor.build(root, decorSet.mats);
+  yield;
 
   const sprite = createGlowSprite();
   const lamps = glowPoints(ctx, ctx.lists.lampPts, 0xffc06a, 9, sprite, pixelRatio);
@@ -220,6 +233,10 @@ export function buildCity({ pixelRatio, maxAnisotropy }: CityOptions): CityModel
     animate,
     setHover,
     exposure: () => toneExposure,
+    setMaxAnisotropy(max) {
+      const a = Math.min(8, max);
+      for (const t of [facade.map, facade.emissiveMap]) if (t) t.anisotropy = a;
+    },
     dispose() {
       const materials = new Set<Material>();
       const textures = new Set<Texture>([sprite]);
@@ -239,4 +256,13 @@ export function buildCity({ pixelRatio, maxAnisotropy }: CityOptions): CityModel
       sun.shadow.map?.dispose();
     },
   };
+}
+
+/** Builds the whole city in one go (tests, or when slicing is not needed). */
+export function buildCity(options: CityOptions): CityModel {
+  const steps = buildCitySteps(options);
+  for (;;) {
+    const r = steps.next();
+    if (r.done) return r.value;
+  }
 }

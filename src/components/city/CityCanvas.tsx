@@ -1,12 +1,15 @@
 'use client';
 
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { OrthographicCamera } from 'three';
 
 import type { PlaceId } from '@/content/site';
 
+import { buildCitySteps, type CityModel } from './engine/build-city';
 import { CityController, type ControllerCallbacks } from './engine/controller';
+import { canvasPixelRatio } from './pixel-ratio';
+import { runSliced, yieldToMain } from './schedule';
 import type { TimeStore } from './time-store';
 
 export interface CityCanvasProps extends Omit<ControllerCallbacks, 'invalidate'> {
@@ -19,34 +22,86 @@ export interface CityCanvasProps extends Omit<ControllerCallbacks, 'invalidate'>
 
 /**
  * The WebGL city. Loaded lazily and client-only by CityExperience; the page
- * is complete without it.
+ * is complete without it. Three phases keep the main thread free: the scene
+ * is built in short slices (`buildCitySteps` + `runSliced`), then its shaders
+ * compile in parallel (`compileAsync`), and only then does the loop start.
  */
 export default function CityCanvas({ active, reducedMotion, ...scene }: CityCanvasProps) {
+  const [dpr] = useState(() =>
+    canvasPixelRatio(window.devicePixelRatio, window.matchMedia('(pointer: coarse)').matches),
+  );
   const [camera] = useState(() => {
     const cam = new OrthographicCamera(-1, 1, 1, -1, 0.1, 300);
     // Tell R3F the frustum is ours: it would otherwise size it in pixels.
     Object.assign(cam, { manual: true });
     return cam;
   });
+  const [model, setModel] = useState<CityModel | null>(null);
+  const [compiled, setCompiled] = useState(false);
+  const [error, setError] = useState<unknown>(null);
+  const onCompiled = useCallback(() => setCompiled(true), []);
+
+  useEffect(() => {
+    const abort = new AbortController();
+    let built: CityModel | null = null;
+    runSliced(buildCitySteps({ pixelRatio: dpr }), { signal: abort.signal }).then(
+      (m) => {
+        built = m;
+        setModel(m);
+      },
+      (e: unknown) => {
+        if (!abort.signal.aborted) setError(e ?? new Error('City build failed'));
+      },
+    );
+    // Free the GPU once the canvas goes away.
+    return () => {
+      abort.abort();
+      built?.dispose();
+    };
+  }, [dpr]);
+
+  // Surface async failures to CityExperience's error boundary.
+  if (error) throw error;
+  if (!model) return null;
+  const running = active && compiled;
 
   return (
     <Canvas
       camera={camera}
       orthographic
-      dpr={[1, 2]}
+      dpr={dpr}
       shadows="percentage"
-      // Paused off screen; on demand only when motion is reduced.
-      frameloop={!active ? 'never' : reducedMotion ? 'demand' : 'always'}
+      // Idle until the shaders are ready; paused off screen; on demand only
+      // when motion is reduced.
+      frameloop={!running ? 'never' : reducedMotion ? 'demand' : 'always'}
       gl={{ antialias: true, powerPreference: 'high-performance' }}
       aria-hidden="true"
       tabIndex={-1}
     >
-      <CityScene reducedMotion={reducedMotion} {...scene} />
+      <CityScene
+        model={model}
+        running={running}
+        onCompiled={onCompiled}
+        onCompileError={setError}
+        reducedMotion={reducedMotion}
+        {...scene}
+      />
     </Canvas>
   );
 }
 
+interface CitySceneProps extends Omit<CityCanvasProps, 'active'> {
+  model: CityModel;
+  running: boolean;
+  onCompiled(): void;
+  onCompileError(e: unknown): void;
+}
+
 function CityScene({
+  model,
+  running,
+  onCompiled,
+  onCompileError,
   store,
   focused,
   reducedMotion,
@@ -55,7 +110,7 @@ function CityScene({
   onHover,
   placePin,
   onReady,
-}: Omit<CityCanvasProps, 'active'>) {
+}: CitySceneProps) {
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
   const camera = useThree((s) => s.camera);
@@ -65,7 +120,7 @@ function CityScene({
 
   const [controller] = useState(
     () =>
-      new CityController(gl, camera as OrthographicCamera, {
+      new CityController(gl, camera as OrthographicCamera, model, {
         onSelect,
         onBackgroundClick,
         onHover,
@@ -86,14 +141,28 @@ function CityScene({
     });
   }, [controller, onSelect, onBackgroundClick, onHover, placePin, onReady, invalidate]);
 
-  // Add the city to the scene; free the GPU on unmount.
+  // Add the city to the scene and compile its shaders without blocking the
+  // main thread (KHR_parallel_shader_compile where available).
   useEffect(() => {
+    let live = true;
     controller.attach(scene);
+    // A task of its own: generating the shader sources is not free either.
+    yieldToMain()
+      .then(() => (live ? gl.compileAsync(scene, camera) : null))
+      .then(
+        () => live && onCompiled(),
+        (e: unknown) => live && onCompileError(e),
+      );
     return () => {
+      live = false;
       controller.detach(scene);
-      controller.dispose();
     };
-  }, [controller, scene]);
+  }, [controller, scene, gl, camera, onCompiled, onCompileError]);
+
+  // Draw the first frame as soon as the loop may run (needed in 'demand' mode).
+  useEffect(() => {
+    if (running) invalidate();
+  }, [running, invalidate]);
 
   useEffect(() => {
     controller.setOptions({ focused, reducedMotion, width, height });

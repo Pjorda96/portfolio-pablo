@@ -1,21 +1,21 @@
 import type { Metadata } from 'next';
 
 import { LegalDocument } from '@/components/pages/legal/LegalDocument';
-import { getContent } from '@/content';
+import { JsonLd } from '@/components/seo/JsonLd';
 import { resolveLocale, type LocaleParams } from '@/i18n/locale';
-import { paths } from '@/i18n/routing';
-import { pageMetadata } from '@/lib/seo';
+import { metadataFor } from '@/lib/seo';
+import { structuredDataFor } from '@/lib/structured-data';
 
 export async function generateMetadata({ params }: LocaleParams): Promise<Metadata> {
-  const locale = await resolveLocale(params);
-  return pageMetadata({
-    locale,
-    pathname: paths.legal.cookies,
-    meta: getContent(locale).legal.cookies.meta,
-  });
+  return metadataFor(await resolveLocale(params), 'legalCookies');
 }
 
 export default async function Page({ params }: LocaleParams) {
   const locale = await resolveLocale(params);
-  return <LegalDocument locale={locale} document="cookies" />;
+  return (
+    <>
+      <JsonLd data={structuredDataFor(locale, 'legalCookies')} />
+      <LegalDocument locale={locale} document="cookies" />
+    </>
+  );
 }

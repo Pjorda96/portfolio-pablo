@@ -10,7 +10,9 @@ import { routing } from './i18n/routing';
 export default createMiddleware(routing);
 
 export const config = {
-  // Everything except API routes, Next internals, Vercel internals and files
-  // with an extension (icons, images, manifest, robots...).
-  matcher: '/((?!api|_next|_vercel|.*\\..*).*)',
+  // Everything except API routes, Next internals, Vercel internals, files
+  // with an extension (icons, images, manifest, robots...) and the generated
+  // social images: `og:image` points at their internal `/es/...` / `/en/...`
+  // paths, which must be served as is, never redirected to the root.
+  matcher: '/((?!api|_next|_vercel|.*\\..*|.*/opengraph-image|.*/twitter-image).*)',
 };

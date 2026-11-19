@@ -43,12 +43,13 @@ const TOWER = ['#e9ecee', '#dfe6ea', '#efe9df', '#d9dfe3', '#e6e1d6'];
 /**
  * Places every generic building, field, tree and lamp of the city into the
  * context lists, district by district. Nothing is drawn here: the lists
- * become instanced meshes later.
+ * become instanced meshes later. A generator that yields between districts,
+ * so the caller can split the work (see `buildCitySteps`).
  */
-export function placeDistricts(
+export function* placeDistricts(
   ctx: BuildContext,
   opts: { cacGroup: Group; pathOff: (s: number, side: number) => number },
-) {
+): Generator<void, void> {
   const { rng, geo, decor, G, lists } = ctx;
   const { rr, rnd, pick } = rng;
   const { AV, turia, turiaHalf, turiaInfo, isTuria, blocked, exclCircle, sCAC, sWest } = geo;
@@ -152,6 +153,8 @@ export function placeDistricts(
     }
   }
 
+  yield;
+
   // Eixample / Russafa / Extramurs: chamfered blocks on the rotated grid of the Gran Vía
   const parkSquare = (x: number, z: number, ry: number) => {
     decor.box('body', '#8aab66', 1.1, 0.02, 1.1, x, 0, z, { ry });
@@ -217,6 +220,8 @@ export function placeDistricts(
       }
     }
   }
+
+  yield;
 
   // north of the Turia: grid along Blasco Ibáñez, towers in Campanar and Av. de Francia
   exclCircle(0.2, -9.7, 1.6);
@@ -293,6 +298,8 @@ export function placeDistricts(
     }
   }
 
+  yield;
+
   // El Cabanyal: long rows of low, colourful fishermen's houses
   for (const rx of [10.75, 11.2, 11.85, 12.3]) {
     let z = -7.4;
@@ -320,6 +327,8 @@ export function placeDistricts(
       k++;
     }
   }
+
+  yield;
 
   // the huerta: orange groves, fields and alquerías
   for (let x = -34; x < 12; x += 2.1) {
@@ -370,6 +379,8 @@ export function placeDistricts(
       }
     }
   }
+
+  yield;
 
   // south: rice paddies, L'Albufera with reeds and barracas
   (
@@ -428,6 +439,8 @@ export function placeDistricts(
     for (let q = 0; q < 26; q++)
       reeds.push({ x: cx + rr(-0.5, 0.5), z: cz + rr(-0.25, 0.25), h: rr(0.15, 0.3) });
   }
+
+  yield;
 
   // ---------- coast: Malvarrosa, the Marina, the port ----------
   decor.box('body', '#e8d6aa', 1.6, 0.03, 44, 13.8, 0, -18.35);
@@ -507,6 +520,8 @@ export function placeDistricts(
     }
   }
 
+  yield;
+
   // ---------- street trees, park trees ----------
   const alongAvenue = (
     path: CityPath,
@@ -569,6 +584,8 @@ export function placeDistricts(
     addTree(ctx, x + 0.3, z + 0.25, 'round', 0.8);
     addTree(ctx, x - 0.3, z - 0.2, 'palm', 0.8);
   });
+
+  yield;
 
   // ---------- lamps ----------
   const lampsAlong = (path: CityPath, step: number, off: readonly number[], y = 0.28) => {
