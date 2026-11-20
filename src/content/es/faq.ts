@@ -18,7 +18,7 @@ export const faq: FaqContent = {
       id: 'plazos',
       question: '¿Cuánto tarda un proyecto?',
       answer:
-        'Depende del alcance. Una web a medida suele estar en producción en pocas semanas y un MVP en semanas, no en meses. Tras la primera conversación te doy un plazo concreto por escrito.',
+        'Depende del alcance. Una web a medida suele estar en producción en pocas semanas; un MVP lleva algo más, pero sin irse a meses. Tras la primera conversación te doy un plazo concreto por escrito.',
     },
     {
       id: 'proceso',

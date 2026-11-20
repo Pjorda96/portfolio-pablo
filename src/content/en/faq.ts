@@ -18,7 +18,7 @@ export const faq: FaqContent = {
       id: 'plazos',
       question: 'How long does a project take?',
       answer:
-        'It depends on the scope. A custom website is usually live within a few weeks, and an MVP in weeks rather than months. After our first conversation you get a specific timeline in writing.',
+        'It depends on the scope. A custom website is usually live within a few weeks; an MVP takes a little longer, but not months. After our first conversation you get a specific timeline in writing.',
     },
     {
       id: 'proceso',
