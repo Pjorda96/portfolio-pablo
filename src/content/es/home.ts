@@ -61,7 +61,7 @@ export const home: HomeContent = {
         landmark: 'El Micalet',
         short: 'Sobre mí',
         title: 'Sobre mí',
-        text: 'Desarrollador full-stack potenciado por IA, con más de 7 años construyendo aplicaciones web para seguros, fintech y arquitectura. Hoy uso la IA en cada fase del trabajo para entregar antes sin rebajar la calidad.',
+        text: 'Desarrollador full-stack potenciado por IA, con más de 7 años construyendo aplicaciones web para seguros, fintech y consultoría. Hoy uso la IA en cada fase del trabajo para entregar antes sin rebajar la calidad.',
         points: [
           'Desarrollo potenciado por IA: más rápido, igual de riguroso',
           'React, Next.js, TypeScript y Node.js',

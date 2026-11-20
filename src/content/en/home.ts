@@ -61,7 +61,7 @@ export const home: HomeContent = {
         landmark: 'El Micalet',
         short: 'About',
         title: 'About me',
-        text: 'AI-powered full-stack developer with 7+ years building web applications for insurance, fintech and architecture. Today I use AI at every stage of the work to deliver sooner without lowering the bar.',
+        text: 'AI-powered full-stack developer with 7+ years building web applications for insurance, fintech and consulting. Today I use AI at every stage of the work to deliver sooner without lowering the bar.',
         points: [
           'AI-powered development: faster, just as rigorous',
           'React, Next.js, TypeScript and Node.js',
