@@ -7,7 +7,16 @@ Web de servicios de **Pablo Jordá**: desarrollo web a medida, integraciones de 
 
 El repositorio es público a propósito. Además de la web, es un escaparate técnico: el código, el proceso y las decisiones están a la vista, desde la arquitectura hasta la calidad, la accesibilidad y el rendimiento.
 
-> **Estado:** en construcción. La fase actual y las siguientes están en el [plan del proyecto](docs/PLAN.md) y en el [tablero de GitHub Projects](https://github.com/users/Pjorda96/projects/13).
+**En producción:** [pablojorda.es](https://pablojorda.es) (versión en [`CHANGELOG.md`](CHANGELOG.md)). Por ahora la web está publicada **sin indexar** hasta el lanzamiento público; lo que falta y los pasos de ese día están en [docs/LANZAMIENTO.md](docs/LANZAMIENTO.md).
+
+## Qué incluye
+
+- **Una ciudad 3D de Valencia** en la portada (Three.js con React Three Fiber). Cada edificio lleva a una sección y la luz sigue la hora del visitante, que también se puede adelantar o fijar. three.js solo se descarga en el cliente y la página funciona entera sin JavaScript ni WebGL.
+- **Español e inglés** con next-intl: español en la raíz e inglés en `/en`, con slugs traducidos, `hreflang` y `x-default`. Todo el contenido está tipado en `src/content/` y un test comprueba que los dos idiomas tienen la misma estructura.
+- **Formulario de contacto** con Server Actions y Resend, validado con Zod en cliente y servidor y con antispam propio (honeypot, tiempo mínimo firmado y límite por IP).
+- **Asistente de IA** que responde sobre los servicios con el contenido de la propia web (Claude, de Anthropic). Las respuestas llegan en streaming y hay límites de uso. Sin `ANTHROPIC_API_KEY` se muestra como no disponible.
+- **SEO técnico:** metadatos por página, JSON-LD (`Person`, `ProfessionalService`, `Service`, `FAQPage`…), sitemap, `robots.txt`, `llms.txt` e imágenes Open Graph generadas en el servidor.
+- **Medido en cada pull request:** E2E y axe en todas las páginas, y Lighthouse CI con presupuestos de rendimiento y peso.
 
 ## Stack
 
@@ -17,23 +26,30 @@ El repositorio es público a propósito. Además de la web, es un escaparate té
 | UI         | React 19 con React Compiler                                                          |
 | Lenguaje   | TypeScript en modo estricto (`noUncheckedIndexedAccess`)                             |
 | Estilos    | Tailwind CSS 4 con tokens de diseño en CSS (`@theme`)                                |
-| Validación | Zod 4 (variables de entorno validadas al arrancar y al compilar)                     |
+| 3D         | three.js + React Three Fiber                                                         |
+| Idiomas    | next-intl                                                                            |
+| Validación | Zod 4 (`zod/mini` en el cliente); variables de entorno validadas al arrancar         |
+| Correo     | Resend                                                                               |
+| IA         | SDK de Anthropic (Claude)                                                            |
 | Tests      | Vitest + Testing Library + jsdom; Playwright + axe-core (E2E y accesibilidad)        |
 | Calidad    | ESLint (Next, typescript-eslint, jsx-a11y), Prettier, Husky, lint-staged, commitlint |
-| CI         | GitHub Actions + Dependabot                                                          |
-| Hosting    | Vercel (región `fra1`)                                                               |
+| CI         | GitHub Actions, Lighthouse CI y Dependabot                                           |
+| Hosting    | Vercel (región `fra1`), con Web Analytics y Speed Insights                           |
 
 ## Estructura
 
 ```text
 .
 ├── .github/          # Workflows de CI y configuración de Dependabot
-├── docs/             # Plan y documentación del proyecto
+├── docs/             # Plan, contenido, lanzamiento, rendimiento, seguridad y versiones
+├── scripts/          # Scripts de versionado (Node, sin dependencias)
 ├── src/
-│   ├── app/          # Rutas (App Router), layout raíz y estilos globales
-│   ├── components/   # Componentes de interfaz
-│   ├── content/      # Contenido tipado (servicios, casos)
-│   ├── lib/          # Utilidades y lógica compartida
+│   ├── app/          # Rutas por idioma, API, sitemap, robots, manifest e iconos
+│   ├── components/   # Interfaz: ciudad 3D, páginas, layout, asistente, SEO
+│   ├── content/      # Textos tipados por idioma (es/, en/) y datos del titular
+│   ├── i18n/         # Rutas traducidas y configuración de next-intl
+│   ├── lib/          # Contacto, asistente, SEO, datos estructurados, OG, seguridad
+│   ├── proxy.ts      # Idioma y cabeceras de cada petición
 │   └── env.ts        # Esquema y validación de variables de entorno
 ├── e2e/              # Tests E2E y de accesibilidad (Playwright + axe)
 └── tests/            # Tests unitarios y de componentes
@@ -50,6 +66,16 @@ npm run dev
 ```
 
 La web queda disponible en <http://localhost:3000>.
+
+Ninguna variable es obligatoria en local. Están todas explicadas en [`.env.example`](.env.example):
+
+| Variable                                 | Para qué                                                             |
+| ---------------------------------------- | -------------------------------------------------------------------- |
+| `SITE_URL`                               | Origen canónico. Obligatoria en producción                           |
+| `RESEND_API_KEY`                         | Envío del formulario. Sin ella, en local el mensaje sale por consola |
+| `CONTACT_FROM_EMAIL`, `CONTACT_TO_EMAIL` | Remitente y destinatario de los mensajes                             |
+| `CONTACT_FORM_SECRET`                    | Firma del antispam. Si falta, se deriva de `RESEND_API_KEY`          |
+| `ANTHROPIC_API_KEY`, `ASSISTANT_MODEL`   | Asistente de IA. Sin clave, el asistente aparece como no disponible  |
 
 ## Scripts
 
@@ -92,10 +118,6 @@ La web queda disponible en <http://localhost:3000>.
 Para los E2E en local: `npx playwright install chromium` (una vez), `npm run build` y
 `npm run test:e2e` (usa el puerto 3100; otro con `E2E_PORT`).
 
-Las versiones (release candidates por pull request, `CHANGELOG.md` y etiquetas) siguen el esquema descrito en [docs/VERSIONING.md](docs/VERSIONING.md).
-
-La web está publicada sin indexar hasta el lanzamiento público: lo que está preparado (Search Console, Bing, DNS) y los pasos de ese día están en [docs/LANZAMIENTO.md](docs/LANZAMIENTO.md).
-
 ## Estándares de calidad
 
 - **TypeScript estricto**, incluido `noUncheckedIndexedAccess`.
@@ -105,6 +127,21 @@ La web está publicada sin indexar hasta el lanzamiento público: lo que está p
 - **Integración continua:** cada push a `develop` y cada pull request ejecutan tipos, lint, formato, tests y build en GitHub Actions; las pull requests además pasan los E2E con axe y Lighthouse CI.
 - **Dependencias al día** con Dependabot, agrupando actualizaciones menores.
 - **Cabeceras de seguridad:** CSP estática, HSTS, COOP/CORP y Permissions-Policy, con `npm audit` en cada pull request; detalles en [docs/SECURITY.md](docs/SECURITY.md).
+
+## Documentación
+
+| Documento                             | Contenido                                                        |
+| ------------------------------------- | ---------------------------------------------------------------- |
+| [PLAN.md](docs/PLAN.md)               | Objetivos, decisiones y fases del proyecto                       |
+| [CONTENIDO.md](docs/CONTENIDO.md)     | Textos de la web y criterios de tono                             |
+| [PERFORMANCE.md](docs/PERFORMANCE.md) | Presupuestos de rendimiento y Lighthouse CI                      |
+| [SECURITY.md](docs/SECURITY.md)       | CSP, cabeceras y decisiones de seguridad                         |
+| [VERSIONING.md](docs/VERSIONING.md)   | Versiones por pull request, releases, `CHANGELOG.md` y etiquetas |
+| [LANZAMIENTO.md](docs/LANZAMIENTO.md) | Indexación, Search Console, Bing y pasos del día del lanzamiento |
+
+## Ramas y releases
+
+El trabajo entra en `develop` con pull requests que suben una versión `-rc`. Una release es una pull request de `develop` a `master`, que es lo que despliega Vercel en producción; después se etiqueta `vX.Y.Z`. El detalle está en [VERSIONING.md](docs/VERSIONING.md).
 
 ## Licencia
 
