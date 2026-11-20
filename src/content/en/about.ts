@@ -5,7 +5,7 @@ export const about: AboutContent = {
   meta: {
     title: 'About · Pablo Jordá, full-stack developer',
     description:
-      'AI-powered full-stack developer based in Valencia, Spain, with 7+ years in insurance, fintech and architecture software. How I work and what I care about.',
+      'AI-powered full-stack developer based in Valencia, Spain, with 7+ years in insurance, fintech and consulting. How I work and what I care about.',
   },
   hero: {
     kicker: 'About',
@@ -32,8 +32,8 @@ export const about: AboutContent = {
         text: 'Financial products where security, traceability and reliability are the starting point.',
       },
       {
-        title: 'Architecture software',
-        text: 'Technical tools for demanding professionals, with rich interfaces and plenty of detail.',
+        title: 'Consulting',
+        text: 'Projects for clients across industries, where every engagement means learning a new business and delivering with rigour.',
       },
     ],
   },

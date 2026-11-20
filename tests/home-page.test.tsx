@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { renderToString } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -26,8 +26,26 @@ describe.each(LOCALES)('HomePage (%s)', (locale) => {
   it('keeps the brand chip and the menu button over the city', () => {
     renderWithIntl(<HomePage locale={locale} />, locale);
 
-    expect(screen.getByRole('banner')).toHaveTextContent('Pablo Jordá');
-    expect(screen.getByRole('button', { expanded: false })).toBeInTheDocument();
+    const banner = screen.getByRole('banner');
+    expect(banner).toHaveTextContent('Pablo Jordá');
+    expect(within(banner).getByRole('button', { expanded: false })).toBeInTheDocument();
+  });
+
+  it('folds the clock controls behind a toggle on phones', () => {
+    renderWithIntl(<HomePage locale={locale} />, locale);
+
+    const toggle = screen.getByRole('button', { name: new RegExp(ui.clock.toggle) });
+    const controls = document.getElementById(toggle.getAttribute('aria-controls')!)!;
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(controls).toHaveClass('hidden', 'sm:grid');
+
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(controls).not.toHaveClass('hidden');
+
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(toggle).toHaveFocus();
   });
 
   it('links every place from the dock to its section', () => {

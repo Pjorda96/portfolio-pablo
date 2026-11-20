@@ -61,7 +61,7 @@ export const home: HomeContent = {
         landmark: 'El Micalet',
         short: 'About',
         title: 'About me',
-        text: 'AI-powered full-stack developer with 7+ years building web applications for insurance, fintech and architecture. Today I use AI at every stage of the work to deliver sooner without lowering the bar.',
+        text: 'AI-powered full-stack developer with 7+ years building web applications for insurance, fintech and consulting. Today I use AI at every stage of the work to deliver sooner without lowering the bar.',
         points: [
           'AI-powered development: faster, just as rigorous',
           'React, Next.js, TypeScript and Node.js',
@@ -93,6 +93,7 @@ export const home: HomeContent = {
       clock: {
         label: 'City time',
         slider: 'Time of day in the city',
+        toggle: 'Change the city time',
         real: 'Real time',
         play: 'Watch a whole day',
         modes: { real: 'your time', play: 'a day in 24 s', manual: 'chosen time' },

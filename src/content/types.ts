@@ -155,6 +155,8 @@ export interface CityUi {
   clock: {
     label: string;
     slider: string;
+    /** Phones: the button that shows or hides the time controls. */
+    toggle: string;
     real: string;
     play: string;
     modes: { real: string; play: string; manual: string };
