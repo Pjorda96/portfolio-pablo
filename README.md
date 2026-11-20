@@ -1,7 +1,15 @@
-# pablojorda.es
+<p align="center">
+  <img src="src/app/icon.svg" width="96" alt="Monograma de Pablo Jordá">
+</p>
 
-[![Continuous integration](https://github.com/Pjorda96/portfolio-pablo/actions/workflows/CI.yml/badge.svg?branch=develop)](https://github.com/Pjorda96/portfolio-pablo/actions/workflows/CI.yml)
-[![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-blue.svg)](LICENSE)
+<h1 align="center">pablojorda.es</h1>
+
+<p align="center"><em>Una ciudad de cosas bien construidas.</em></p>
+
+<p align="center">
+  <a href="https://github.com/Pjorda96/portfolio-pablo/actions/workflows/CI.yml"><img src="https://github.com/Pjorda96/portfolio-pablo/actions/workflows/CI.yml/badge.svg?branch=develop" alt="Continuous integration"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-blue.svg" alt="Licencia: MIT"></a>
+</p>
 
 Web de servicios de **Pablo Jordá**: desarrollo web a medida, integraciones de inteligencia artificial y producto digital (apps, SaaS y MVPs).
 
