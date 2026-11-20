@@ -2,6 +2,18 @@
 
 Las versiones y cómo se publican están descritas en [docs/VERSIONING.md](docs/VERSIONING.md).
 
+## 0.2.1
+
+### Bug Fixes
+
+- La portada se ve bien en móvil: el reloj y la tarjeta principal ya no se salen de la pantalla, el reloj se pliega en un botón, la barra de lugares ocupa una sola fila y los edificios llevan puntos en lugar de etiquetas.
+- Consultoría en lugar de arquitectura como sector de experiencia, en el inicio y en «Sobre mí».
+- La respuesta de la FAQ sobre plazos ya no repite «semanas».
+
+### Documentation
+
+- Guía de lanzamiento: Search Console y Bing verificados, registros DNS que hay que conservar y pasos para abrir la web a los buscadores.
+
 ## 0.2.0
 
 Primera versión de la web de servicios: pablojorda.es pasa de CV a web para captar clientes, en español y en inglés. Se publica sin indexar hasta el lanzamiento público.
